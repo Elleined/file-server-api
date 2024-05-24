@@ -1,10 +1,9 @@
-package com.elleined.image_server_api.model.image;
+package com.elleined.image_server_api.model.image_format;
 
 
 import com.elleined.image_server_api.model.PrimaryKeyIdentity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

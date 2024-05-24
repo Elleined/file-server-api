@@ -1,4 +1,4 @@
-package com.elleined.image_server_api.service;
+package com.elleined.image_server_api.service.image;
 
 import org.springframework.web.multipart.MultipartFile;
 
