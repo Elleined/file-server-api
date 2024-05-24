@@ -1,8 +1,5 @@
 package com.elleined.image_server_api.dto.image;
 
-import com.elleined.image_server_api.dto.DTO;
-import com.elleined.image_server_api.model.image.ImageHistory;
-import com.elleined.image_server_api.model.project.Project;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,7 +11,7 @@ import java.util.List;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class ActiveImageDTO extends DTO {
+public class ActiveImageDTO extends ImageDTO {
     private int projectId;
     private List<Integer> imageHistoriesIds;
 }

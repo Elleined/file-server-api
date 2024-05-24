@@ -34,4 +34,15 @@ public class Project extends PrimaryKeyIdentity {
 
     @OneToMany(mappedBy = "project")
     private List<DeletedImage> deletedImages;
+
+    public List<Integer> getAllActiveImageIds() {
+        return getActiveImages().stream()
+                .map(PrimaryKeyIdentity::getId)
+                .toList();
+    }
+    public List<Integer> getAllDeletedImageIds() {
+        return getDeletedImages().stream()
+                .map(PrimaryKeyIdentity::getId)
+                .toList();
+    }
 }

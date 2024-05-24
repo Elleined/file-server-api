@@ -1,5 +1,6 @@
 package com.elleined.image_server_api.model.image;
 
+import com.elleined.image_server_api.model.PrimaryKeyIdentity;
 import com.elleined.image_server_api.model.project.Project;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -33,4 +34,10 @@ public class ActiveImage extends Image {
 
     @OneToMany(mappedBy = "activeImage")
     private List<ImageHistory> imageHistories;
+
+    public List<Integer> getAllImageHistoriesIds() {
+        return this.getImageHistories().stream()
+                .map(PrimaryKeyIdentity::getId)
+                .toList();
+    }
 }

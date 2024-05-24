@@ -22,10 +22,10 @@ public class ImageHistory extends Image {
 
     @ManyToOne(optional = false)
     @JoinColumn(
-            name = "active_image_id",
+            name = "image_id",
             referencedColumnName = "id",
             nullable = false,
             updatable = false
     )
-    private ActiveImage activeImage;
+    private Image image;
 }

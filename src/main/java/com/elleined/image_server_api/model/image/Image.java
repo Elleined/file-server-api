@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @SuperBuilder
-public class Image extends PrimaryKeyIdentity {
+public abstract class Image extends PrimaryKeyIdentity {
 
     @Column(
             name = "uuid",
@@ -48,8 +48,8 @@ public class Image extends PrimaryKeyIdentity {
 
     @Lob
     @Column(
-            name = "image",
+            name = "bytes",
             nullable = false
     )
-    private byte[] image;
+    private byte[] bytes;
 }
