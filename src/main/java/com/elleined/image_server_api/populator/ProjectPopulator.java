@@ -1,13 +1,10 @@
 package com.elleined.image_server_api.populator;
 
-import com.elleined.image_server_api.mapper.image.ImageFormatMapper;
-import com.elleined.image_server_api.service.image.ImageFormatService;
+import com.elleined.image_server_api.mapper.project.ProjectMapper;
+import com.elleined.image_server_api.service.project.ProjectService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
 
@@ -17,12 +14,12 @@ import java.util.List;
 
 @Component
 @Transactional
-public class ImageFormatPopulator extends Populator {
-    private final ImageFormatService imageFormatService;
+public class ProjectPopulator extends Populator {
+    private final ProjectService projectService;
 
-    public ImageFormatPopulator(ObjectMapper objectMapper, ImageFormatService imageFormatService) {
+    public ProjectPopulator(ObjectMapper objectMapper, ProjectService projectService) {
         super(objectMapper);
-        this.imageFormatService = imageFormatService;
+        this.projectService = projectService;
     }
 
     @Override
@@ -31,7 +28,7 @@ public class ImageFormatPopulator extends Populator {
         byte[] dataBytes = FileCopyUtils.copyToByteArray(resource.getInputStream());
         var type = objectMapper.getTypeFactory().constructCollectionType(List.class, String.class);
 
-        List<String> formats = objectMapper.readValue(new String(dataBytes, StandardCharsets.UTF_8), type);
-        imageFormatService.saveAll(formats);
+        List<String> projects = objectMapper.readValue(new String(dataBytes, StandardCharsets.UTF_8), type);
+        projectService.saveAll(projects);
     }
 }

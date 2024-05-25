@@ -26,7 +26,9 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public Project save(String name) {
         Project project = projectMapper.toEntity(name);
-        return projectRepository.save(project);
+        projectRepository.save(project);
+        log.debug("Saving project with name of {} success", name);
+        return project;
     }
 
     @Override
