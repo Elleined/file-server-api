@@ -3,19 +3,19 @@ package com.elleined.image_server_api.service.image.active;
 import com.elleined.image_server_api.model.PrimaryKeyIdentity;
 import com.elleined.image_server_api.model.image.ActiveImage;
 import com.elleined.image_server_api.request.ImageRequest;
-import com.elleined.image_server_api.service.CustomService;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Comparator;
 import java.util.List;
 
-public interface ActiveImageService extends CustomService<ActiveImage> {
+public interface ActiveImageService {
     int MAX_FILE_SIZE = 1024 * 1024 * 3; // 3MB
 
     ActiveImage save(ImageRequest imageRequest);
     ActiveImage getByUUID(String uuid);
     void deleteByUUID(String uuid);
     ActiveImage restoreByUUID(String uuid);
+    List<ActiveImage> getAllById(List<Integer> ids);
 
     default boolean isAboveMaxFileSize(MultipartFile image) {
         return image.getSize() > MAX_FILE_SIZE;
