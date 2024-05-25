@@ -12,7 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public interface ActiveImageService {
-    int MAX_FILE_SIZE = 1024 * 1024 * 3; // 3MB
+    int MAX_FILE_SIZE = 1024 * 1024 * 2; // 2MB
 
     ActiveImage save(Project project, MultipartFile image, ImageRequest imageRequest) throws IOException;
     ActiveImage getByUUID(Project project, String uuid);

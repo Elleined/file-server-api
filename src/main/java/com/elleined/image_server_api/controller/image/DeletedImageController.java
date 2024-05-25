@@ -34,20 +34,20 @@ public class DeletedImageController {
                 .toList();
     }
 
-    @PutMapping("/{id}/restore")
+    @PutMapping("/{uuid}/restore")
     public ActiveImageDTO restore(@PathVariable("projectId") int projectId,
-                                  @PathVariable("id") int id) {
+                                  @PathVariable("uuid") String uuid) {
 
         Project project = projectService.getById(projectId);
-        DeletedImage deletedImage = deletedImageService.getById(id);
+        DeletedImage deletedImage = deletedImageService.getByUUID(uuid);
         ActiveImage activeImage = activeImageService.restore(project, deletedImage);
 
         return activeImageMapper.toDTO(activeImage);
     }
 
-    @GetMapping("/{id}")
-    public DeletedImageDTO getById(@PathVariable("id") int id) {
-        DeletedImage deletedImage = deletedImageService.getById(id);
+    @GetMapping("/{uuid}")
+    public DeletedImageDTO getByUUID(@PathVariable("uuid") String uuid) {
+        DeletedImage deletedImage = deletedImageService.getByUUID(uuid);
         return deletedImageMapper.toDTO(deletedImage);
     }
 }

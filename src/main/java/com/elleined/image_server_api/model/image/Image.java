@@ -45,10 +45,10 @@ public abstract class Image extends PrimaryKeyIdentity {
     )
     private ImageFormat imageFormat;
 
-    @Lob
     @Column(
             name = "bytes",
-            nullable = false
+            nullable = false,
+            columnDefinition = "MEDIUMBLOB"
     )
     private byte[] bytes;
 }

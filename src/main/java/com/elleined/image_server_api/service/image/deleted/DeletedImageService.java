@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface DeletedImageService {
     List<DeletedImage> getAllById(List<Integer> ids);
-    DeletedImage getById(int deletedImageId);
+    DeletedImage getByUUID(String uuid);
 
     void deleteAll(); // All images that are not accessed within 1 month will be deleted
 }

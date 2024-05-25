@@ -33,8 +33,8 @@ public class DeletedImageServiceImpl implements DeletedImageService {
     }
 
     @Override
-    public DeletedImage getById(int deletedImageId) {
-        return deletedImageRepository.findById(deletedImageId).orElseThrow(() -> new ResourceNotFoundException(STR."Deleted image with id of \{deletedImageId} does not exists!"));
+    public DeletedImage getByUUID(String uuid) {
+        return deletedImageRepository.fetchByUUID(uuid).orElseThrow(() -> new ResourceNotFoundException("Deleted image with uuid of " + uuid + " does not exists!"));
     }
 
     @Override

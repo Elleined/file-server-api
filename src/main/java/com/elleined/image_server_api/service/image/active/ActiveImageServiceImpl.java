@@ -62,7 +62,7 @@ public class ActiveImageServiceImpl implements ActiveImageService {
     public ActiveImage getByUUID(Project project, String uuid) {
         ActiveImage activeImage = activeImageRepository.fetchByUUID(uuid).orElseThrow(() -> new ResourceNotFoundException(STR."Image with uuid of \{uuid} does not exists!"));
 
-        if (projectService.has(project, activeImage))
+        if (!projectService.has(project, activeImage))
             throw new ResourceNotOwnedException("Project does not owned this image!");
 
         activeImage.setLastAccessedAt(LocalDateTime.now());
@@ -75,7 +75,7 @@ public class ActiveImageServiceImpl implements ActiveImageService {
     public void deleteByUUID(Project project, String uuid) {
         ActiveImage activeImage = activeImageRepository.fetchByUUID(uuid).orElseThrow(() -> new ResourceNotFoundException(STR."Image with uuid of \{uuid} does not exists!"));
 
-        if (projectService.has(project, activeImage))
+        if (!projectService.has(project, activeImage))
             throw new ResourceNotOwnedException("Project does not owned this image!");
 
         DeletedImage deletedImage = deletedImageMapper.toEntity(activeImage);
@@ -89,7 +89,7 @@ public class ActiveImageServiceImpl implements ActiveImageService {
     public ActiveImage restore(Project project, DeletedImage deletedImage) {
         ActiveImage activeImage = activeImageMapper.toEntity(deletedImage);
 
-        if (projectService.has(project, activeImage))
+        if (!projectService.has(project, activeImage))
             throw new ResourceNotOwnedException("Project does not owned this image!");
 
         activeImageRepository.save(activeImage);

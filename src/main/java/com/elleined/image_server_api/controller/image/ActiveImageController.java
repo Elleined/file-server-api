@@ -9,9 +9,11 @@ import com.elleined.image_server_api.service.image.active.ActiveImageService;
 import com.elleined.image_server_api.service.project.ProjectService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 
@@ -27,7 +29,7 @@ public class ActiveImageController {
     @PostMapping
     public ActiveImageDTO save(@PathVariable("projectId") int projectId,
                                @RequestPart("image") MultipartFile image,
-                               @Valid @RequestBody ImageRequest imageRequest) throws IOException {
+                               @Valid @RequestPart("imageRequest") ImageRequest imageRequest) throws IOException {
 
         Project project = projectService.getById(projectId);
         ActiveImage activeImage = activeImageService.save(project, image, imageRequest);

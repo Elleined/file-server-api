@@ -9,6 +9,6 @@ import java.util.Optional;
 
 public interface ActiveImageRepository extends JpaRepository<ActiveImage, Integer> {
 
-    @Query("SELECT ActiveImage ai FROM ActiveImage ai WHERE ai.uuid = :uuid")
+    @Query("SELECT ai FROM ActiveImage ai WHERE ai.uuid = :uuid")
     Optional<ActiveImage> fetchByUUID(@Param("uuid") String uuid);
 }
