@@ -3,10 +3,10 @@ package com.elleined.image_server_api.service.image.deleted;
 import com.elleined.image_server_api.model.PrimaryKeyIdentity;
 import com.elleined.image_server_api.model.image.DeletedImage;
 import com.elleined.image_server_api.repository.image.DeletedImageRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -29,5 +29,10 @@ public class DeletedImageServiceImpl implements DeletedImageService {
         deletedImageRepository.saveAll(deletedImages);
 
         return deletedImages;
+    }
+
+    @Override
+    public void deleteAll() {
+
     }
 }

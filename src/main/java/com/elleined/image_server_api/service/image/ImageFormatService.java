@@ -8,4 +8,10 @@ public interface ImageFormatService {
     ImageFormat save(String format);
     ImageFormat getById(int id);
     List<ImageFormat> getAll();
+
+    default List<ImageFormat> saveAll(List<String> formats) {
+        return formats.stream()
+                .map(this::save)
+                .toList();
+    }
 }
