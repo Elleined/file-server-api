@@ -33,6 +33,10 @@ public class DeletedImageServiceImpl implements DeletedImageService {
 
     @Override
     public void deleteAll() {
-
+        LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
+        List<DeletedImage> deletedImages = deletedImageRepository.findAll().stream()
+                .filter(deletedImage -> deletedImage.getLastAccessedAt().isBefore(oneMonthAgo) ||
+                        deletedImage.getLastAccessedAt().equals(oneMonthAgo))
+                .toList();
     }
 }
