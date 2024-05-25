@@ -1,7 +1,6 @@
 package com.elleined.image_server_api.service.image.active;
 
 import com.elleined.image_server_api.exception.image.ImageSizeException;
-import com.elleined.image_server_api.exception.resource.ResourceAlreadyExistsException;
 import com.elleined.image_server_api.exception.resource.ResourceNotFoundException;
 import com.elleined.image_server_api.exception.resource.ResourceNotOwnedException;
 import com.elleined.image_server_api.mapper.image.ActiveImageMapper;
@@ -44,21 +43,16 @@ public class ActiveImageServiceImpl implements ActiveImageService {
     private final ImageFormatService imageFormatService;
 
     @Override
-    public ActiveImage save(MultipartFile image, ImageRequest imageRequest) throws IOException {
-        String uuid = imageRequest.getUuid();
+    public ActiveImage save(Project project, MultipartFile image, ImageRequest imageRequest) throws IOException {
         String description = imageRequest.getDescription();
         String additionalInformation = imageRequest.getAdditionalInformation();
         byte[] bytes = image.getBytes();
-        Project project = projectService.getById(imageRequest.getProjectId());
         ImageFormat imageFormat = imageFormatService.getById(imageRequest.getImageFormatId());
 
         if (isAboveMaxFileSize(image))
             throw new ImageSizeException(STR."Cannot upload image! because image exceeds to file size which is \{MAX_FILE_SIZE}");
 
-        if (isUUIDExists(uuid))
-            throw new ResourceAlreadyExistsException("Cannot upload image! because uuid already exists!");
-
-        ActiveImage activeImage = activeImageMapper.toEntity(uuid, description, additionalInformation, imageFormat, bytes, project);
+        ActiveImage activeImage = activeImageMapper.toEntity(description, additionalInformation, imageFormat, bytes, project);
         activeImageRepository.save(activeImage);
         log.debug("Uploading image success!");
         return activeImage;

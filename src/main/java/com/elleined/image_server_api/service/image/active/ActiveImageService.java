@@ -14,7 +14,7 @@ import java.util.List;
 public interface ActiveImageService {
     int MAX_FILE_SIZE = 1024 * 1024 * 3; // 3MB
 
-    ActiveImage save(MultipartFile image, ImageRequest imageRequest) throws IOException;
+    ActiveImage save(Project project, MultipartFile image, ImageRequest imageRequest) throws IOException;
     ActiveImage getByUUID(Project project, String uuid);
     void deleteByUUID(Project project, String uuid);
     ActiveImage restore(Project project, DeletedImage deletedImage);

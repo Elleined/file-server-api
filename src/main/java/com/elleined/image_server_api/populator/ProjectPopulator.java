@@ -1,6 +1,5 @@
 package com.elleined.image_server_api.populator;
 
-import com.elleined.image_server_api.mapper.project.ProjectMapper;
 import com.elleined.image_server_api.service.project.ProjectService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.io.ClassPathResource;

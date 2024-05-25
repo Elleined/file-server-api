@@ -6,6 +6,7 @@ import com.elleined.image_server_api.model.image.ActiveImage;
 import com.elleined.image_server_api.model.image.DeletedImage;
 import com.elleined.image_server_api.model.image.ImageFormat;
 import com.elleined.image_server_api.model.project.Project;
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -30,7 +31,7 @@ public interface ActiveImageMapper extends CustomMapper<ActiveImage, ActiveImage
     @Mappings({
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())"),
-            @Mapping(target = "uuid", expression = "java(uuid)"),
+            @Mapping(target = "uuid", expression = "java(java.util.UUID.randomUUID().toString())"),
             @Mapping(target = "lastAccessedAt", expression = "java(java.time.LocalDateTime.now())"),
             @Mapping(target = "description", expression = "java(description)"),
             @Mapping(target = "additionalInformation", expression = "java(additionalInformation)"),
@@ -38,11 +39,10 @@ public interface ActiveImageMapper extends CustomMapper<ActiveImage, ActiveImage
             @Mapping(target = "bytes", expression = "java(bytes)"),
             @Mapping(target = "project", expression = "java(project)")
     })
-    ActiveImage toEntity(String uuid,
-                         String description,
+    ActiveImage toEntity(String description,
                          String additionalInformation,
                          ImageFormat imageFormat,
-                         byte[] bytes,
+                         @Context byte[] bytes,
                          Project project);
 
     @Mappings({

@@ -1,13 +1,9 @@
 package com.elleined.image_server_api.populator;
 
-import com.elleined.image_server_api.mapper.image.ImageFormatMapper;
 import com.elleined.image_server_api.service.image.ImageFormatService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
 
