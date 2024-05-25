@@ -14,6 +14,10 @@ public interface ProjectService {
     List<ActiveImage> getAllActiveImages(Project project);
     List<DeletedImage> getAllDeletedImages(Project project);
 
+    default boolean has(Project project, ActiveImage activeImage) {
+        return project.getActiveImages().contains(activeImage);
+    }
+
     default List<Project> saveAll(List<String> names) {
         return names.stream()
                 .map(this::save)

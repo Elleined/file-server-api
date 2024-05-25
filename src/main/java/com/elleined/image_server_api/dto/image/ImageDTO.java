@@ -18,5 +18,4 @@ public class ImageDTO extends DTO {
     private String description;
     private String additionalInformation;
     private int imageFormatId;
-    private byte[] bytes;
 }

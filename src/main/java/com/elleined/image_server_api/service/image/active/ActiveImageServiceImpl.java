@@ -3,6 +3,7 @@ package com.elleined.image_server_api.service.image.active;
 import com.elleined.image_server_api.exception.image.ImageSizeException;
 import com.elleined.image_server_api.exception.resource.ResourceAlreadyExistsException;
 import com.elleined.image_server_api.exception.resource.ResourceNotFoundException;
+import com.elleined.image_server_api.exception.resource.ResourceNotOwnedException;
 import com.elleined.image_server_api.mapper.image.ActiveImageMapper;
 import com.elleined.image_server_api.mapper.image.DeletedImageMapper;
 import com.elleined.image_server_api.model.PrimaryKeyIdentity;
@@ -64,8 +65,11 @@ public class ActiveImageServiceImpl implements ActiveImageService {
     }
 
     @Override
-    public ActiveImage getByUUID(String uuid) {
+    public ActiveImage getByUUID(Project project, String uuid) {
         ActiveImage activeImage = activeImageRepository.fetchByUUID(uuid).orElseThrow(() -> new ResourceNotFoundException(STR."Image with uuid of \{uuid} does not exists!"));
+
+        if (projectService.has(project, activeImage))
+            throw new ResourceNotOwnedException("Project does not owned this image!");
 
         activeImage.setLastAccessedAt(LocalDateTime.now());
         activeImageRepository.save(activeImage);
@@ -74,8 +78,12 @@ public class ActiveImageServiceImpl implements ActiveImageService {
     }
 
     @Override
-    public void deleteByUUID(String uuid) {
+    public void deleteByUUID(Project project, String uuid) {
         ActiveImage activeImage = activeImageRepository.fetchByUUID(uuid).orElseThrow(() -> new ResourceNotFoundException(STR."Image with uuid of \{uuid} does not exists!"));
+
+        if (projectService.has(project, activeImage))
+            throw new ResourceNotOwnedException("Project does not owned this image!");
+
         DeletedImage deletedImage = deletedImageMapper.toEntity(activeImage);
 
         deletedImageRepository.save(deletedImage);
@@ -84,8 +92,11 @@ public class ActiveImageServiceImpl implements ActiveImageService {
     }
 
     @Override
-    public ActiveImage restore(DeletedImage deletedImage) {
+    public ActiveImage restore(Project project, DeletedImage deletedImage) {
         ActiveImage activeImage = activeImageMapper.toEntity(deletedImage);
+
+        if (projectService.has(project, activeImage))
+            throw new ResourceNotOwnedException("Project does not owned this image!");
 
         activeImageRepository.save(activeImage);
         deletedImageRepository.delete(deletedImage);

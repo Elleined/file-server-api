@@ -1,5 +1,6 @@
 package com.elleined.image_server_api.service.image.deleted;
 
+import com.elleined.image_server_api.exception.resource.ResourceNotFoundException;
 import com.elleined.image_server_api.model.PrimaryKeyIdentity;
 import com.elleined.image_server_api.model.image.DeletedImage;
 import com.elleined.image_server_api.repository.image.DeletedImageRepository;
@@ -29,6 +30,11 @@ public class DeletedImageServiceImpl implements DeletedImageService {
         deletedImageRepository.saveAll(deletedImages);
 
         return deletedImages;
+    }
+
+    @Override
+    public DeletedImage getById(int deletedImageId) {
+        return deletedImageRepository.findById(deletedImageId).orElseThrow(() -> new ResourceNotFoundException(STR."Deleted image with id of \{deletedImageId} does not exists!"));
     }
 
     @Override
