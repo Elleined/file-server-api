@@ -23,6 +23,7 @@ public class ProjectController {
     private final ActiveImageMapper activeImageMapper;
     private final DeletedImageMapper deletedImageMapper;
 
+    @PostMapping
     public ProjectDTO save(@RequestParam("name") String name) {
         Project project = projectService.save(name);
         return projectMapper.toDTO(project);
@@ -34,6 +35,7 @@ public class ProjectController {
         return projectMapper.toDTO(project);
     }
 
+    @GetMapping
     public List<ProjectDTO> getAll() {
         return projectService.getAll().stream()
                 .map(projectMapper::toDTO)

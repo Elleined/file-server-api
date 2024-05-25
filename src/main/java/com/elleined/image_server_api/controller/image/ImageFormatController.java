@@ -16,13 +16,6 @@ public class ImageFormatController {
     private final ImageFormatService imageFormatService;
     private final ImageFormatMapper imageFormatMapper;
 
-    @PostMapping
-    public ImageFormatDTO save(@RequestParam("format") String format) {
-        ImageFormat imageFormat = imageFormatService.save(format);
-        return imageFormatMapper.toDTO(imageFormat);
-    }
-
-
     @GetMapping("/{id}")
     public ImageFormatDTO getById(@PathVariable("id") int id) {
         ImageFormat imageFormat = imageFormatService.getById(id);
