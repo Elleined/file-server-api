@@ -9,7 +9,7 @@ import java.util.List;
 public interface ProjectService {
     Project save(String name);
     Project getById(int id);
-    Project getAll();
+    List<Project> getAll();
 
     List<ActiveImage> getAllActiveImages(Project project);
     List<DeletedImage> getAllDeletedImages(Project project);

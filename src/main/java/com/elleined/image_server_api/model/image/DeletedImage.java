@@ -1,14 +1,11 @@
 package com.elleined.image_server_api.model.image;
 
-import com.elleined.image_server_api.model.PrimaryKeyIdentity;
 import com.elleined.image_server_api.model.project.Project;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-
-import java.util.List;
 
 @Entity
 @Table(

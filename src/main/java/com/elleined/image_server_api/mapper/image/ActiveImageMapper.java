@@ -49,7 +49,7 @@ public interface ActiveImageMapper extends CustomMapper<ActiveImage, ActiveImage
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "createdAt", source = "createdAt"),
             @Mapping(target = "uuid", source = "uuid"),
-            @Mapping(target = "lastAccessedAt", source = "lastAccessedAt"),
+            @Mapping(target = "lastAccessedAt", expression = "java(java.time.LocalDateTime.now())"),
             @Mapping(target = "description", source = "description"),
             @Mapping(target = "additionalInformation", source = "additionalInformation"),
             @Mapping(target = "imageFormat", source = "imageFormat"),
