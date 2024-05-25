@@ -1,4 +1,4 @@
-package com.elleined.image_server_api.model.image_format;
+package com.elleined.image_server_api.model.image;
 
 
 import com.elleined.image_server_api.model.PrimaryKeyIdentity;

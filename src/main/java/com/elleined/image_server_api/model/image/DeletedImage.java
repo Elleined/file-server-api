@@ -31,13 +31,4 @@ public class DeletedImage extends Image {
             updatable = false
     )
     private Project project;
-
-    @OneToMany(mappedBy = "deletedImage")
-    private List<ImageHistory> imageHistories;
-
-    public List<Integer> getAllImageHistoriesIds() {
-        return this.getImageHistories().stream()
-                .map(PrimaryKeyIdentity::getId)
-                .toList();
-    }
 }

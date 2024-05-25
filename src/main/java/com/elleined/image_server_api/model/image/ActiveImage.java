@@ -31,13 +31,4 @@ public class ActiveImage extends Image {
             updatable = false
     )
     private Project project;
-
-    @OneToMany(mappedBy = "activeImage")
-    private List<ImageHistory> imageHistories;
-
-    public List<Integer> getAllImageHistoriesIds() {
-        return this.getImageHistories().stream()
-                .map(PrimaryKeyIdentity::getId)
-                .toList();
-    }
 }

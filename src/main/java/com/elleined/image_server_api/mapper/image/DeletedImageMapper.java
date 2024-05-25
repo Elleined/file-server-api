@@ -21,8 +21,7 @@ public interface DeletedImageMapper extends CustomMapper<DeletedImage, DeletedIm
             @Mapping(target = "additionalInformation", source = "additionalInformation"),
             @Mapping(target = "imageFormatId", source = "imageFormat.id"),
             @Mapping(target = "bytes", source = "bytes"),
-            @Mapping(target = "projectId", source = "project.id"),
-            @Mapping(target = "imageHistoriesIds", expression = "java(new java.util.ArrayList<>())")
+            @Mapping(target = "projectId", source = "project.id")
     })
     DeletedImageDTO toDTO(DeletedImage deletedImage);
 
@@ -34,9 +33,8 @@ public interface DeletedImageMapper extends CustomMapper<DeletedImage, DeletedIm
             @Mapping(target = "description", source = "description"),
             @Mapping(target = "additionalInformation", source = "additionalInformation"),
             @Mapping(target = "imageFormat", source = "imageFormat"),
-            @Mapping(target = "image", source = "image"),
-            @Mapping(target = "project", source = "project"),
-            @Mapping(target = "imageHistories", expression = "java(new java.util.ArrayList<>())")
+            @Mapping(target = "bytes", source = "bytes"),
+            @Mapping(target = "project", source = "project")
     })
     DeletedImage toEntity(ActiveImage activeImage);
 }

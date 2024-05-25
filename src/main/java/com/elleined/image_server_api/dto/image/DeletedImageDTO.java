@@ -14,5 +14,4 @@ import java.util.List;
 @NoArgsConstructor
 public class DeletedImageDTO extends ImageDTO {
     private int projectId;
-    private List<Integer> imageHistoriesIds;
 }

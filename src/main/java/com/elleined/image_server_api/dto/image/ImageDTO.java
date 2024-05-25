@@ -1,7 +1,6 @@
 package com.elleined.image_server_api.dto.image;
 
 import com.elleined.image_server_api.dto.DTO;
-import com.elleined.image_server_api.model.image_format.ImageFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

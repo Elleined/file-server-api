@@ -4,7 +4,7 @@ import com.elleined.image_server_api.dto.image.ActiveImageDTO;
 import com.elleined.image_server_api.mapper.CustomMapper;
 import com.elleined.image_server_api.model.image.ActiveImage;
 import com.elleined.image_server_api.model.image.DeletedImage;
-import com.elleined.image_server_api.model.image_format.ImageFormat;
+import com.elleined.image_server_api.model.image.ImageFormat;
 import com.elleined.image_server_api.model.project.Project;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -23,8 +23,7 @@ public interface ActiveImageMapper extends CustomMapper<ActiveImage, ActiveImage
             @Mapping(target = "additionalInformation", source = "additionalInformation"),
             @Mapping(target = "imageFormatId", source = "imageFormat.id"),
             @Mapping(target = "bytes", source = "bytes"),
-            @Mapping(target = "projectId", source = "project.id"),
-            @Mapping(target = "imageHistoriesIds", expression = "java(activeImage.getAllImageHistoriesIds())"),
+            @Mapping(target = "projectId", source = "project.id")
     })
     ActiveImageDTO toDTO(ActiveImage activeImage);
 
@@ -37,8 +36,7 @@ public interface ActiveImageMapper extends CustomMapper<ActiveImage, ActiveImage
             @Mapping(target = "additionalInformation", expression = "java(additionalInformation)"),
             @Mapping(target = "imageFormat", expression = "java(imageFormat)"),
             @Mapping(target = "bytes", expression = "java(bytes)"),
-            @Mapping(target = "project", expression = "java(project)"),
-            @Mapping(target = "imageHistories", expression = "java(new java.util.ArrayList<>())")
+            @Mapping(target = "project", expression = "java(project)")
     })
     ActiveImage toEntity(String uuid,
                          String description,
@@ -56,8 +54,7 @@ public interface ActiveImageMapper extends CustomMapper<ActiveImage, ActiveImage
             @Mapping(target = "additionalInformation", source = "additionalInformation"),
             @Mapping(target = "imageFormat", source = "imageFormat"),
             @Mapping(target = "bytes", source = "bytes"),
-            @Mapping(target = "project", source = "project"),
-            @Mapping(target = "imageHistories", source = "imageHistories")
+            @Mapping(target = "project", source = "project")
     })
     ActiveImage toEntity(DeletedImage deletedImage); // For restoring deleted images;
 }

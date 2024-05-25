@@ -1,5 +1,6 @@
 package com.elleined.image_server_api.dto.image;
 
+import com.elleined.image_server_api.dto.DTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,7 +10,6 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class ImageHistoryDTO extends ImageDTO {
-    private int activeImageId;
-    private int deletedImageId;
+public class ImageFormatDTO extends DTO {
+    private String format;
 }
