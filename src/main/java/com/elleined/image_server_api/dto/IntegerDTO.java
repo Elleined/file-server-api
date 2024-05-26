@@ -1,4 +1,4 @@
-package com.elleined.image_server_api.request;
+package com.elleined.image_server_api.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,5 +9,6 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class Request {
+public abstract class IntegerDTO extends DTO {
+    private int id;
 }

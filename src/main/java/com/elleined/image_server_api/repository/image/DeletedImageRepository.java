@@ -7,10 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
+import java.util.UUID;
 
-public interface DeletedImageRepository extends JpaRepository<DeletedImage, Integer> {
-
-
-    @Query("SELECT di FROM DeletedImage di WHERE di.uuid = :uuid")
-    Optional<DeletedImage> fetchByUUID(@Param("uuid") String uuid);
+public interface DeletedImageRepository extends JpaRepository<DeletedImage, UUID> {
 }

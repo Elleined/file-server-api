@@ -1,6 +1,7 @@
 package com.elleined.image_server_api.model.image;
 
 import com.elleined.image_server_api.model.PrimaryKeyIdentity;
+import com.elleined.image_server_api.model.PrimaryKeyUUID;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,15 +15,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @SuperBuilder
-public abstract class Image extends PrimaryKeyIdentity {
-
-    @Column(
-            name = "uuid",
-            nullable = false,
-            updatable = false,
-            unique = true
-    )
-    private String uuid;
+public abstract class Image extends PrimaryKeyUUID {
 
     @Column(
             name = "last_accessed_at",
@@ -46,9 +39,9 @@ public abstract class Image extends PrimaryKeyIdentity {
     private ImageFormat imageFormat;
 
     @Column(
-            name = "bytes",
+            name = "file_name",
             nullable = false,
-            columnDefinition = "MEDIUMBLOB"
+            unique = true
     )
-    private byte[] bytes;
+    private String fileName;
 }
