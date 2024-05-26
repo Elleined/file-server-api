@@ -28,8 +28,12 @@ target/
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
+**/src/main/**/resources/pictures
 **/src/main/**/resources/pictures/
+**/src/main/**/resources/pictures/**/active
+**/src/main/**/resources/pictures/**/deleted
 
 ### VS Code ###
 .vscode/
+
 

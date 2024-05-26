@@ -64,7 +64,8 @@ public class ActiveImageServiceImpl implements ActiveImageService {
         ImageFormat imageFormat = imageFormatService.getByMultipart(image)
                 .orElseThrow(() -> new ResourceNotFoundException("Cannot upload image! format is not valid!"));
 
-        ActiveImage activeImage = activeImageMapper.toEntity(description, additionalInformation, imageFormat, image.getOriginalFilename(), project);
+        String fileName = this.save(project, image);
+        ActiveImage activeImage = activeImageMapper.toEntity(description, additionalInformation, imageFormat, fileName, project);
         activeImageRepository.save(activeImage);
         log.debug("Uploading image success!");
         return activeImage;
@@ -97,10 +98,10 @@ public class ActiveImageServiceImpl implements ActiveImageService {
 
     @Override
     public ActiveImage restore(Project project, DeletedImage deletedImage) {
-        ActiveImage activeImage = activeImageMapper.toEntity(deletedImage);
+        if (!projectService.has(project, deletedImage))
+            throw new ResourceNotOwnedException("Cannot restore image! because this project does not owned this image!");
 
-        if (!projectService.has(project, activeImage))
-            throw new ResourceNotOwnedException("Project does not owned this image!");
+        ActiveImage activeImage = activeImageMapper.toEntity(deletedImage);
 
         activeImageRepository.save(activeImage);
         deletedImageRepository.delete(deletedImage);
@@ -136,7 +137,6 @@ public class ActiveImageServiceImpl implements ActiveImageService {
     @Override
     public byte[] getImage(Project project, String fileName) throws IOException {
         Path imagePath = Path.of(this.getActiveImagesPath(project), fileName);
-
         if (!Files.exists(imagePath))
             return null;
 
@@ -146,10 +146,10 @@ public class ActiveImageServiceImpl implements ActiveImageService {
     @Override
     public void transfer(Project project, MultipartFile multipartFile) throws IOException {
         if (multipartFile == null || multipartFile.isEmpty()) return;
-        Path uploadPath = Path.of(this.getDeletedImagesPath(project));
-        Path filePath = uploadPath.resolve(Objects.requireNonNull(multipartFile.getOriginalFilename()));
+        Path destination = Path.of(this.getDeletedImagesPath(project));
+        Path destinationPath = destination.resolve(Objects.requireNonNull(multipartFile.getOriginalFilename()));
 
-        multipartFile.transferTo(filePath);
-        log.debug("Transferring image to {} success!", filePath);
+        multipartFile.transferTo(destinationPath);
+        log.debug("Transferring image from to {} success!", destinationPath);
     }
 }

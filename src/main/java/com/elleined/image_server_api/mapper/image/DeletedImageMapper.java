@@ -19,12 +19,13 @@ public interface DeletedImageMapper extends CustomMapper<DeletedImage, DeletedIm
             @Mapping(target = "description", source = "description"),
             @Mapping(target = "additionalInformation", source = "additionalInformation"),
             @Mapping(target = "imageFormatId", source = "imageFormat.id"),
+            @Mapping(target = "fileName", source = "fileName"),
             @Mapping(target = "projectId", source = "project.id")
     })
     DeletedImageDTO toDTO(DeletedImage deletedImage);
 
     @Mappings({
-            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "id", source = "id"),
             @Mapping(target = "createdAt", source = "createdAt"),
             @Mapping(target = "lastAccessedAt", expression = "java(java.time.LocalDateTime.now())"),
             @Mapping(target = "description", source = "description"),

@@ -5,6 +5,7 @@ import com.elleined.image_server_api.model.image.DeletedImage;
 import com.elleined.image_server_api.model.project.Project;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public interface ProjectService {
@@ -19,16 +20,16 @@ public interface ProjectService {
         return project.getActiveImages().contains(activeImage);
     }
 
+    default boolean has(Project project, DeletedImage deletedImage) {
+        return project.getDeletedImages().contains(deletedImage);
+    }
 
     default List<Project> saveAll(List<String> names) throws IOException {
-        return names.stream()
-                .map(name -> {
-                    try {
-                        return this.save(name);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .toList();
+        List<Project> projects = new ArrayList<>();
+        for (String name : names) {
+            Project project = this.save(name);
+            projects.add(project);
+        }
+        return projects;
     }
 }

@@ -35,7 +35,6 @@ public class ActiveImageController {
         Project project = projectService.getById(projectId);
 
         ActiveImage activeImage = activeImageService.save(project, description, additionalInformation, image);
-        activeImageService.save(project, image);
 
         byte[] bytes = activeImageService.getImage(project, activeImage.getFileName());
         return activeImageMapper.toDTO(activeImage, bytes);

@@ -1,6 +1,7 @@
 package com.elleined.image_server_api.service.image.deleted;
 
 import com.elleined.image_server_api.exception.resource.ResourceNotFoundException;
+import com.elleined.image_server_api.exception.resource.ResourceNotOwnedException;
 import com.elleined.image_server_api.model.PrimaryKeyUUID;
 import com.elleined.image_server_api.model.image.DeletedImage;
 import com.elleined.image_server_api.model.project.Project;
@@ -45,7 +46,12 @@ public class DeletedImageServiceImpl implements DeletedImageService {
 
     @Override
     public DeletedImage getByUUID(UUID uuid) {
-        return deletedImageRepository.findById(uuid).orElseThrow(() -> new ResourceNotFoundException(STR."Deleted image with uuid of \{uuid} does not exists!"));
+        DeletedImage deletedImage = deletedImageRepository.findById(uuid).orElseThrow(() -> new ResourceNotFoundException(STR."Deleted image with uuid of \{uuid} does not exists!"));
+
+        deletedImage.setLastAccessedAt(LocalDateTime.now());
+        deletedImageRepository.save(deletedImage);
+
+        return deletedImage;
     }
 
     @Override
@@ -68,6 +74,7 @@ public class DeletedImageServiceImpl implements DeletedImageService {
         if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
 
         Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        log.debug("Saving image to local storage success!");
         return uniqueFileName;
     }
 
@@ -78,16 +85,16 @@ public class DeletedImageServiceImpl implements DeletedImageService {
         if (!Files.exists(imagePath))
             return null;
 
-
         return Files.readAllBytes(imagePath);
     }
 
     @Override
     public void transfer(Project project, MultipartFile multipartFile) throws IOException {
         if (multipartFile == null || multipartFile.isEmpty()) return;
-        Path uploadPath = Path.of(this.getActiveImagesPath(project));
-        Path filePath = uploadPath.resolve(Objects.requireNonNull(multipartFile.getOriginalFilename()));
+        Path destination = Path.of(this.getActiveImagesPath(project));
+        Path destinationPath = destination.resolve(Objects.requireNonNull(multipartFile.getOriginalFilename()));
 
-        multipartFile.transferTo(filePath);
+        multipartFile.transferTo(destinationPath);
+        log.debug("Transferring image to {} success!", destinationPath);
     }
 }

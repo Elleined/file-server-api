@@ -20,6 +20,7 @@ public interface ActiveImageMapper {
             @Mapping(target = "description", source = "description"),
             @Mapping(target = "additionalInformation", source = "additionalInformation"),
             @Mapping(target = "imageFormatId", source = "imageFormat.id"),
+            @Mapping(target = "fileName", source = "fileName"),
             @Mapping(target = "bytes", expression = "java(bytes)"),
             @Mapping(target = "projectId", source = "project.id")
     })
@@ -27,7 +28,7 @@ public interface ActiveImageMapper {
                          @Context byte[] bytes);
 
     @Mappings({
-            @Mapping(target = "id", ignore = true),
+            @Mapping(target = "id", expression = "java(java.util.UUID.randomUUID())"),
             @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())"),
             @Mapping(target = "lastAccessedAt", expression = "java(java.time.LocalDateTime.now())"),
             @Mapping(target = "description", expression = "java(description)"),

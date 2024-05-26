@@ -17,4 +17,5 @@ public class ImageDTO extends UUIDDTO {
     private String description;
     private String additionalInformation;
     private int imageFormatId;
+    private String fileName;
 }
