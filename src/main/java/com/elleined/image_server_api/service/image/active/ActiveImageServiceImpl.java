@@ -129,6 +129,7 @@ public class ActiveImageServiceImpl implements ActiveImageService {
         if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
 
         Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        log.debug("Saving image to local storage success!");
         return uniqueFileName;
     }
 
@@ -138,7 +139,6 @@ public class ActiveImageServiceImpl implements ActiveImageService {
 
         if (!Files.exists(imagePath))
             return null;
-
 
         return Files.readAllBytes(imagePath);
     }
@@ -150,5 +150,6 @@ public class ActiveImageServiceImpl implements ActiveImageService {
         Path filePath = uploadPath.resolve(Objects.requireNonNull(multipartFile.getOriginalFilename()));
 
         multipartFile.transferTo(filePath);
+        log.debug("Transferring image to {} success!", filePath);
     }
 }

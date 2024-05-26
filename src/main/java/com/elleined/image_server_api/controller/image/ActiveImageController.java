@@ -29,13 +29,13 @@ public class ActiveImageController {
     @PostMapping
     public ActiveImageDTO save(@PathVariable("projectId") int projectId,
                                @RequestPart("image") MultipartFile image,
-                               @RequestPart("description") String description,
-                               @RequestPart("additionalInformation") String additionalInformation) throws IOException {
+                               @RequestPart(value = "description", required = false) String description,
+                               @RequestPart(value = "additionalInformation", required = false) String additionalInformation) throws IOException {
 
         Project project = projectService.getById(projectId);
 
-        activeImageService.save(project, image);
         ActiveImage activeImage = activeImageService.save(project, description, additionalInformation, image);
+        activeImageService.save(project, image);
 
         byte[] bytes = activeImageService.getImage(project, activeImage.getFileName());
         return activeImageMapper.toDTO(activeImage, bytes);
@@ -58,12 +58,11 @@ public class ActiveImageController {
 
         Project project = projectService.getById(projectId);
         ActiveImage activeImage = activeImageService.getByUUID(project, UUID.fromString(uuid));
+        activeImageService.deleteByUUID(project, activeImage);
 
         String fileName = activeImage.getFileName();
         MultipartFile activeImageFile = new CustomMultipartFile(fileName, activeImageService.getImage(project, fileName));
         activeImageService.transfer(project, activeImageFile);
-
-        activeImageService.deleteByUUID(project, activeImage);
     }
 
     @GetMapping("/get-all-by-uuid")

@@ -52,12 +52,12 @@ public class DeletedImageController {
 
         Project project = projectService.getById(projectId);
         DeletedImage deletedImage = deletedImageService.getByUUID(UUID.fromString(uuid));
+        ActiveImage activeImage = activeImageService.restore(project, deletedImage);
 
         String fileName = deletedImage.getFileName();
         MultipartFile deletedImageFile = new CustomMultipartFile(fileName, deletedImageService.getImage(project, fileName));
         deletedImageService.transfer(project, deletedImageFile);
 
-        ActiveImage activeImage = activeImageService.restore(project, deletedImage);
         byte[] bytes = activeImageService.getImage(project, activeImage.getFileName());
         return activeImageMapper.toDTO(activeImage, bytes);
     }

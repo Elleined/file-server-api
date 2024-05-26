@@ -3,13 +3,14 @@ package com.elleined.image_server_api.service.image;
 import com.elleined.image_server_api.model.project.Project;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 
 public interface ImageService {
-    String uploadDirectory = "/pictures";
+    String uploadDirectory = "src/main/resources/pictures";
 
     String save(Project project, MultipartFile image) throws IOException;
     byte[] getImage(Project project, String fileName) throws IOException;
