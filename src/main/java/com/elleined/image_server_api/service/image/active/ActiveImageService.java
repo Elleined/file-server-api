@@ -4,6 +4,7 @@ import com.elleined.image_server_api.model.PrimaryKeyUUID;
 import com.elleined.image_server_api.model.image.ActiveImage;
 import com.elleined.image_server_api.model.image.DeletedImage;
 import com.elleined.image_server_api.model.project.Project;
+import com.elleined.image_server_api.service.image.ImageService;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -11,7 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
-public interface ActiveImageService {
+public interface ActiveImageService extends ImageService {
     int MAX_FILE_SIZE = 1024 * 1024 * 2; // 2MB
 
     ActiveImage save(Project project,
@@ -21,7 +22,7 @@ public interface ActiveImageService {
 
     ActiveImage getByUUID(Project project, UUID uuid);
 
-    void deleteByUUID(Project project, UUID uuid);
+    void deleteByUUID(Project project, ActiveImage activeImage);
 
     ActiveImage restore(Project project, DeletedImage deletedImage);
 
@@ -38,8 +39,8 @@ public interface ActiveImageService {
                 .toList();
     }
 
-    default void deleteAllByUUID(Project project, List<UUID> uuids) {
-        uuids.forEach(uuid -> deleteByUUID(project, uuid));
+    default void deleteAllByUUID(Project project, List<ActiveImage> activeImages) {
+        activeImages.forEach(activeImage -> deleteByUUID(project, activeImage));
     }
 
     default List<ActiveImage> restoreAll(Project project, List<DeletedImage> deletedImages) {

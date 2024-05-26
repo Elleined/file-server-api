@@ -14,12 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
-
-import static com.elleined.image_server_api.service.image.ImageService.uploadDirectory;
 
 @Slf4j
 @Service
@@ -30,7 +27,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectMapper projectMapper;
 
     @Override
-    public Project save(String name) {
+    public Project save(String name) throws IOException {
         Project project = projectMapper.toEntity(name);
         projectRepository.save(project);
         log.debug("Saving project with name of {} success", name);

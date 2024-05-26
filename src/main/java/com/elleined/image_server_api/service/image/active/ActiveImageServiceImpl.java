@@ -18,24 +18,28 @@ import com.elleined.image_server_api.service.image.format.ImageFormatService;
 import com.elleined.image_server_api.service.project.ProjectService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Primary
 public class ActiveImageServiceImpl implements ActiveImageService {
     private final ProjectService projectService;
-
-    private final ImageService imageService;
 
     private final ActiveImageRepository activeImageRepository;
     private final ActiveImageMapper activeImageMapper;
@@ -57,10 +61,10 @@ public class ActiveImageServiceImpl implements ActiveImageService {
         if (!imageFormatService.isFileExtensionValid(image))
             throw new ImageFormatException("Cannot upload image! because extension name is not valid. Please refer to valid extension names!");
 
-        ImageFormat imageFormat = imageFormatService.getByMultipart(image).orElseThrow(() -> new ResourceNotFoundException("Cannot upload image! format is not valid!"));
-        String fileName = imageService.save(project, image);
+        ImageFormat imageFormat = imageFormatService.getByMultipart(image)
+                .orElseThrow(() -> new ResourceNotFoundException("Cannot upload image! format is not valid!"));
 
-        ActiveImage activeImage = activeImageMapper.toEntity(description, additionalInformation, imageFormat, fileName, project);
+        ActiveImage activeImage = activeImageMapper.toEntity(description, additionalInformation, imageFormat, image.getOriginalFilename(), project);
         activeImageRepository.save(activeImage);
         log.debug("Uploading image success!");
         return activeImage;
@@ -80,18 +84,15 @@ public class ActiveImageServiceImpl implements ActiveImageService {
     }
 
     @Override
-    public void deleteByUUID(Project project, UUID uuid) {
-        ActiveImage activeImage = activeImageRepository.findById(uuid).orElseThrow(() -> new ResourceNotFoundException(STR."Image with uuid of \{uuid} does not exists!"));
-
+    public void deleteByUUID(Project project, ActiveImage activeImage) {
         if (!projectService.has(project, activeImage))
             throw new ResourceNotOwnedException("Project does not owned this image!");
 
         DeletedImage deletedImage = deletedImageMapper.toEntity(activeImage);
-        imageService.delete(project, deletedImage.getFileName());
 
         deletedImageRepository.save(deletedImage);
         activeImageRepository.delete(activeImage);
-        log.debug("Deleting image with uuid of {} success", uuid);
+        log.debug("Deleting image with uuid of {} success", activeImage.getId());
     }
 
     @Override
@@ -117,5 +118,37 @@ public class ActiveImageServiceImpl implements ActiveImageService {
         activeImageRepository.saveAll(activeImages);
 
         return activeImages;
+    }
+
+    @Override
+    public String save(Project project, MultipartFile image) throws IOException {
+        String uniqueFileName = this.getUniqueFileName(image);
+        Path uploadPath = Path.of(this.getActiveImagesPath(project));
+        Path filePath = uploadPath.resolve(uniqueFileName);
+
+        if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
+
+        Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        return uniqueFileName;
+    }
+
+    @Override
+    public byte[] getImage(Project project, String fileName) throws IOException {
+        Path imagePath = Path.of(this.getActiveImagesPath(project), fileName);
+
+        if (!Files.exists(imagePath))
+            return null;
+
+
+        return Files.readAllBytes(imagePath);
+    }
+
+    @Override
+    public void transfer(Project project, MultipartFile multipartFile) throws IOException {
+        if (multipartFile == null || multipartFile.isEmpty()) return;
+        Path uploadPath = Path.of(this.getDeletedImagesPath(project));
+        Path filePath = uploadPath.resolve(Objects.requireNonNull(multipartFile.getOriginalFilename()));
+
+        multipartFile.transferTo(filePath);
     }
 }

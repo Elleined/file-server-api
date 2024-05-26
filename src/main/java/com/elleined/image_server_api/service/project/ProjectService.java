@@ -4,10 +4,11 @@ import com.elleined.image_server_api.model.image.ActiveImage;
 import com.elleined.image_server_api.model.image.DeletedImage;
 import com.elleined.image_server_api.model.project.Project;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface ProjectService {
-    Project save(String name);
+    Project save(String name) throws IOException;
     Project getById(int id);
     List<Project> getAll();
 
@@ -18,9 +19,16 @@ public interface ProjectService {
         return project.getActiveImages().contains(activeImage);
     }
 
-    default List<Project> saveAll(List<String> names) {
+
+    default List<Project> saveAll(List<String> names) throws IOException {
         return names.stream()
-                .map(this::save)
+                .map(name -> {
+                    try {
+                        return this.save(name);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
                 .toList();
     }
 }

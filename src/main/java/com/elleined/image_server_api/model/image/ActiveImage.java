@@ -10,10 +10,7 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(
         name = "tbl_image",
-        indexes = {
-                @Index(name = "created_at_idx", columnList = "created_at"),
-                @Index(name = "uuid_idx", columnList = "uuid")
-        }
+        indexes = @Index(name = "created_at_idx", columnList = "created_at")
 )
 @Getter
 @Setter
