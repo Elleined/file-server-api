@@ -7,6 +7,7 @@ import com.elleined.image_server_api.mapper.image.DeletedImageMapper;
 import com.elleined.image_server_api.model.image.ActiveImage;
 import com.elleined.image_server_api.model.image.DeletedImage;
 import com.elleined.image_server_api.model.project.Project;
+import com.elleined.image_server_api.service.image.ImageService;
 import com.elleined.image_server_api.service.image.active.ActiveImageService;
 import com.elleined.image_server_api.service.image.deleted.DeletedImageService;
 import com.elleined.image_server_api.service.project.ProjectService;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,15 +23,24 @@ import java.util.List;
 public class DeletedImageController {
     private final ProjectService projectService;
 
+    private final ImageService imageService;
+
     private final ActiveImageService activeImageService;
     private final ActiveImageMapper activeImageMapper;
 
     private final DeletedImageService deletedImageService;
     private final DeletedImageMapper deletedImageMapper;
 
-    @GetMapping("/get-all-by-id")
-    public List<DeletedImageDTO> getAllById(List<Integer> ids) {
-        return deletedImageService.getAllById(ids).stream()
+    @GetMapping("/get-all-by-uuid")
+    public List<DeletedImageDTO> getAllByUUID(@PathVariable("projectId") int projectId,
+                                              @RequestBody List<String> uuids) {
+
+        Project project = projectService.getById(projectId);
+        List<UUID> ids = uuids.stream()
+                .map(UUID::fromString)
+                .toList();
+
+        return deletedImageService.getAllByUUID(ids).stream()
                 .map(deletedImageMapper::toDTO)
                 .toList();
     }
@@ -39,15 +50,16 @@ public class DeletedImageController {
                                   @PathVariable("uuid") String uuid) {
 
         Project project = projectService.getById(projectId);
-        DeletedImage deletedImage = deletedImageService.getByUUID(uuid);
+        DeletedImage deletedImage = deletedImageService.getByUUID(UUID.fromString(uuid));
         ActiveImage activeImage = activeImageService.restore(project, deletedImage);
 
-        return activeImageMapper.toDTO(activeImage);
+        byte[] bytes = imageService.getImage(project, activeImage.getFileName());
+        return activeImageMapper.toDTO(activeImage, bytes);
     }
 
     @GetMapping("/{uuid}")
     public DeletedImageDTO getByUUID(@PathVariable("uuid") String uuid) {
-        DeletedImage deletedImage = deletedImageService.getByUUID(uuid);
+        DeletedImage deletedImage = deletedImageService.getByUUID(UUID.fromString(uuid));
         return deletedImageMapper.toDTO(deletedImage);
     }
 }

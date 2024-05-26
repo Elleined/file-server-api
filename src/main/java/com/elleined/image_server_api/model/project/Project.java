@@ -1,6 +1,7 @@
 package com.elleined.image_server_api.model.project;
 
 import com.elleined.image_server_api.model.PrimaryKeyIdentity;
+import com.elleined.image_server_api.model.PrimaryKeyUUID;
 import com.elleined.image_server_api.model.image.ActiveImage;
 import com.elleined.image_server_api.model.image.DeletedImage;
 import jakarta.persistence.*;
@@ -10,6 +11,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(
@@ -35,14 +37,14 @@ public class Project extends PrimaryKeyIdentity {
     @OneToMany(mappedBy = "project")
     private List<DeletedImage> deletedImages;
 
-    public List<Integer> getAllActiveImageIds() {
+    public List<UUID> getAllActiveImageIds() {
         return getActiveImages().stream()
-                .map(PrimaryKeyIdentity::getId)
+                .map(PrimaryKeyUUID::getId)
                 .toList();
     }
-    public List<Integer> getAllDeletedImageIds() {
+    public List<UUID> getAllDeletedImageIds() {
         return getDeletedImages().stream()
-                .map(PrimaryKeyIdentity::getId)
+                .map(PrimaryKeyUUID::getId)
                 .toList();
     }
 }

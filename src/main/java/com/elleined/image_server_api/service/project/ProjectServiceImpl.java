@@ -3,17 +3,23 @@ package com.elleined.image_server_api.service.project;
 import com.elleined.image_server_api.exception.resource.ResourceNotFoundException;
 import com.elleined.image_server_api.mapper.project.ProjectMapper;
 import com.elleined.image_server_api.model.PrimaryKeyIdentity;
+import com.elleined.image_server_api.model.PrimaryKeyUUID;
 import com.elleined.image_server_api.model.image.ActiveImage;
 import com.elleined.image_server_api.model.image.DeletedImage;
 import com.elleined.image_server_api.model.project.Project;
 import com.elleined.image_server_api.repository.project.ProjectRepository;
+import com.elleined.image_server_api.service.image.ImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
+
+import static com.elleined.image_server_api.service.image.ImageService.uploadDirectory;
 
 @Slf4j
 @Service
@@ -33,7 +39,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Project getById(int id) {
-        return projectRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Project with id of " + id + " does not exists!"));
+        return projectRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(STR."Project with id of \{id} does not exists!"));
     }
 
     @Override
@@ -46,14 +52,14 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<ActiveImage> getAllActiveImages(Project project) {
         return project.getActiveImages().stream()
-                .sorted(Comparator.comparing(PrimaryKeyIdentity::getCreatedAt).reversed())
+                .sorted(Comparator.comparing(PrimaryKeyUUID::getCreatedAt).reversed())
                 .toList();
     }
 
     @Override
     public List<DeletedImage> getAllDeletedImages(Project project) {
         return project.getDeletedImages().stream()
-                .sorted(Comparator.comparing(PrimaryKeyIdentity::getCreatedAt).reversed())
+                .sorted(Comparator.comparing(PrimaryKeyUUID::getCreatedAt).reversed())
                 .toList();
     }
 }

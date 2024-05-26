@@ -3,7 +3,7 @@ package com.elleined.image_server_api.controller.image;
 import com.elleined.image_server_api.dto.image.ImageFormatDTO;
 import com.elleined.image_server_api.mapper.image.ImageFormatMapper;
 import com.elleined.image_server_api.model.image.ImageFormat;
-import com.elleined.image_server_api.service.image.ImageFormatService;
+import com.elleined.image_server_api.service.image.format.ImageFormatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

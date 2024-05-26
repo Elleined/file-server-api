@@ -1,8 +1,6 @@
 package com.elleined.image_server_api.dto.project;
 
-import com.elleined.image_server_api.dto.DTO;
 import com.elleined.image_server_api.dto.IntegerDTO;
-import com.elleined.image_server_api.dto.UUIDDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

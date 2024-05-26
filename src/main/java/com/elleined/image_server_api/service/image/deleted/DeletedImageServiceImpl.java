@@ -1,7 +1,7 @@
 package com.elleined.image_server_api.service.image.deleted;
 
 import com.elleined.image_server_api.exception.resource.ResourceNotFoundException;
-import com.elleined.image_server_api.model.PrimaryKeyIdentity;
+import com.elleined.image_server_api.model.PrimaryKeyUUID;
 import com.elleined.image_server_api.model.image.DeletedImage;
 import com.elleined.image_server_api.repository.image.DeletedImageRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -21,9 +22,9 @@ public class DeletedImageServiceImpl implements DeletedImageService {
     private final DeletedImageRepository deletedImageRepository;
 
     @Override
-    public List<DeletedImage> getAllById(List<Integer> ids) {
-        List<DeletedImage> deletedImages = deletedImageRepository.findAllById(ids).stream()
-                .sorted(Comparator.comparing(PrimaryKeyIdentity::getCreatedAt).reversed())
+    public List<DeletedImage> getAllByUUID(List<UUID> uuids) {
+        List<DeletedImage> deletedImages = deletedImageRepository.findAllById(uuids).stream()
+                .sorted(Comparator.comparing(PrimaryKeyUUID::getCreatedAt).reversed())
                 .toList();
 
         deletedImages.forEach(deletedImage -> deletedImage.setLastAccessedAt(LocalDateTime.now()));
@@ -33,8 +34,8 @@ public class DeletedImageServiceImpl implements DeletedImageService {
     }
 
     @Override
-    public DeletedImage getByUUID(String uuid) {
-        return deletedImageRepository.fetchByUUID(uuid).orElseThrow(() -> new ResourceNotFoundException("Deleted image with uuid of " + uuid + " does not exists!"));
+    public DeletedImage getByUUID(UUID uuid) {
+        return deletedImageRepository.findById(uuid).orElseThrow(() -> new ResourceNotFoundException("Deleted image with uuid of " + uuid + " does not exists!"));
     }
 
     @Override

@@ -12,5 +12,5 @@ import java.util.UUID;
 @SuperBuilder
 @NoArgsConstructor
 public abstract class UUIDDTO extends DTO {
-    private UUID uuid;
+    private UUID id;
 }

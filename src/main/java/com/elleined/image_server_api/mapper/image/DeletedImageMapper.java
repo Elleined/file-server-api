@@ -15,7 +15,6 @@ public interface DeletedImageMapper extends CustomMapper<DeletedImage, DeletedIm
     @Mappings({
             @Mapping(target = "id", source = "id"),
             @Mapping(target = "createdAt", source = "createdAt"),
-            @Mapping(target = "uuid", source = "uuid"),
             @Mapping(target = "lastAccessedAt", source = "lastAccessedAt"),
             @Mapping(target = "description", source = "description"),
             @Mapping(target = "additionalInformation", source = "additionalInformation"),
@@ -27,12 +26,11 @@ public interface DeletedImageMapper extends CustomMapper<DeletedImage, DeletedIm
     @Mappings({
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "createdAt", source = "createdAt"),
-            @Mapping(target = "uuid", source = "uuid"),
             @Mapping(target = "lastAccessedAt", expression = "java(java.time.LocalDateTime.now())"),
             @Mapping(target = "description", source = "description"),
             @Mapping(target = "additionalInformation", source = "additionalInformation"),
             @Mapping(target = "imageFormat", source = "imageFormat"),
-            @Mapping(target = "bytes", source = "bytes"),
+            @Mapping(target = "fileName", source = "fileName"),
             @Mapping(target = "project", source = "project")
     })
     DeletedImage toEntity(ActiveImage activeImage);
