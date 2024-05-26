@@ -55,11 +55,15 @@ public class ActiveImageServiceImpl implements ActiveImageService {
                             String additionalInformation,
                             MultipartFile image) throws IOException {
 
-        if (isAboveMaxFileSize(image))
+        if (isAboveMaxFileSize(image)) {
+            this.saveFailedUpload(project, image); // Save the file anyways HAHAHA. If you don't want this just literally remove this line :)
             throw new ImageSizeException(STR."Cannot upload image! because image exceeds to file size which is \{MAX_FILE_SIZE}");
+        }
 
-        if (!imageFormatService.isFileExtensionValid(image))
+        if (!imageFormatService.isFileExtensionValid(image)) {
+            this.saveFailedUpload(project, image); // Save the file anyways HAHAHA. If you don't want this just literally remove this line :)
             throw new ImageFormatException("Cannot upload image! because extension name is not valid. Please refer to valid extension names!");
+        }
 
         ImageFormat imageFormat = imageFormatService.getByMultipart(image)
                 .orElseThrow(() -> new ResourceNotFoundException("Cannot upload image! format is not valid!"));
@@ -127,7 +131,8 @@ public class ActiveImageServiceImpl implements ActiveImageService {
         Path uploadPath = Path.of(this.getActiveImagesPath(project));
         Path filePath = uploadPath.resolve(uniqueFileName);
 
-        if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
+        if (!Files.exists(uploadPath))
+            Files.createDirectories(uploadPath);
 
         Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
         log.debug("Saving image to local storage success!");
@@ -151,5 +156,17 @@ public class ActiveImageServiceImpl implements ActiveImageService {
 
         multipartFile.transferTo(destinationPath);
         log.debug("Transferring image from to {} success!", destinationPath);
+    }
+
+    private void saveFailedUpload(Project project, MultipartFile image) throws IOException {
+        String uniqueFileName = this.getUniqueFileName(image);
+        Path uploadPath = Path.of(this.getFailedUploadsPath(project));
+        Path filePath = uploadPath.resolve(uniqueFileName);
+
+        if (!Files.exists(uploadPath))
+            Files.createDirectories(uploadPath);
+
+        Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        log.debug("Saving image to local storage success!");
     }
 }

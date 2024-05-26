@@ -23,11 +23,17 @@ public interface ImageService {
     }
 
     default void createFolders(Project project) throws IOException {
-        Path projectDirectory = Path.of(STR."\{uploadDirectory}/\{project.getName()}");
+        Path pictureDirectory = Path.of(STR."\{uploadDirectory}");
+
+        Path projectDirectory = Path.of(uploadDirectory, project.getName());
+
         Path activeImagesDirectory = Path.of(this.getActiveImagesPath(project));
         Path deletedImagesDirectory = Path.of(this.getDeletedImagesPath(project));
+        Path failedUploadDirectory = Path.of(this.getFailedUploadsPath(project));
 
+        if (!Files.exists(pictureDirectory)) Files.createDirectories(pictureDirectory);
         if (!Files.exists(projectDirectory)) Files.createDirectories(projectDirectory);
+        if (!Files.exists(failedUploadDirectory)) Files.createDirectories(failedUploadDirectory);
         if (!Files.exists(activeImagesDirectory)) Files.createDirectories(activeImagesDirectory);
         if (!Files.exists(deletedImagesDirectory)) Files.createDirectories(deletedImagesDirectory);
     }
@@ -37,6 +43,9 @@ public interface ImageService {
     }
     default String getDeletedImagesPath(Project project) {
         return STR."\{uploadDirectory}/\{project.getName()}/deleted";
+    }
+    default String getFailedUploadsPath(Project project) {
+        return STR."\{uploadDirectory}/\{project.getName()}/failed";
     }
 }
 
