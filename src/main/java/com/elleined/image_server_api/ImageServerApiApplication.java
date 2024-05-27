@@ -13,6 +13,7 @@ import java.util.UUID;
 @EnableTransactionManagement
 @EnableScheduling
 @EnableCaching
+
 public class ImageServerApiApplication {
 
 	public static void main(String[] args) {

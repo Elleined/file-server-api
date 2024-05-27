@@ -21,7 +21,6 @@ services:
       redis_server:
         condition: service_healthy
 
-
   mysql_server:
     image: 'mysql:8.0.32'
     container_name: 'mysql_server'
