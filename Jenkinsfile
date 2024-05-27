@@ -10,7 +10,7 @@ pipeline {
     }
 
     stages {
-        stage("Clone Social Media API from Github") {
+        stage("Clone Image Server API from Github") {
             steps {
                 echo "Cloning Social Media API from Github. Please Wait..."
                 git branch: 'main',

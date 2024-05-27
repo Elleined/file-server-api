@@ -113,7 +113,8 @@
 					</annotationProcessorPaths>
 					<compilerArgs>--enable-preview</compilerArgs>
 				</configuration>
-			</plugin>		</plugins>
+			</plugin>
+		</plugins>
 		<finalName>image-server-api</finalName>
 	</build>
 
