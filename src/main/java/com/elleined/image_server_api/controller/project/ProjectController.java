@@ -3,17 +3,17 @@ package com.elleined.image_server_api.controller.project;
 import com.elleined.image_server_api.dto.image.ActiveImageDTO;
 import com.elleined.image_server_api.dto.image.DeletedImageDTO;
 import com.elleined.image_server_api.dto.project.ProjectDTO;
-import com.elleined.image_server_api.exception.resource.ResourceException;
 import com.elleined.image_server_api.mapper.image.ActiveImageMapper;
 import com.elleined.image_server_api.mapper.image.DeletedImageMapper;
 import com.elleined.image_server_api.mapper.project.ProjectMapper;
 import com.elleined.image_server_api.model.image.ActiveImage;
 import com.elleined.image_server_api.model.project.Project;
-import com.elleined.image_server_api.service.image.ImageService;
 import com.elleined.image_server_api.service.image.active.ActiveImageService;
-import com.elleined.image_server_api.service.image.deleted.DeletedImageService;
 import com.elleined.image_server_api.service.project.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -46,16 +46,26 @@ public class ProjectController {
     }
 
     @GetMapping
-    public List<ProjectDTO> getAll() {
-        return projectService.getAll().stream()
+    public List<ProjectDTO> getAll(@RequestParam(required = false, defaultValue = "1", value = "pageNumber") int pageNumber,
+                                   @RequestParam(required = false, defaultValue = "5", value = "pageSize") int pageSize,
+                                   @RequestParam(required = false, defaultValue = "ASC", value = "sortDirection") Sort.Direction direction,
+                                   @RequestParam(required = false, defaultValue = "id", value = "sortBy") String sortBy) {
+
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, direction, sortBy);
+        return projectService.getAll(pageable).stream()
                 .map(projectMapper::toDTO)
                 .toList();
     }
 
     @GetMapping("/{projectId}/active-images")
-    public List<ActiveImageDTO> getAllActiveImages(@PathVariable("projectId") int projectId) throws IOException {
+    public List<ActiveImageDTO> getAllActiveImages(@PathVariable("projectId") int projectId,
+                                                   @RequestParam(required = false, defaultValue = "1", value = "pageNumber") int pageNumber,
+                                                   @RequestParam(required = false, defaultValue = "5", value = "pageSize") int pageSize,
+                                                   @RequestParam(required = false, defaultValue = "ASC", value = "sortDirection") Sort.Direction direction,
+                                                   @RequestParam(required = false, defaultValue = "id", value = "sortBy") String sortBy) throws IOException {
         Project project = projectService.getById(projectId);
-        List<ActiveImage> activeImages = projectService.getAllActiveImages(project);
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, direction, sortBy);
+        List<ActiveImage> activeImages = projectService.getAllActiveImages(project, pageable);
 
         List<ActiveImageDTO> activeImageDTOS = new ArrayList<>();
         for (ActiveImage activeImage : activeImages) {
@@ -67,9 +77,15 @@ public class ProjectController {
     }
 
     @GetMapping("/{projectId}/deleted-images")
-    public List<DeletedImageDTO> getAllDeletedImages(@PathVariable("projectId") int projectId) {
+    public List<DeletedImageDTO> getAllDeletedImages(@PathVariable("projectId") int projectId,
+                                                     @RequestParam(required = false, defaultValue = "1", value = "pageNumber") int pageNumber,
+                                                     @RequestParam(required = false, defaultValue = "5", value = "pageSize") int pageSize,
+                                                     @RequestParam(required = false, defaultValue = "ASC", value = "sortDirection") Sort.Direction direction,
+                                                     @RequestParam(required = false, defaultValue = "id", value = "sortBy") String sortBy) {
+
         Project project = projectService.getById(projectId);
-        return projectService.getAllDeletedImages(project).stream()
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, direction, sortBy);
+        return projectService.getAllDeletedImages(project, pageable).stream()
                 .map(deletedImageMapper::toDTO)
                 .toList();
     }

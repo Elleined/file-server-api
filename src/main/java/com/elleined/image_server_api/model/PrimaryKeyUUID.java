@@ -16,7 +16,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @SuperBuilder
-public abstract class PrimaryKeyUUID implements Serializable {
+public abstract class PrimaryKeyUUID {
 
     @Id
     @Column(

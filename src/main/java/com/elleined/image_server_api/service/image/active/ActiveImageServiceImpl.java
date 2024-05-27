@@ -114,7 +114,7 @@ public class ActiveImageServiceImpl implements ActiveImageService {
     }
 
     @Override
-    public List<ActiveImage> getAllByUUID(List<UUID> uuids) {
+    public List<ActiveImage> getAllByUUID(Project project, List<UUID> uuids) {
         List<ActiveImage> activeImages = activeImageRepository.findAllById(uuids).stream()
                 .sorted(Comparator.comparing(PrimaryKeyUUID::getCreatedAt).reversed())
                 .toList();

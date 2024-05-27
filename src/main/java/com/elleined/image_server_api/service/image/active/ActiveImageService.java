@@ -26,17 +26,10 @@ public interface ActiveImageService extends ImageService {
 
     ActiveImage restore(Project project, DeletedImage deletedImage);
 
-    List<ActiveImage> getAllByUUID(List<UUID> uuids);
+    List<ActiveImage> getAllByUUID(Project project, List<UUID> uuids);
 
     default boolean isAboveMaxFileSize(MultipartFile image) {
         return image.getSize() > MAX_FILE_SIZE;
-    }
-
-    default List<ActiveImage> getAllByUUID(Project project, List<UUID> uuids) {
-        return uuids.stream()
-                .map(uuid -> getByUUID(project, uuid))
-                .sorted(Comparator.comparing(PrimaryKeyUUID::getCreatedAt).reversed())
-                .toList();
     }
 
     default void deleteAllByUUID(Project project, List<ActiveImage> activeImages) {

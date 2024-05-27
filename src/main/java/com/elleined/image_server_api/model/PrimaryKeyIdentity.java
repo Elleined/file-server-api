@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @SuperBuilder
-public abstract class PrimaryKeyIdentity implements Serializable {
+public abstract class PrimaryKeyIdentity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

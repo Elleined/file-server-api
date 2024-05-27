@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.springframework.data.redis.core.RedisHash;
 
 import java.util.List;
 import java.util.UUID;
@@ -43,6 +42,7 @@ public class Project extends PrimaryKeyIdentity {
                 .map(PrimaryKeyUUID::getId)
                 .toList();
     }
+
     public List<UUID> getAllDeletedImageIds() {
         return getDeletedImages().stream()
                 .map(PrimaryKeyUUID::getId)

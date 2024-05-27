@@ -2,18 +2,14 @@ package com.elleined.image_server_api.service.project;
 
 import com.elleined.image_server_api.exception.resource.ResourceNotFoundException;
 import com.elleined.image_server_api.mapper.project.ProjectMapper;
-import com.elleined.image_server_api.model.PrimaryKeyIdentity;
 import com.elleined.image_server_api.model.PrimaryKeyUUID;
 import com.elleined.image_server_api.model.image.ActiveImage;
 import com.elleined.image_server_api.model.image.DeletedImage;
 import com.elleined.image_server_api.model.project.Project;
 import com.elleined.image_server_api.repository.project.ProjectRepository;
-import com.elleined.image_server_api.service.image.ImageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Hibernate;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,23 +39,17 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<Project> getAll() {
-        return projectRepository.findAll().stream()
-                .sorted(Comparator.comparing(PrimaryKeyIdentity::getId))
-                .toList();
+    public List<Project> getAll(Pageable pageable) {
+        return projectRepository.findAll(pageable).stream().toList();
     }
 
     @Override
-    public List<ActiveImage> getAllActiveImages(Project project) {
-        return project.getActiveImages().stream()
-                .sorted(Comparator.comparing(PrimaryKeyUUID::getCreatedAt).reversed())
-                .toList();
+    public List<ActiveImage> getAllActiveImages(Project project, Pageable pageable) {
+        return projectRepository.findAllActiveImages(project, pageable).stream().toList();
     }
 
     @Override
-    public List<DeletedImage> getAllDeletedImages(Project project) {
-        return project.getDeletedImages().stream()
-                .sorted(Comparator.comparing(PrimaryKeyUUID::getCreatedAt).reversed())
-                .toList();
+    public List<DeletedImage> getAllDeletedImages(Project project, Pageable pageable) {
+        return projectRepository.findAllDeletedImages(project, pageable).stream().toList();
     }
 }
