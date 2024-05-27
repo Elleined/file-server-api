@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @MappedSuperclass
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @SuperBuilder
-public abstract class PrimaryKeyIdentity {
+public abstract class PrimaryKeyIdentity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
