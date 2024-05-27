@@ -10,6 +10,7 @@ import com.elleined.image_server_api.validator.FieldValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,10 +46,8 @@ public class ImageFormatServiceImpl implements ImageFormatService {
     }
 
     @Override
-    public List<ImageFormat> getAll() {
-        return imageFormatRepository.findAll().stream()
-                .sorted(Comparator.comparing(PrimaryKeyIdentity::getId))
-                .toList();
+    public List<ImageFormat> getAll(Pageable pageable) {
+        return imageFormatRepository.findAll(pageable).stream().toList();
     }
 
     @Override

@@ -5,10 +5,10 @@ import com.elleined.image_server_api.mapper.image.ImageFormatMapper;
 import com.elleined.image_server_api.model.image.ImageFormat;
 import com.elleined.image_server_api.service.image.format.ImageFormatService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,8 +26,13 @@ public class ImageFormatController {
     }
 
     @GetMapping
-    public List<ImageFormatDTO> getAll() {
-        return imageFormatService.getAll().stream()
+    public List<ImageFormatDTO> getAll(@RequestParam(required = false, defaultValue = "1", value = "pageNumber") int pageNumber,
+                                       @RequestParam(required = false, defaultValue = "5", value = "pageSize") int pageSize,
+                                       @RequestParam(required = false, defaultValue = "ASC", value = "sortDirection") Sort.Direction direction,
+                                       @RequestParam(required = false, defaultValue = "id", value = "sortBy") String sortBy) {
+
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, direction, sortBy);
+        return imageFormatService.getAll(pageable).stream()
                 .map(imageFormatMapper::toDTO)
                 .toList();
     }

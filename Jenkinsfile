@@ -14,7 +14,7 @@ pipeline {
             steps {
                 echo "Cloning Social Media API from Github. Please Wait..."
                 git branch: 'main',
-                    url: 'https://github.com/Elleined/social-media-api'
+                    url: 'https://github.com/Elleined/image-server-api'
                 echo "Cloning Social Media API from Github. Success!"
             }
         }
@@ -30,7 +30,7 @@ pipeline {
         stage("Create Docker Image") {
             steps {
                 echo "Creating docker image. Please Wait..."
-                sh 'docker build -t sma:latest .'
+                sh 'docker build -t image-server-api:latest .'
                 echo "Creating docker image. Success!"
             }
         }
@@ -46,7 +46,7 @@ pipeline {
         stage("Push docker image to DockerHub") {
             steps {
                 echo "Pushing docker image to DockerHub. Please Wait..."
-                sh 'docker tag sma:latest elleined/sma:latest'
+                sh 'docker tag image-server-api:latest elleined/image-server-api:latest'
                 sh 'docker push elleined/sma:latest'
                 echo "Pushing docker image to DockerHub. Success!"
             }
