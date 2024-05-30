@@ -6,31 +6,21 @@ import com.elleined.image_server_api.model.project.Project;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 
 public interface FolderCreator {
 
-    default void createFolders(Project project, List<Folder> folders) throws IOException {
+    default void createFolder() throws IOException {
         Path uploadDirectory = this.getUploadDirectory();
+
+        if (!Files.exists(uploadDirectory))
+            Files.createDirectories(uploadDirectory);
+    }
+
+    default void createFolder(Project project) throws IOException {
         Path projectDirectory = this.getProjectDirectory(project);
         Path activeImagesPath = this.getActiveImagesPath(project);
         Path deletedImagesPath = this.getDeletedImagesPath(project);
         Path failedUploadsPath = this.getFailedUploadsPath(project);
-
-        List<Path> activeImagesFolderPath = folders.stream()
-                .map(folder -> this.getActiveImagesPath(project, folder))
-                .toList();
-
-        List<Path> getDeletedImagesFolderPath = folders.stream()
-                .map(folder -> this.getDeletedImagesPath(project, folder))
-                .toList();
-
-        List<Path> getFailedUploadsFolderPath = folders.stream()
-                .map(folder -> this.getDeletedImagesPath(project, folder))
-                .toList();
-
-        if (!Files.exists(uploadDirectory))
-            Files.createDirectories(uploadDirectory);
 
         if (!Files.exists(projectDirectory))
             Files.createDirectories(projectDirectory);
@@ -44,14 +34,24 @@ public interface FolderCreator {
         if (!Files.exists(failedUploadsPath))
             Files.createDirectories(failedUploadsPath);
 
-        if (!Files.exists())
-            Files.createDirectories(pictureDirectory);
+        for (Folder folder : project.getFolders()) {
+            this.createFolder(project, folder);
+        }
+    }
 
-        if (!Files.exists())
-            Files.createDirectories(pictureDirectory);
+    default void createFolder(Project project, Folder folder) throws IOException {
+        Path activeImagesFolderPath = this.getActiveImagesPath(project, folder);
+        Path deletedImagesFolderPath = this.getDeletedImagesPath(project, folder);
+        Path failedUploadsFolderPath = this.getFailedUploadsPath(project, folder);
 
-        if (!Files.exists())
-            Files.createDirectories(pictureDirectory);
+        if (!Files.exists(activeImagesFolderPath))
+            Files.createDirectories(activeImagesFolderPath);
+
+        if (!Files.exists(deletedImagesFolderPath))
+            Files.createDirectories(deletedImagesFolderPath);
+
+        if (!Files.exists(failedUploadsFolderPath))
+            Files.createDirectories(failedUploadsFolderPath);
     }
 
     private Path getUploadDirectory() {

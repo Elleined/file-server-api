@@ -46,7 +46,10 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
-    public Folder getById(int id) throws ResourceNotFoundException {
+    public Folder getById(Project project, int id) throws ResourceNotFoundException {
+        if (!project.getAllFolderIds().contains(id))
+            throw new ResourceNotOwnedException("Cannot get by id! because this project doesn't have a folder with id of " + id);
+
         return folderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Folder with id of " + id + " doesn't exists!"));
     }
 
@@ -56,7 +59,7 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
-    public List<Folder> getAllById(List<Integer> ids) {
+    public List<Folder> getAllById(Project project, List<Integer> ids) {
         return folderRepository.findAllById(ids).stream()
                 .sorted(Comparator.comparing(Folder::getName))
                 .toList();
@@ -68,6 +71,7 @@ public class FolderServiceImpl implements FolderService {
                 .map(Folder::getName)
                 .anyMatch(name::equalsIgnoreCase);
     }
+
 
     @Override
     public List<ActiveImage> getAllActiveImages(Project project, Folder folder, Pageable pageable) {
@@ -83,5 +87,15 @@ public class FolderServiceImpl implements FolderService {
             throw new ResourceNotOwnedException("Cannot get all deleted images! because this project doesn't have this folder!");
 
         return folderRepository.findAllDeletedImages(folder, pageable).stream().toList();
+    }
+
+    @Override
+    public List<Folder> saveAll(Project project, List<String> names) {
+        if (names.stream().anyMatch(this::isNameAlreadyExists))
+            throw new ResourceAlreadyExistsException("Cannot save project! because one of the folder names already exists!");
+
+        return names.stream()
+                .map(name -> save(project, name))
+                .toList();
     }
 }

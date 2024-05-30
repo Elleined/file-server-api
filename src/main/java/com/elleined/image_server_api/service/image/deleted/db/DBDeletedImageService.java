@@ -3,6 +3,7 @@ package com.elleined.image_server_api.service.image.deleted.db;
 import com.elleined.image_server_api.model.folder.Folder;
 import com.elleined.image_server_api.model.image.DeletedImage;
 import com.elleined.image_server_api.model.project.Project;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;

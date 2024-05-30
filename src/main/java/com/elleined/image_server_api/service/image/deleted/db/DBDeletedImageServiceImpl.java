@@ -28,8 +28,6 @@ public class DBDeletedImageServiceImpl implements DBDeletedImageService {
 
     private final ProjectService projectService;
 
-    private final FolderService folderService;
-
     @Override
     public List<DeletedImage> getAllByUUID(Project project, Folder folder, List<UUID> uuids) {
         if (!projectService.has(project, folder))

@@ -5,6 +5,7 @@ import com.elleined.image_server_api.model.folder.Folder;
 import com.elleined.image_server_api.model.image.ActiveImage;
 import com.elleined.image_server_api.model.image.DeletedImage;
 import com.elleined.image_server_api.model.project.Project;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -33,15 +34,7 @@ public interface DBActiveImageService {
         return image.getSize() > MAX_FILE_SIZE;
     }
 
-    default void deleteAllByUUID(Project project, Folder folder, List<ActiveImage> activeImages) {
-        activeImages.forEach(activeImage -> deleteByUUID(project, folder, activeImage));
-    }
+    void deleteAllByUUID(Project project, Folder folder, List<ActiveImage> activeImages);
 
-    default List<ActiveImage> restoreAll(Project project, Folder folder, List<DeletedImage> deletedImages) {
-        return deletedImages.stream()
-                .map(deletedImage -> restore(project, folder, deletedImage))
-                .sorted(Comparator.comparing(PrimaryKeyUUID::getCreatedAt).reversed())
-                .toList();
-    }
-
+    List<ActiveImage> restoreAll(Project project, Folder folder, List<DeletedImage> deletedImages);
 }

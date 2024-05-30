@@ -29,7 +29,7 @@ public class LocalDeletedImageServiceImpl implements LocalDeletedImageService {
         if (!projectService.has(project, folder))
             throw new ResourceNotOwnedException("Cannot get image from storage! because this project doesn't have the specified upload folder");
 
-        Path imagePath = folderService.getDeletedImagesPath(project, folder);
+        Path imagePath = Path.of(folderService.getDeletedImagesPath(project, folder).toString(), fileName);
         if (!Files.exists(imagePath))
             return null;
 

@@ -2,6 +2,7 @@ package com.elleined.image_server_api.service.format;
 
 import com.elleined.image_server_api.model.format.Format;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -17,9 +18,5 @@ public interface FormatService {
     boolean isAlreadyExists(String format);
     boolean isFileExtensionValid(MultipartFile image);
 
-    default List<Format> saveAll(List<String> formats) {
-        return formats.stream()
-                .map(this::save)
-                .toList();
-    }
+    List<Format> saveAll(List<String> formats);
 }

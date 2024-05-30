@@ -11,20 +11,16 @@ import java.util.List;
 
 public interface FolderService extends FolderCreator {
     Folder save(Project project, String name);
-    Folder getById(int id) throws ResourceNotFoundException;
+    Folder getById(Project project, int id) throws ResourceNotFoundException;
     List<Folder> getAll(Project project, Pageable pageable);
-    List<Folder> getAllById(List<Integer> ids);
+    List<Folder> getAllById(Project project, List<Integer> ids);
 
     boolean isNameAlreadyExists(String name);
 
     List<ActiveImage> getAllActiveImages(Project project, Folder folder, Pageable pageable);
     List<DeletedImage> getAllDeletedImages(Project project, Folder folder, Pageable pageable);
 
-    default List<Folder> saveAll(Project project, List<String> names) {
-        return names.stream()
-                .map(name -> save(project, name))
-                .toList();
-    }
+    List<Folder> saveAll(Project project, List<String> names);
 
     default boolean has(Folder folder, ActiveImage activeImage) {
         return folder.getActiveImages().contains(activeImage);

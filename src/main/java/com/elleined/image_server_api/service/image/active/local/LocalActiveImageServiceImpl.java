@@ -44,7 +44,7 @@ public class LocalActiveImageServiceImpl implements LocalActiveImageService {
         if (!projectService.has(project, folder))
             throw new ResourceNotOwnedException("Cannot get image from storage! because this project doesn't have the specified upload folder");
 
-        Path imagePath = folderService.getActiveImagesPath(project, folder);
+        Path imagePath = Path.of(folderService.getActiveImagesPath(project, folder).toString(), fileName);
         if (!Files.exists(imagePath))
             return null;
 

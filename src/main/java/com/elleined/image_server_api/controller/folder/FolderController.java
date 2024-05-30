@@ -11,7 +11,7 @@ import com.elleined.image_server_api.model.folder.Folder;
 import com.elleined.image_server_api.model.image.ActiveImage;
 import com.elleined.image_server_api.model.project.Project;
 import com.elleined.image_server_api.service.folder.FolderService;
-import com.elleined.image_server_api.service.image.active.db.DBActiveImageService;
+import com.elleined.image_server_api.service.image.active.local.LocalActiveImageService;
 import com.elleined.image_server_api.service.project.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -32,18 +32,19 @@ public class FolderController {
     private final FolderService folderService;
     private final FolderMapper folderMapper;
 
-    private final DBActiveImageService DBActiveImageService;
+    private final LocalActiveImageService localActiveImageService;
     private final ActiveImageMapper activeImageMapper;
 
     private final DeletedImageMapper deletedImageMapper;
 
     @PostMapping
     public FolderDTO save(@PathVariable("projectId") int projectId,
-                          @RequestParam("folderName") String name) {
+                          @RequestParam("folderName") String name) throws IOException {
 
         Project project = projectService.getById(projectId);
         Folder folder = folderService.save(project, name);
 
+        folderService.createFolder(project, folder);
         return folderMapper.toDTO(folder);
     }
 
@@ -51,7 +52,9 @@ public class FolderController {
     public FolderDTO getById(@PathVariable("projectId") int projectId,
                              @PathVariable("folderId") int folderId) {
 
-        Folder folder = folderService.getById(folderId);
+        Project project = projectService.getById(projectId);
+        Folder folder = folderService.getById(project, folderId);
+
         return folderMapper.toDTO(folder);
     }
 
@@ -80,13 +83,13 @@ public class FolderController {
                                                    @RequestParam(required = false, defaultValue = "id", value = "sortBy") String sortBy) throws IOException {
 
         Project project = projectService.getById(projectId);
-        Folder folder = folderService.getById(folderId);
+        Folder folder = folderService.getById(project, folderId);
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, direction, sortBy);
 
         List<ActiveImage> activeImages = folderService.getAllActiveImages(project, folder, pageable);
         List<ActiveImageDTO> activeImageDTOS = new ArrayList<>();
         for (ActiveImage activeImage : activeImages) {
-            byte[] bytes = DBActiveImageService.getImage(project, folder, activeImage.getFileName());
+            byte[] bytes = localActiveImageService.getImage(project, folder, activeImage.getFileName());
             ActiveImageDTO activeImageDTO = activeImageMapper.toDTO(activeImage, bytes);
             activeImageDTOS.add(activeImageDTO);
         }
@@ -102,7 +105,7 @@ public class FolderController {
                                                      @RequestParam(required = false, defaultValue = "id", value = "sortBy") String sortBy) {
 
         Project project = projectService.getById(projectId);
-        Folder folder = folderService.getById(folderId);
+        Folder folder = folderService.getById(project, folderId);
 
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, direction, sortBy);
         return folderService.getAllDeletedImages(project, folder, pageable).stream()
@@ -111,8 +114,12 @@ public class FolderController {
     }
 
     @GetMapping("/get-all-by-id")
-    public List<FolderDTO> getAllById(@RequestBody List<Integer> ids) {
-        return folderService.getAllById(ids).stream()
+    public List<FolderDTO> getAllById(@PathVariable("projectId") int projectId,
+                                      @RequestBody List<Integer> ids) {
+
+        Project project = projectService.getById(projectId);
+
+        return folderService.getAllById(project, ids).stream()
                 .map(folderMapper::toDTO)
                 .toList();
     }

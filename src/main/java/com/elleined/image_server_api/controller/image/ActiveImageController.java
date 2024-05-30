@@ -21,7 +21,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/projects/{projectId}/folder/{folderId}/active-images")
+@RequestMapping("/projects/{projectId}/folders/{folderId}/active-images")
 public class ActiveImageController {
     private final ProjectService projectService;
     
@@ -39,7 +39,7 @@ public class ActiveImageController {
                                @RequestPart(value = "additionalInformation", required = false) String additionalInformation) throws IOException {
 
         Project project = projectService.getById(projectId);
-        Folder folder = folderService.getById(folderId);
+        Folder folder = folderService.getById(project, folderId);
 
         ActiveImage activeImage = DBActiveImageService.save(project, folder, description, additionalInformation, image);
 
@@ -50,11 +50,11 @@ public class ActiveImageController {
     @GetMapping("/{uuid}")
     public ActiveImageDTO getByUUID(@PathVariable("projectId") int projectId,
                                     @PathVariable("folderId") int folderId,
-                                    @PathVariable("uuid") String uuid) throws IOException {
+                                    @PathVariable("uuid") UUID uuid) throws IOException {
 
         Project project = projectService.getById(projectId);
-        Folder folder = folderService.getById(folderId);
-        ActiveImage activeImage = DBActiveImageService.getByUUID(project, folder, UUID.fromString(uuid));
+        Folder folder = folderService.getById(project, folderId);
+        ActiveImage activeImage = DBActiveImageService.getByUUID(project, folder, uuid);
 
         byte[] bytes = localActiveImageService.getImage(project, folder, activeImage.getFileName());
         return activeImageMapper.toDTO(activeImage, bytes);
@@ -63,11 +63,11 @@ public class ActiveImageController {
     @DeleteMapping("/{uuid}")
     public void deleteByUUID(@PathVariable("projectId") int projectId,
                              @PathVariable("folderId") int folderId,
-                             @PathVariable("uuid") String uuid) throws IOException {
+                             @PathVariable("uuid") UUID uuid) throws IOException {
 
         Project project = projectService.getById(projectId);
-        Folder folder = folderService.getById(folderId);
-        ActiveImage activeImage = DBActiveImageService.getByUUID(project, folder, UUID.fromString(uuid));
+        Folder folder = folderService.getById(project, folderId);
+        ActiveImage activeImage = DBActiveImageService.getByUUID(project, folder, uuid);
         DBActiveImageService.deleteByUUID(project, folder, activeImage);
 
         String fileName = activeImage.getFileName();
@@ -78,15 +78,11 @@ public class ActiveImageController {
     @GetMapping("/get-all-by-uuid")
     public List<ActiveImageDTO> getAllByUUID(@PathVariable("projectId") int projectId,
                                              @PathVariable("folderId") int folderId,
-                                             @RequestBody List<String> uuids) throws IOException {
+                                             @RequestBody List<UUID> uuids) throws IOException {
 
         Project project = projectService.getById(projectId);
-        Folder folder = folderService.getById(folderId);
-        List<UUID> ids = uuids.stream()
-                .map(UUID::fromString)
-                .toList();
-
-        List<ActiveImage> activeImages = DBActiveImageService.getAllByUUID(project, folder, ids);
+        Folder folder = folderService.getById(project, folderId);
+        List<ActiveImage> activeImages = DBActiveImageService.getAllByUUID(project, folder, uuids);
 
         List<ActiveImageDTO> activeImageDTOS = new ArrayList<>();
         for (ActiveImage activeImage : activeImages) {

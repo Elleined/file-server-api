@@ -24,9 +24,6 @@ public class ProjectController {
 
     private final FolderService folderService;
 
-    private final DBActiveImageService DBActiveImageService;
-
-
     @PostMapping
     public ProjectDTO save(@RequestPart("name") String name,
                            @RequestPart("folderNames") List<String> folderNames) throws IOException {
@@ -34,7 +31,7 @@ public class ProjectController {
         Project project = projectService.save(name);
         folderService.saveAll(project, folderNames);
 
-        DBActiveImageService.createFolders(project, project.getFolders());
+        folderService.createFolder(project);
         return projectMapper.toDTO(project);
     }
 

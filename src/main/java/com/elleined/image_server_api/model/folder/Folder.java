@@ -39,8 +39,7 @@ public class Folder extends PrimaryKeyIdentity {
     @JoinColumn(
             name = "project_id",
             referencedColumnName = "id",
-            nullable = false,
-            unique = true
+            nullable = false
     )
     private Project project;
 

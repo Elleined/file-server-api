@@ -72,4 +72,14 @@ public class FormatServiceImpl implements FormatService {
                 .map(String::toLowerCase)
                 .anyMatch(fileExtension::equalsIgnoreCase);
     }
+
+    @Override
+    public List<Format> saveAll(List<String> formats) {
+        if (formats.stream().anyMatch(this::isAlreadyExists))
+            throw new ResourceAlreadyExistsException("Cannot save all formats! because one of the specified format already exists!");
+
+        return formats.stream()
+                .map(this::save)
+                .toList();
+    }
 }

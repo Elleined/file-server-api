@@ -143,4 +143,17 @@ public class DBActiveImageServiceImpl implements DBActiveImageService {
 
         return activeImages;
     }
+
+    @Override
+    public void deleteAllByUUID(Project project, Folder folder, List<ActiveImage> activeImages) {
+        activeImages.forEach(activeImage -> deleteByUUID(project, folder, activeImage));
+    }
+
+    @Override
+    public List<ActiveImage> restoreAll(Project project, Folder folder, List<DeletedImage> deletedImages) {
+        return deletedImages.stream()
+                .map(deletedImage -> restore(project, folder, deletedImage))
+                .sorted(Comparator.comparing(PrimaryKeyUUID::getCreatedAt).reversed())
+                .toList();
+    }
 }
