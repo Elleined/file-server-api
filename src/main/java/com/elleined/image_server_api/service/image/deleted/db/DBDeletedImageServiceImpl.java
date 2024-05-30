@@ -7,13 +7,14 @@ import com.elleined.image_server_api.model.folder.Folder;
 import com.elleined.image_server_api.model.image.DeletedImage;
 import com.elleined.image_server_api.model.project.Project;
 import com.elleined.image_server_api.repository.image.DeletedImageRepository;
-import com.elleined.image_server_api.service.folder.FolderService;
+import com.elleined.image_server_api.service.image.deleted.local.LocalDeletedImageService;
 import com.elleined.image_server_api.service.project.ProjectService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -27,6 +28,8 @@ public class DBDeletedImageServiceImpl implements DBDeletedImageService {
     private final DeletedImageRepository deletedImageRepository;
 
     private final ProjectService projectService;
+
+    private final LocalDeletedImageService localDeletedImageService;
 
     @Override
     public List<DeletedImage> getAllByUUID(Project project, Folder folder, List<UUID> uuids) {
@@ -57,13 +60,15 @@ public class DBDeletedImageServiceImpl implements DBDeletedImageService {
     }
 
     @Override
-    public void deleteAll() {
+    public void permanentlyDeleteDeletedImages() throws IOException {
         LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
 
         List<DeletedImage> deletedImages = deletedImageRepository.findAll().stream()
                 .filter(deletedImage -> deletedImage.getLastAccessedAt().isBefore(oneMonthAgo) ||
                         deletedImage.getLastAccessedAt().equals(oneMonthAgo))
                 .toList();
+
+        localDeletedImageService.permanentlyDeleteDeletedImages(deletedImages);
         deletedImageRepository.deleteAll(deletedImages);
     }
 }

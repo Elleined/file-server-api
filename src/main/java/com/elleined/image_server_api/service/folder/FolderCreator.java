@@ -16,6 +16,7 @@ public interface FolderCreator {
             Files.createDirectories(uploadDirectory);
     }
 
+    // Create the default directories for a project active, deleted, and failed
     default void createFolder(Project project) throws IOException {
         Path projectDirectory = this.getProjectDirectory(project);
         Path activeImagesPath = this.getActiveImagesPath(project);
@@ -39,6 +40,7 @@ public interface FolderCreator {
         }
     }
 
+    // Create the folders in the project active, deleted, and failed directories
     default void createFolder(Project project, Folder folder) throws IOException {
         Path activeImagesFolderPath = this.getActiveImagesPath(project, folder);
         Path deletedImagesFolderPath = this.getDeletedImagesPath(project, folder);
