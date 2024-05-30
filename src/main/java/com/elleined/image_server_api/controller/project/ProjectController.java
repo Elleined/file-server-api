@@ -4,7 +4,7 @@ import com.elleined.image_server_api.dto.project.ProjectDTO;
 import com.elleined.image_server_api.mapper.project.ProjectMapper;
 import com.elleined.image_server_api.model.project.Project;
 import com.elleined.image_server_api.service.folder.FolderService;
-import com.elleined.image_server_api.service.image.active.ActiveImageService;
+import com.elleined.image_server_api.service.image.active.db.DBActiveImageService;
 import com.elleined.image_server_api.service.project.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -24,7 +24,7 @@ public class ProjectController {
 
     private final FolderService folderService;
 
-    private final ActiveImageService activeImageService;
+    private final DBActiveImageService DBActiveImageService;
 
 
     @PostMapping
@@ -34,7 +34,7 @@ public class ProjectController {
         Project project = projectService.save(name);
         folderService.saveAll(project, folderNames);
 
-        activeImageService.createFolders(project, project.getFolders());
+        DBActiveImageService.createFolders(project, project.getFolders());
         return projectMapper.toDTO(project);
     }
 

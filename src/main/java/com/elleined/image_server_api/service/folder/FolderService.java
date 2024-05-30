@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
-public interface FolderService {
+public interface FolderService extends FolderCreator {
     Folder save(Project project, String name);
     Folder getById(int id) throws ResourceNotFoundException;
     List<Folder> getAll(Project project, Pageable pageable);

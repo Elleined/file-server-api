@@ -11,7 +11,7 @@ import com.elleined.image_server_api.model.folder.Folder;
 import com.elleined.image_server_api.model.image.ActiveImage;
 import com.elleined.image_server_api.model.project.Project;
 import com.elleined.image_server_api.service.folder.FolderService;
-import com.elleined.image_server_api.service.image.active.ActiveImageService;
+import com.elleined.image_server_api.service.image.active.db.DBActiveImageService;
 import com.elleined.image_server_api.service.project.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -32,7 +32,7 @@ public class FolderController {
     private final FolderService folderService;
     private final FolderMapper folderMapper;
 
-    private final ActiveImageService activeImageService;
+    private final DBActiveImageService DBActiveImageService;
     private final ActiveImageMapper activeImageMapper;
 
     private final DeletedImageMapper deletedImageMapper;
@@ -86,7 +86,7 @@ public class FolderController {
         List<ActiveImage> activeImages = folderService.getAllActiveImages(project, folder, pageable);
         List<ActiveImageDTO> activeImageDTOS = new ArrayList<>();
         for (ActiveImage activeImage : activeImages) {
-            byte[] bytes = activeImageService.getImage(project, folder, activeImage.getFileName());
+            byte[] bytes = DBActiveImageService.getImage(project, folder, activeImage.getFileName());
             ActiveImageDTO activeImageDTO = activeImageMapper.toDTO(activeImage, bytes);
             activeImageDTOS.add(activeImageDTO);
         }

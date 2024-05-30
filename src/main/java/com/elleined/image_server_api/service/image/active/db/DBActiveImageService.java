@@ -1,11 +1,10 @@
-package com.elleined.image_server_api.service.image.active;
+package com.elleined.image_server_api.service.image.active.db;
 
 import com.elleined.image_server_api.model.PrimaryKeyUUID;
 import com.elleined.image_server_api.model.folder.Folder;
 import com.elleined.image_server_api.model.image.ActiveImage;
 import com.elleined.image_server_api.model.image.DeletedImage;
 import com.elleined.image_server_api.model.project.Project;
-import com.elleined.image_server_api.service.image.ImageService;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -13,7 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
-public interface ActiveImageService extends ImageService {
+public interface DBActiveImageService {
     int MAX_FILE_SIZE = 1024 * 1024 * 2; // 2MB
 
     ActiveImage save(Project project,
@@ -44,4 +43,5 @@ public interface ActiveImageService extends ImageService {
                 .sorted(Comparator.comparing(PrimaryKeyUUID::getCreatedAt).reversed())
                 .toList();
     }
+
 }

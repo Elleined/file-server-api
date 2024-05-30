@@ -10,8 +10,9 @@ import com.elleined.image_server_api.model.image.CustomMultipartFile;
 import com.elleined.image_server_api.model.image.DeletedImage;
 import com.elleined.image_server_api.model.project.Project;
 import com.elleined.image_server_api.service.folder.FolderService;
-import com.elleined.image_server_api.service.image.active.ActiveImageService;
-import com.elleined.image_server_api.service.image.deleted.DeletedImageService;
+import com.elleined.image_server_api.service.image.active.db.DBActiveImageService;
+import com.elleined.image_server_api.service.image.deleted.db.DBDeletedImageService;
+import com.elleined.image_server_api.service.image.deleted.local.LocalDeletedImageService;
 import com.elleined.image_server_api.service.project.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -29,10 +30,11 @@ public class DeletedImageController {
 
     private final FolderService folderService;
 
-    private final ActiveImageService activeImageService;
+    private final DBActiveImageService DBActiveImageService;
     private final ActiveImageMapper activeImageMapper;
 
-    private final DeletedImageService deletedImageService;
+    private final LocalDeletedImageService localDeletedImageService;
+    private final DBDeletedImageService DBDeletedImageService;
     private final DeletedImageMapper deletedImageMapper;
 
     @GetMapping("/get-all-by-uuid")
@@ -46,7 +48,7 @@ public class DeletedImageController {
                 .map(UUID::fromString)
                 .toList();
 
-        return deletedImageService.getAllByUUID(project, folder, ids).stream()
+        return DBDeletedImageService.getAllByUUID(project, folder, ids).stream()
                 .map(deletedImageMapper::toDTO)
                 .toList();
     }
@@ -58,14 +60,14 @@ public class DeletedImageController {
 
         Project project = projectService.getById(projectId);
         Folder folder = folderService.getById(folderId);
-        DeletedImage deletedImage = deletedImageService.getByUUID(project, folder, UUID.fromString(uuid));
-        ActiveImage activeImage = activeImageService.restore(project, folder, deletedImage);
+        DeletedImage deletedImage = DBDeletedImageService.getByUUID(project, folder, UUID.fromString(uuid));
+        ActiveImage activeImage = DBActiveImageService.restore(project, folder, deletedImage);
 
         String fileName = deletedImage.getFileName();
-        MultipartFile deletedImageFile = new CustomMultipartFile(fileName, deletedImageService.getImage(project, folder, fileName));
-        deletedImageService.transfer(project, folder, deletedImageFile);
+        MultipartFile deletedImageFile = new CustomMultipartFile(fileName, localDeletedImageService.getImage(project, folder, fileName));
+        localDeletedImageService.transfer(project, folder, deletedImageFile);
 
-        byte[] bytes = activeImageService.getImage(project, folder, activeImage.getFileName());
+        byte[] bytes = localDeletedImageService.getImage(project, folder, activeImage.getFileName());
         return activeImageMapper.toDTO(activeImage, bytes);
     }
 
@@ -76,7 +78,7 @@ public class DeletedImageController {
 
         Project project = projectService.getById(projectId);
         Folder folder = folderService.getById(folderId);
-        DeletedImage deletedImage = deletedImageService.getByUUID(project, folder, UUID.fromString(uuid));
+        DeletedImage deletedImage = DBDeletedImageService.getByUUID(project, folder, UUID.fromString(uuid));
         return deletedImageMapper.toDTO(deletedImage);
     }
 }

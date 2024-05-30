@@ -1,4 +1,4 @@
-package com.elleined.image_server_api.service.image.active;
+package com.elleined.image_server_api.service.image.active.db;
 
 import com.elleined.image_server_api.exception.image.ImageFormatException;
 import com.elleined.image_server_api.exception.image.ImageSizeException;
@@ -16,32 +16,28 @@ import com.elleined.image_server_api.repository.image.ActiveImageRepository;
 import com.elleined.image_server_api.repository.image.DeletedImageRepository;
 import com.elleined.image_server_api.service.folder.FolderService;
 import com.elleined.image_server_api.service.format.FormatService;
+import com.elleined.image_server_api.service.image.active.local.LocalActiveImageService;
 import com.elleined.image_server_api.service.project.ProjectService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
-@Primary
-public class ActiveImageServiceImpl implements ActiveImageService {
+public class DBActiveImageServiceImpl implements DBActiveImageService {
     private final ProjectService projectService;
 
+    private final LocalActiveImageService localActiveImageService;
     private final ActiveImageRepository activeImageRepository;
     private final ActiveImageMapper activeImageMapper;
 
@@ -60,24 +56,24 @@ public class ActiveImageServiceImpl implements ActiveImageService {
                             MultipartFile image) throws IOException {
 
         if (!projectService.has(project, folder)) {
-            this.saveFailedUpload(project, image); // Save the file anyways HAHAHA. If you don't want this just literally remove this line :)
+            localActiveImageService.saveFailedUpload(project, folder, image); // Save the file anyways HAHAHA. If you don't want this just literally remove this line :)
             throw new ResourceNotOwnedException("Cannot upload image! because this project doesn't have the specified upload folder");
         }
 
         if (isAboveMaxFileSize(image)) {
-            this.saveFailedUpload(project, image); // Save the file anyways HAHAHA. If you don't want this just literally remove this line :)
+            localActiveImageService.saveFailedUpload(project, folder, image); // Save the file anyways HAHAHA. If you don't want this just literally remove this line :)
             throw new ImageSizeException(STR."Cannot upload image! because image exceeds to file size which is \{MAX_FILE_SIZE}");
         }
 
         if (!formatService.isFileExtensionValid(image)) {
-            this.saveFailedUpload(project, image); // Save the file anyways HAHAHA. If you don't want this just literally remove this line :)
+            localActiveImageService.saveFailedUpload(project, folder, image); // Save the file anyways HAHAHA. If you don't want this just literally remove this line :)
             throw new ImageFormatException("Cannot upload image! because extension name is not valid. Please refer to valid extension names!");
         }
 
         Format format = formatService.getByMultipart(image)
                 .orElseThrow(() -> new ResourceNotFoundException("Cannot upload image! format is not valid!"));
 
-        String fileName = this.save(project, folder, image);
+        String fileName = localActiveImageService.save(project, folder, image);
         ActiveImage activeImage = activeImageMapper.toEntity(description, additionalInformation, format, fileName, folder);
         activeImageRepository.save(activeImage);
         log.debug("Uploading image success!");
@@ -146,62 +142,5 @@ public class ActiveImageServiceImpl implements ActiveImageService {
         activeImageRepository.saveAll(activeImages);
 
         return activeImages;
-    }
-
-    @Override
-    public String save(Project project, Folder folder, MultipartFile image) throws IOException {
-        if (!projectService.has(project, folder))
-            throw new ResourceNotOwnedException("Cannot save image to storage! because this project doesn't have the specified upload folder");
-
-        String uniqueFileName = this.getUniqueFileName(image);
-        Path uploadPath = Path.of(this.getActiveImagesPath(project));
-        Path filePath = uploadPath.resolve(uniqueFileName);
-
-        if (!Files.exists(uploadPath))
-            Files.createDirectories(uploadPath);
-
-        Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-        log.debug("Saving image to storage success!");
-        return uniqueFileName;
-    }
-
-    @Override
-    public byte[] getImage(Project project, Folder folder, String fileName) throws IOException {
-        if (!projectService.has(project, folder))
-            throw new ResourceNotOwnedException("Cannot get image from storage! because this project doesn't have the specified upload folder");
-
-        Path imagePath = Path.of(this.getActiveImagesPath(project), fileName);
-        if (!Files.exists(imagePath))
-            return null;
-
-        return Files.readAllBytes(imagePath);
-    }
-
-    @Override
-    public void transfer(Project project, Folder folder, MultipartFile multipartFile) throws IOException {
-        if (!projectService.has(project, folder)) {
-            throw new ResourceNotOwnedException("Cannot transfer image from storage! because this project doesn't have the specified upload folder");
-        }
-
-        if (multipartFile == null || multipartFile.isEmpty())
-            return;
-
-        Path destination = Path.of(this.getDeletedImagesPath(project));
-        Path destinationPath = destination.resolve(Objects.requireNonNull(multipartFile.getOriginalFilename()));
-
-        multipartFile.transferTo(destinationPath);
-        log.debug("Transferring image from to {} success!", destinationPath);
-    }
-
-    private void saveFailedUpload(Project project, MultipartFile image) throws IOException {
-        String uniqueFileName = this.getUniqueFileName(image);
-        Path uploadPath = Path.of(this.getFailedUploadsPath(project));
-        Path filePath = uploadPath.resolve(uniqueFileName);
-
-        if (!Files.exists(uploadPath))
-            Files.createDirectories(uploadPath);
-
-        Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-        log.debug("Saving image to storage success!");
     }
 }
