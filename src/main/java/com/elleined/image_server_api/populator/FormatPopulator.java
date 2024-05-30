@@ -1,6 +1,6 @@
 package com.elleined.image_server_api.populator;
 
-import com.elleined.image_server_api.service.image.format.ImageFormatService;
+import com.elleined.image_server_api.service.format.FormatService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
@@ -13,12 +13,12 @@ import java.util.List;
 
 @Component
 @Transactional
-public class ImageFormatPopulator extends Populator {
-    private final ImageFormatService imageFormatService;
+public class FormatPopulator extends Populator {
+    private final FormatService formatService;
 
-    public ImageFormatPopulator(ObjectMapper objectMapper, ImageFormatService imageFormatService) {
+    public FormatPopulator(ObjectMapper objectMapper, FormatService formatService) {
         super(objectMapper);
-        this.imageFormatService = imageFormatService;
+        this.formatService = formatService;
     }
 
     @Override
@@ -28,6 +28,6 @@ public class ImageFormatPopulator extends Populator {
         var type = objectMapper.getTypeFactory().constructCollectionType(List.class, String.class);
 
         List<String> formats = objectMapper.readValue(new String(dataBytes, StandardCharsets.UTF_8), type);
-        imageFormatService.saveAll(formats);
+        formatService.saveAll(formats);
     }
 }

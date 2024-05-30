@@ -1,20 +1,21 @@
 package com.elleined.image_server_api.service.image;
 
+import com.elleined.image_server_api.model.folder.Folder;
 import com.elleined.image_server_api.model.project.Project;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface ImageService {
     String uploadDirectory = "src/main/resources/pictures";
 
-    String save(Project project, MultipartFile image) throws IOException;
-    byte[] getImage(Project project, String fileName) throws IOException;
-    void transfer(Project project, MultipartFile multipartFile) throws IOException;
+    String save(Project project, Folder folder, MultipartFile image) throws IOException;
+    byte[] getImage(Project project, Folder folder, String fileName) throws IOException;
+    void transfer(Project project, Folder folder, MultipartFile multipartFile) throws IOException;
 
     default String getUniqueFileName(MultipartFile image) {
         String currentDateAndTime = LocalDateTime.now().toString();
@@ -22,7 +23,7 @@ public interface ImageService {
         return STR."\{currentDateAndTime}_\{fileName}";
     }
 
-    default void createFolders(Project project) throws IOException {
+    default void createFolders(Project project, List<Folder> folders) throws IOException {
         Path pictureDirectory = Path.of(STR."\{uploadDirectory}");
 
         Path projectDirectory = Path.of(uploadDirectory, project.getName());

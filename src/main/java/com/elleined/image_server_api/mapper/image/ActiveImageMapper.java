@@ -1,10 +1,10 @@
 package com.elleined.image_server_api.mapper.image;
 
 import com.elleined.image_server_api.dto.image.ActiveImageDTO;
+import com.elleined.image_server_api.model.folder.Folder;
+import com.elleined.image_server_api.model.format.Format;
 import com.elleined.image_server_api.model.image.ActiveImage;
 import com.elleined.image_server_api.model.image.DeletedImage;
-import com.elleined.image_server_api.model.image.ImageFormat;
-import com.elleined.image_server_api.model.project.Project;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -19,10 +19,10 @@ public interface ActiveImageMapper {
             @Mapping(target = "lastAccessedAt", source = "lastAccessedAt"),
             @Mapping(target = "description", source = "description"),
             @Mapping(target = "additionalInformation", source = "additionalInformation"),
-            @Mapping(target = "imageFormatId", source = "imageFormat.id"),
+            @Mapping(target = "formatId", source = "format.id"),
             @Mapping(target = "fileName", source = "fileName"),
-            @Mapping(target = "bytes", expression = "java(bytes)"),
-            @Mapping(target = "projectId", source = "project.id")
+            @Mapping(target = "folderId", source = "folder.id"),
+            @Mapping(target = "bytes", expression = "java(bytes)")
     })
     ActiveImageDTO toDTO(ActiveImage activeImage,
                          @Context byte[] bytes);
@@ -33,15 +33,15 @@ public interface ActiveImageMapper {
             @Mapping(target = "lastAccessedAt", expression = "java(java.time.LocalDateTime.now())"),
             @Mapping(target = "description", expression = "java(description)"),
             @Mapping(target = "additionalInformation", expression = "java(additionalInformation)"),
-            @Mapping(target = "imageFormat", expression = "java(imageFormat)"),
+            @Mapping(target = "format", expression = "java(format)"),
             @Mapping(target = "fileName", expression = "java(fileName)"),
-            @Mapping(target = "project", expression = "java(project)")
+            @Mapping(target = "folder", expression = "java(folder)")
     })
     ActiveImage toEntity(String description,
                          String additionalInformation,
-                         ImageFormat imageFormat,
+                         Format format,
                          String fileName,
-                         Project project);
+                         Folder folder);
 
     @Mappings({
             @Mapping(target = "id", source = "id"),
@@ -49,9 +49,9 @@ public interface ActiveImageMapper {
             @Mapping(target = "lastAccessedAt", expression = "java(java.time.LocalDateTime.now())"),
             @Mapping(target = "description", source = "description"),
             @Mapping(target = "additionalInformation", source = "additionalInformation"),
-            @Mapping(target = "imageFormat", source = "imageFormat"),
+            @Mapping(target = "format", source = "format"),
             @Mapping(target = "fileName", source = "fileName"),
-            @Mapping(target = "project", source = "project")
+            @Mapping(target = "folder", source = "folder")
     })
     ActiveImage toEntity(DeletedImage deletedImage); // For restoring deleted images;
 }

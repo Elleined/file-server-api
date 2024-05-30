@@ -4,11 +4,12 @@ import com.elleined.image_server_api.dto.image.ActiveImageDTO;
 import com.elleined.image_server_api.dto.image.DeletedImageDTO;
 import com.elleined.image_server_api.mapper.image.ActiveImageMapper;
 import com.elleined.image_server_api.mapper.image.DeletedImageMapper;
+import com.elleined.image_server_api.model.folder.Folder;
 import com.elleined.image_server_api.model.image.ActiveImage;
 import com.elleined.image_server_api.model.image.CustomMultipartFile;
 import com.elleined.image_server_api.model.image.DeletedImage;
 import com.elleined.image_server_api.model.project.Project;
-import com.elleined.image_server_api.service.image.ImageService;
+import com.elleined.image_server_api.service.folder.FolderService;
 import com.elleined.image_server_api.service.image.active.ActiveImageService;
 import com.elleined.image_server_api.service.image.deleted.DeletedImageService;
 import com.elleined.image_server_api.service.project.ProjectService;
@@ -22,9 +23,11 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/projects/{projectId}/deleted-images")
+@RequestMapping("/projects/{projectId}/folders/{folderId}/deleted-images")
 public class DeletedImageController {
     private final ProjectService projectService;
+
+    private final FolderService folderService;
 
     private final ActiveImageService activeImageService;
     private final ActiveImageMapper activeImageMapper;
@@ -34,37 +37,46 @@ public class DeletedImageController {
 
     @GetMapping("/get-all-by-uuid")
     public List<DeletedImageDTO> getAllByUUID(@PathVariable("projectId") int projectId,
+                                              @PathVariable("folderId") int folderId,
                                               @RequestBody List<String> uuids) {
 
         Project project = projectService.getById(projectId);
+        Folder folder = folderService.getById(folderId);
         List<UUID> ids = uuids.stream()
                 .map(UUID::fromString)
                 .toList();
 
-        return deletedImageService.getAllByUUID(ids).stream()
+        return deletedImageService.getAllByUUID(project, folder, ids).stream()
                 .map(deletedImageMapper::toDTO)
                 .toList();
     }
 
     @PutMapping("/{uuid}/restore")
     public ActiveImageDTO restore(@PathVariable("projectId") int projectId,
+                                  @PathVariable("folderId") int folderId,
                                   @PathVariable("uuid") String uuid) throws IOException {
 
         Project project = projectService.getById(projectId);
-        DeletedImage deletedImage = deletedImageService.getByUUID(UUID.fromString(uuid));
-        ActiveImage activeImage = activeImageService.restore(project, deletedImage);
+        Folder folder = folderService.getById(folderId);
+        DeletedImage deletedImage = deletedImageService.getByUUID(project, folder, UUID.fromString(uuid));
+        ActiveImage activeImage = activeImageService.restore(project, folder, deletedImage);
 
         String fileName = deletedImage.getFileName();
-        MultipartFile deletedImageFile = new CustomMultipartFile(fileName, deletedImageService.getImage(project, fileName));
-        deletedImageService.transfer(project, deletedImageFile);
+        MultipartFile deletedImageFile = new CustomMultipartFile(fileName, deletedImageService.getImage(project, folder, fileName));
+        deletedImageService.transfer(project, folder, deletedImageFile);
 
-        byte[] bytes = activeImageService.getImage(project, activeImage.getFileName());
+        byte[] bytes = activeImageService.getImage(project, folder, activeImage.getFileName());
         return activeImageMapper.toDTO(activeImage, bytes);
     }
 
     @GetMapping("/{uuid}")
-    public DeletedImageDTO getByUUID(@PathVariable("uuid") String uuid) {
-        DeletedImage deletedImage = deletedImageService.getByUUID(UUID.fromString(uuid));
+    public DeletedImageDTO getByUUID(@PathVariable("projectId") int projectId,
+                                     @PathVariable("folderId") int folderId,
+                                     @PathVariable("uuid") String uuid) {
+
+        Project project = projectService.getById(projectId);
+        Folder folder = folderService.getById(folderId);
+        DeletedImage deletedImage = deletedImageService.getByUUID(project, folder, UUID.fromString(uuid));
         return deletedImageMapper.toDTO(deletedImage);
     }
 }

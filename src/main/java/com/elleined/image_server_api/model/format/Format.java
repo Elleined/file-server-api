@@ -1,4 +1,4 @@
-package com.elleined.image_server_api.model.image;
+package com.elleined.image_server_api.model.format;
 
 
 import com.elleined.image_server_api.model.PrimaryKeyIdentity;
@@ -13,14 +13,14 @@ import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(
-        name = "tbl_image_format",
+        name = "tbl_format",
         indexes = @Index(name = "format_idx", columnList = "format")
 )
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class ImageFormat extends PrimaryKeyIdentity {
+public class Format extends PrimaryKeyIdentity {
 
     @Column(
             name = "format",

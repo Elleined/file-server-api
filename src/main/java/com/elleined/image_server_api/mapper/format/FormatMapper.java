@@ -1,14 +1,14 @@
-package com.elleined.image_server_api.mapper.image;
+package com.elleined.image_server_api.mapper.format;
 
-import com.elleined.image_server_api.dto.image.ImageFormatDTO;
+import com.elleined.image_server_api.dto.format.FormatDTO;
 import com.elleined.image_server_api.mapper.CustomMapper;
-import com.elleined.image_server_api.model.image.ImageFormat;
+import com.elleined.image_server_api.model.format.Format;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
 @Mapper(componentModel = "spring")
-public interface ImageFormatMapper extends CustomMapper<ImageFormat, ImageFormatDTO> {
+public interface FormatMapper extends CustomMapper<Format, FormatDTO> {
 
     @Override
     @Mappings({
@@ -16,12 +16,12 @@ public interface ImageFormatMapper extends CustomMapper<ImageFormat, ImageFormat
             @Mapping(target = "createdAt", source = "createdAt"),
             @Mapping(target = "format", source = "format")
     })
-    ImageFormatDTO toDTO(ImageFormat imageFormat);
+    FormatDTO toDTO(Format format);
 
     @Mappings({
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())"),
             @Mapping(target = "format", expression = "java(format)")
     })
-    ImageFormat toEntity(String format);
+    Format toEntity(String format);
 }

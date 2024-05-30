@@ -1,7 +1,6 @@
 package com.elleined.image_server_api;
 
-import com.elleined.image_server_api.populator.ImageFormatPopulator;
-import com.elleined.image_server_api.populator.ProjectPopulator;
+import com.elleined.image_server_api.populator.FormatPopulator;
 import com.elleined.image_server_api.repository.image.ImageFormatRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +13,7 @@ import java.io.IOException;
 public class AfterStartUp {
     private final ImageFormatRepository imageFormatRepository;
 
-    private final ImageFormatPopulator imageFormatPopulator;
-    private final ProjectPopulator projectPopulator;
+    private final FormatPopulator formatPopulator;
 
     @PostConstruct
     void init() throws IOException {
@@ -25,8 +23,7 @@ public class AfterStartUp {
         }
 
         System.out.println("Saving pre-defined values... Please wait");
-        imageFormatPopulator.populate("/json/image_formats.json");
-        projectPopulator.populate("/json/projects.json");
+        formatPopulator.populate("/json/image_formats.json");
         System.out.println("Saving pre-defined values... Completed.");
     }
 }

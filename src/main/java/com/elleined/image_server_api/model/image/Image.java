@@ -1,6 +1,8 @@
 package com.elleined.image_server_api.model.image;
 
 import com.elleined.image_server_api.model.PrimaryKeyUUID;
+import com.elleined.image_server_api.model.folder.Folder;
+import com.elleined.image_server_api.model.format.Format;
 import jakarta.persistence.Column;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -33,12 +35,12 @@ public abstract class Image extends PrimaryKeyUUID {
 
     @ManyToOne(optional = false)
     @JoinColumn(
-            name = "image_format_id",
+            name = "format_id",
             referencedColumnName = "id",
             nullable = false,
             updatable = false
     )
-    private ImageFormat imageFormat;
+    private Format format;
 
     @Column(
             name = "file_name",
@@ -46,4 +48,13 @@ public abstract class Image extends PrimaryKeyUUID {
             unique = true
     )
     private String fileName;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(
+            name = "folder_id",
+            referencedColumnName = "id",
+            nullable = false,
+            updatable = false
+    )
+    private Folder folder;
 }

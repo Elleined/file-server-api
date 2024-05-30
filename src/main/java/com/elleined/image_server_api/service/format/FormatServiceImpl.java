@@ -1,10 +1,9 @@
-package com.elleined.image_server_api.service.image.format;
+package com.elleined.image_server_api.service.format;
 
 import com.elleined.image_server_api.exception.resource.ResourceAlreadyExistsException;
 import com.elleined.image_server_api.exception.resource.ResourceNotFoundException;
-import com.elleined.image_server_api.mapper.image.ImageFormatMapper;
-import com.elleined.image_server_api.model.PrimaryKeyIdentity;
-import com.elleined.image_server_api.model.image.ImageFormat;
+import com.elleined.image_server_api.mapper.format.FormatMapper;
+import com.elleined.image_server_api.model.format.Format;
 import com.elleined.image_server_api.repository.image.ImageFormatRepository;
 import com.elleined.image_server_api.validator.FieldValidator;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,35 +21,35 @@ import java.util.Optional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class ImageFormatServiceImpl implements ImageFormatService {
+public class FormatServiceImpl implements FormatService {
     private final ImageFormatRepository imageFormatRepository;
-    private final ImageFormatMapper imageFormatMapper;
+    private final FormatMapper formatMapper;
 
     private final FieldValidator fieldValidator;
 
     @Override
-    public ImageFormat save(String format) {
+    public Format save(String format) {
         if (isAlreadyExists(format))
             throw new ResourceAlreadyExistsException(STR."Cannot save format! because \{format} already exists");
 
-        ImageFormat imageFormat = imageFormatMapper.toEntity(format);
+        Format imageFormat = formatMapper.toEntity(format);
         imageFormatRepository.save(imageFormat);
         log.debug("Saving image format {} success", format);
         return imageFormat;
     }
 
     @Override
-    public ImageFormat getById(int id) {
+    public Format getById(int id) {
         return imageFormatRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(STR."Image format with id of \{id} does not exists!"));
     }
 
     @Override
-    public List<ImageFormat> getAll(Pageable pageable) {
+    public List<Format> getAll(Pageable pageable) {
         return imageFormatRepository.findAll(pageable).stream().toList();
     }
 
     @Override
-    public Optional<ImageFormat> getByMultipart(MultipartFile image) {
+    public Optional<Format> getByMultipart(MultipartFile image) {
         String fileExtension = FilenameUtils.getExtension(image.getOriginalFilename());
         return imageFormatRepository.findAll().stream()
                 .filter(imageFormat -> imageFormat.getFormat().equalsIgnoreCase(fileExtension))
@@ -61,7 +59,7 @@ public class ImageFormatServiceImpl implements ImageFormatService {
     @Override
     public boolean isAlreadyExists(String format) {
         return imageFormatRepository.findAll().stream()
-                .map(ImageFormat::getFormat)
+                .map(Format::getFormat)
                 .anyMatch(format::equalsIgnoreCase);
     }
 
@@ -70,7 +68,7 @@ public class ImageFormatServiceImpl implements ImageFormatService {
         String fileExtension = FilenameUtils.getExtension(image.getOriginalFilename());
         if (fieldValidator.isNotValid(fileExtension)) return false;
         return imageFormatRepository.findAll().stream()
-                .map(ImageFormat::getFormat)
+                .map(Format::getFormat)
                 .map(String::toLowerCase)
                 .anyMatch(fileExtension::equalsIgnoreCase);
     }
