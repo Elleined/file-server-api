@@ -62,8 +62,11 @@ public class LocalActiveImageServiceImpl implements LocalActiveImageService {
 
         Path destination = folderService.getDeletedImagesPath(project, folder);
         Path destinationPath = destination.resolve(Objects.requireNonNull(multipartFile.getOriginalFilename()));
-
         multipartFile.transferTo(destinationPath);
+
+        Path source = folderService.getActiveImagesPath(project, folder);
+        Path sourcePath = source.resolve(Objects.requireNonNull(multipartFile.getOriginalFilename()));
+        Files.delete(sourcePath);
         log.debug("Transferring image from to {} success!", destinationPath);
     }
 
