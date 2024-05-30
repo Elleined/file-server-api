@@ -1,7 +1,8 @@
 package com.elleined.image_server_api.model.image;
 
-import com.elleined.image_server_api.model.project.Project;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,7 +11,10 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(
         name = "tbl_image",
-        indexes = @Index(name = "created_at_idx", columnList = "created_at")
+        indexes = {
+                @Index(name = "created_at_idx", columnList = "created_at"),
+                @Index(name = "file_name_idx", columnList = "file_name")
+        }
 )
 @Getter
 @Setter
@@ -18,11 +22,4 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public class ActiveImage extends Image {
 
-    @ManyToOne(optional = false)
-    @JoinColumn(
-            name = "project_id",
-            nullable = false,
-            updatable = false
-    )
-    private Project project;
 }

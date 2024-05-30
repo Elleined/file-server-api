@@ -1,4 +1,4 @@
-package com.elleined.image_server_api.dto.project;
+package com.elleined.image_server_api.dto.folder;
 
 import com.elleined.image_server_api.dto.IntegerDTO;
 import lombok.Getter;
@@ -7,12 +7,16 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class ProjectDTO extends IntegerDTO {
+public class FolderDTO extends IntegerDTO {
     private String name;
-    private List<Integer> folderIds;
+    private int projectId;
+    private List<UUID> activeImageIds;
+    private List<UUID> deletedImageIds;
 }
+

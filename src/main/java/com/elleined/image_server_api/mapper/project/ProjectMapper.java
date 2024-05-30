@@ -15,8 +15,7 @@ public interface ProjectMapper extends CustomMapper<Project, ProjectDTO> {
             @Mapping(target = "id", source = "id"),
             @Mapping(target = "createdAt", source = "createdAt"),
             @Mapping(target = "name", source = "name"),
-            @Mapping(target = "activeImageIds", expression = "java(project.getAllActiveImageIds())"),
-            @Mapping(target = "deletedImageIds", expression = "java(project.getAllDeletedImageIds())"),
+            @Mapping(target = "folderIds", expression = "java(project.getAllFolderIds())")
     })
     ProjectDTO toDTO(Project project);
 
@@ -24,8 +23,7 @@ public interface ProjectMapper extends CustomMapper<Project, ProjectDTO> {
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())"),
             @Mapping(target = "name", expression = "java(name)"),
-            @Mapping(target = "activeImages", expression = "java(new java.util.ArrayList<>())"),
-            @Mapping(target = "deletedImages", expression = "java(new java.util.ArrayList<>())"),
+            @Mapping(target = "folders", expression = "java(new java.util.ArrayList<>())")
     })
     Project toEntity(String name);
 }

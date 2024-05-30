@@ -16,6 +16,7 @@ public class ImageDTO extends UUIDDTO {
     private LocalDateTime lastAccessedAt;
     private String description;
     private String additionalInformation;
-    private int imageFormatId;
+    private int formatId;
     private String fileName;
+    private int folderId;
 }

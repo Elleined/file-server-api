@@ -18,9 +18,9 @@ public interface DeletedImageMapper extends CustomMapper<DeletedImage, DeletedIm
             @Mapping(target = "lastAccessedAt", source = "lastAccessedAt"),
             @Mapping(target = "description", source = "description"),
             @Mapping(target = "additionalInformation", source = "additionalInformation"),
-            @Mapping(target = "imageFormatId", source = "imageFormat.id"),
+            @Mapping(target = "formatId", source = "format.id"),
             @Mapping(target = "fileName", source = "fileName"),
-            @Mapping(target = "projectId", source = "project.id")
+            @Mapping(target = "folderId", source = "folder.id")
     })
     DeletedImageDTO toDTO(DeletedImage deletedImage);
 
@@ -30,9 +30,9 @@ public interface DeletedImageMapper extends CustomMapper<DeletedImage, DeletedIm
             @Mapping(target = "lastAccessedAt", expression = "java(java.time.LocalDateTime.now())"),
             @Mapping(target = "description", source = "description"),
             @Mapping(target = "additionalInformation", source = "additionalInformation"),
-            @Mapping(target = "imageFormat", source = "imageFormat"),
+            @Mapping(target = "format", source = "format"),
             @Mapping(target = "fileName", source = "fileName"),
-            @Mapping(target = "project", source = "project")
+            @Mapping(target = "folder", source = "folder")
     })
     DeletedImage toEntity(ActiveImage activeImage);
 }

@@ -1,12 +1,14 @@
 package com.elleined.image_server_api.controller.image;
 
 import com.elleined.image_server_api.dto.image.ActiveImageDTO;
-import com.elleined.image_server_api.exception.image.ImageException;
 import com.elleined.image_server_api.mapper.image.ActiveImageMapper;
+import com.elleined.image_server_api.model.folder.Folder;
 import com.elleined.image_server_api.model.image.ActiveImage;
 import com.elleined.image_server_api.model.image.CustomMultipartFile;
 import com.elleined.image_server_api.model.project.Project;
-import com.elleined.image_server_api.service.image.active.ActiveImageService;
+import com.elleined.image_server_api.service.folder.FolderService;
+import com.elleined.image_server_api.service.image.active.db.DBActiveImageService;
+import com.elleined.image_server_api.service.image.active.local.LocalActiveImageService;
 import com.elleined.image_server_api.service.project.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -19,65 +21,72 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/projects/{projectId}/active-images")
+@RequestMapping("/projects/{projectId}/folders/{folderId}/active-images")
 public class ActiveImageController {
     private final ProjectService projectService;
+    
+    private final FolderService folderService;
 
-    private final ActiveImageService activeImageService;
+    private final LocalActiveImageService localActiveImageService;
+    private final DBActiveImageService DBActiveImageService;
     private final ActiveImageMapper activeImageMapper;
 
     @PostMapping
     public ActiveImageDTO save(@PathVariable("projectId") int projectId,
+                               @PathVariable("folderId") int folderId,
                                @RequestPart("image") MultipartFile image,
                                @RequestPart(value = "description", required = false) String description,
                                @RequestPart(value = "additionalInformation", required = false) String additionalInformation) throws IOException {
 
         Project project = projectService.getById(projectId);
+        Folder folder = folderService.getById(project, folderId);
 
-        ActiveImage activeImage = activeImageService.save(project, description, additionalInformation, image);
+        ActiveImage activeImage = DBActiveImageService.save(project, folder, description, additionalInformation, image);
 
-        byte[] bytes = activeImageService.getImage(project, activeImage.getFileName());
+        byte[] bytes = localActiveImageService.getImage(project, folder, activeImage.getFileName());
         return activeImageMapper.toDTO(activeImage, bytes);
     }
 
     @GetMapping("/{uuid}")
     public ActiveImageDTO getByUUID(@PathVariable("projectId") int projectId,
-                                    @PathVariable("uuid") String uuid) throws IOException {
+                                    @PathVariable("folderId") int folderId,
+                                    @PathVariable("uuid") UUID uuid) throws IOException {
 
         Project project = projectService.getById(projectId);
-        ActiveImage activeImage = activeImageService.getByUUID(project, UUID.fromString(uuid));
+        Folder folder = folderService.getById(project, folderId);
+        ActiveImage activeImage = DBActiveImageService.getByUUID(project, folder, uuid);
 
-        byte[] bytes = activeImageService.getImage(project, activeImage.getFileName());
+        byte[] bytes = localActiveImageService.getImage(project, folder, activeImage.getFileName());
         return activeImageMapper.toDTO(activeImage, bytes);
     }
 
     @DeleteMapping("/{uuid}")
     public void deleteByUUID(@PathVariable("projectId") int projectId,
-                             @PathVariable("uuid") String uuid) throws IOException {
+                             @PathVariable("folderId") int folderId,
+                             @PathVariable("uuid") UUID uuid) throws IOException {
 
         Project project = projectService.getById(projectId);
-        ActiveImage activeImage = activeImageService.getByUUID(project, UUID.fromString(uuid));
-        activeImageService.deleteByUUID(project, activeImage);
+        Folder folder = folderService.getById(project, folderId);
+        ActiveImage activeImage = DBActiveImageService.getByUUID(project, folder, uuid);
+        DBActiveImageService.deleteByUUID(project, folder, activeImage);
 
         String fileName = activeImage.getFileName();
-        MultipartFile activeImageFile = new CustomMultipartFile(fileName, activeImageService.getImage(project, fileName));
-        activeImageService.transfer(project, activeImageFile);
+        MultipartFile activeImageFile = new CustomMultipartFile(fileName, localActiveImageService.getImage(project, folder, fileName));
+        localActiveImageService.transfer(project, folder, activeImageFile);
     }
 
     @GetMapping("/get-all-by-uuid")
     public List<ActiveImageDTO> getAllByUUID(@PathVariable("projectId") int projectId,
-                                             @RequestBody List<String> uuids) throws IOException {
+                                             @PathVariable("folderId") int folderId,
+                                             @RequestBody List<UUID> uuids) throws IOException {
 
         Project project = projectService.getById(projectId);
-        List<UUID> ids = uuids.stream()
-                .map(UUID::fromString)
-                .toList();
-
-        List<ActiveImage> activeImages = activeImageService.getAllByUUID(project, ids);
+        Folder folder = folderService.getById(project, folderId);
+        List<ActiveImage> activeImages = DBActiveImageService.getAllByUUID(project, folder, uuids);
 
         List<ActiveImageDTO> activeImageDTOS = new ArrayList<>();
         for (ActiveImage activeImage : activeImages) {
-            byte[] bytes = activeImageService.getImage(project, activeImage.getFileName());
+            byte[] bytes = localActiveImageService.getImage(project, folder, activeImage.getFileName());
             ActiveImageDTO activeImageDTO = activeImageMapper.toDTO(activeImage, bytes);
             activeImageDTOS.add(activeImageDTO);
         }

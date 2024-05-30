@@ -11,5 +11,4 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public class ActiveImageDTO extends ImageDTO {
     private byte[] bytes;
-    private int projectId;
 }

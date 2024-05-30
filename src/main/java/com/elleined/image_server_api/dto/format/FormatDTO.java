@@ -1,4 +1,4 @@
-package com.elleined.image_server_api.dto.image;
+package com.elleined.image_server_api.dto.format;
 
 import com.elleined.image_server_api.dto.IntegerDTO;
 import lombok.Getter;
@@ -10,6 +10,6 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class ImageFormatDTO extends IntegerDTO {
+public class FormatDTO extends IntegerDTO {
     private String format;
 }

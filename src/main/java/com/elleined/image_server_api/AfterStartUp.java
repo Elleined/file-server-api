@@ -1,8 +1,8 @@
 package com.elleined.image_server_api;
 
-import com.elleined.image_server_api.populator.ImageFormatPopulator;
-import com.elleined.image_server_api.populator.ProjectPopulator;
+import com.elleined.image_server_api.populator.FormatPopulator;
 import com.elleined.image_server_api.repository.image.ImageFormatRepository;
+import com.elleined.image_server_api.service.folder.FolderCreator;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -14,19 +14,21 @@ import java.io.IOException;
 public class AfterStartUp {
     private final ImageFormatRepository imageFormatRepository;
 
-    private final ImageFormatPopulator imageFormatPopulator;
-    private final ProjectPopulator projectPopulator;
+    private final FolderCreator folderCreator;
+
+    private final FormatPopulator formatPopulator;
 
     @PostConstruct
     void init() throws IOException {
+        folderCreator.createFolder();
         if (imageFormatRepository.existsById(1)) {
             System.out.println("Returning because pre-defined values are already been saved!");
             return;
         }
 
         System.out.println("Saving pre-defined values... Please wait");
-        imageFormatPopulator.populate("/json/image_formats.json");
-        projectPopulator.populate("/json/projects.json");
+        formatPopulator.populate("/json/image_formats.json");
+
         System.out.println("Saving pre-defined values... Completed.");
     }
 }
