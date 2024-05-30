@@ -12,7 +12,7 @@ pipeline {
     stages {
         stage("Clone Image Server API from Github") {
             steps {
-                echo "Cloning Social Media API from Github. Please Wait..."
+                echo "Cloning Image Server API from Github. Please Wait..."
                 git branch: 'main',
                     url: 'https://github.com/Elleined/image-server-api'
                 echo "Cloning Image Server API from Github. Success!"
