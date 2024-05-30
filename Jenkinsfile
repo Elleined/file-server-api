@@ -10,12 +10,12 @@ pipeline {
     }
 
     stages {
-        stage("Clone Social Media API from Github") {
+        stage("Clone Image Server API from Github") {
             steps {
-                echo "Cloning Social Media API from Github. Please Wait..."
+                echo "Cloning Image Server API from Github. Please Wait..."
                 git branch: 'main',
                     url: 'https://github.com/Elleined/image-server-api'
-                echo "Cloning Social Media API from Github. Success!"
+                echo "Cloning Image Server API from Github. Success!"
             }
         }
 
@@ -47,7 +47,7 @@ pipeline {
             steps {
                 echo "Pushing docker image to DockerHub. Please Wait..."
                 sh 'docker tag image-server-api:latest elleined/image-server-api:latest'
-                sh 'docker push elleined/sma:latest'
+                sh 'docker push elleined/image-server-api:latest'
                 echo "Pushing docker image to DockerHub. Success!"
             }
         }
