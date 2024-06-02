@@ -2,7 +2,6 @@ package com.elleined.image_server_api.service.format;
 
 import com.elleined.image_server_api.model.format.Format;
 import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;

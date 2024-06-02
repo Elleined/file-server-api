@@ -4,7 +4,6 @@ import com.elleined.image_server_api.dto.project.ProjectDTO;
 import com.elleined.image_server_api.mapper.project.ProjectMapper;
 import com.elleined.image_server_api.model.project.Project;
 import com.elleined.image_server_api.service.folder.FolderService;
-import com.elleined.image_server_api.service.image.active.db.DBActiveImageService;
 import com.elleined.image_server_api.service.project.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
