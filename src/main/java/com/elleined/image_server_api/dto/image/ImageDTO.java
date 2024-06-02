@@ -19,4 +19,5 @@ public class ImageDTO extends UUIDDTO {
     private int formatId;
     private String fileName;
     private int folderId;
+    private double fileSizeInMB;
 }

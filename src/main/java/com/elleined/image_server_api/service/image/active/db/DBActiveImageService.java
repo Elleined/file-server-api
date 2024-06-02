@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface DBActiveImageService {
-    int MAX_FILE_SIZE = 1024 * 1024 * 2; // 2MB
+    int MAX_FILE_SIZE = 1024 * 1024 * 3; // 3MB
 
     ActiveImage save(Project project,
                      Folder folder,
@@ -34,7 +34,9 @@ public interface DBActiveImageService {
         return image.getSize() > MAX_FILE_SIZE;
     }
 
-    void deleteAllByUUID(Project project, Folder folder, List<ActiveImage> activeImages);
-
-    List<ActiveImage> restoreAll(Project project, Folder folder, List<DeletedImage> deletedImages);
+    default double getSizeInMB(MultipartFile image) {
+        final double magicMultiplierToConvertBytesIntoMB = 0.00000095367432;
+        double fileSizeInMB = image.getSize() * magicMultiplierToConvertBytesIntoMB;
+        return Math.round(fileSizeInMB * 10000.0) / 10000.0;
+    }
 }

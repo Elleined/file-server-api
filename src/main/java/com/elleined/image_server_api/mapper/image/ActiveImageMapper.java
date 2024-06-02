@@ -22,6 +22,7 @@ public interface ActiveImageMapper {
             @Mapping(target = "formatId", source = "format.id"),
             @Mapping(target = "fileName", source = "fileName"),
             @Mapping(target = "folderId", source = "folder.id"),
+            @Mapping(target = "fileSizeInMB", source = "fileSizeInMB"),
             @Mapping(target = "bytes", expression = "java(bytes)")
     })
     ActiveImageDTO toDTO(ActiveImage activeImage,
@@ -35,13 +36,15 @@ public interface ActiveImageMapper {
             @Mapping(target = "additionalInformation", expression = "java(additionalInformation)"),
             @Mapping(target = "format", expression = "java(format)"),
             @Mapping(target = "fileName", expression = "java(fileName)"),
+            @Mapping(target = "fileSizeInMB", expression = "java(fileSizeInMB)"),
             @Mapping(target = "folder", expression = "java(folder)")
     })
     ActiveImage toEntity(String description,
                          String additionalInformation,
                          Format format,
                          String fileName,
-                         Folder folder);
+                         Folder folder,
+                         double fileSizeInMB);
 
     @Mappings({
             @Mapping(target = "id", source = "id"),
@@ -51,6 +54,7 @@ public interface ActiveImageMapper {
             @Mapping(target = "additionalInformation", source = "additionalInformation"),
             @Mapping(target = "format", source = "format"),
             @Mapping(target = "fileName", source = "fileName"),
+            @Mapping(target = "fileSizeInMB", source = "fileSizeInMB"),
             @Mapping(target = "folder", source = "folder")
     })
     ActiveImage toEntity(DeletedImage deletedImage); // For restoring deleted images;
