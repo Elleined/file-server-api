@@ -20,6 +20,7 @@ public interface DeletedImageMapper extends CustomMapper<DeletedImage, DeletedIm
             @Mapping(target = "additionalInformation", source = "additionalInformation"),
             @Mapping(target = "formatId", source = "format.id"),
             @Mapping(target = "fileName", source = "fileName"),
+            @Mapping(target = "fileSizeInMB", source = "fileSizeInMB"),
             @Mapping(target = "folderId", source = "folder.id")
     })
     DeletedImageDTO toDTO(DeletedImage deletedImage);
@@ -32,6 +33,7 @@ public interface DeletedImageMapper extends CustomMapper<DeletedImage, DeletedIm
             @Mapping(target = "additionalInformation", source = "additionalInformation"),
             @Mapping(target = "format", source = "format"),
             @Mapping(target = "fileName", source = "fileName"),
+            @Mapping(target = "fileSizeInMB", source = "fileSizeInMB"),
             @Mapping(target = "folder", source = "folder")
     })
     DeletedImage toEntity(ActiveImage activeImage);

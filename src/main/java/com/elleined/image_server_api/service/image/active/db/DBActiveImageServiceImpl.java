@@ -74,7 +74,8 @@ public class DBActiveImageServiceImpl implements DBActiveImageService {
                 .orElseThrow(() -> new ResourceNotFoundException("Cannot upload image! format is not valid!"));
 
         String fileName = localActiveImageService.save(project, folder, image);
-        ActiveImage activeImage = activeImageMapper.toEntity(description, additionalInformation, format, fileName, folder);
+        double fileSizeInMB = this.getSizeInMB(image);
+        ActiveImage activeImage = activeImageMapper.toEntity(description, additionalInformation, format, fileName, folder, fileSizeInMB);
         activeImageRepository.save(activeImage);
         log.debug("Uploading image success!");
         return activeImage;
@@ -142,18 +143,5 @@ public class DBActiveImageServiceImpl implements DBActiveImageService {
         activeImageRepository.saveAll(activeImages);
 
         return activeImages;
-    }
-
-    @Override
-    public void deleteAllByUUID(Project project, Folder folder, List<ActiveImage> activeImages) {
-        activeImages.forEach(activeImage -> deleteByUUID(project, folder, activeImage));
-    }
-
-    @Override
-    public List<ActiveImage> restoreAll(Project project, Folder folder, List<DeletedImage> deletedImages) {
-        return deletedImages.stream()
-                .map(deletedImage -> restore(project, folder, deletedImage))
-                .sorted(Comparator.comparing(PrimaryKeyUUID::getCreatedAt).reversed())
-                .toList();
     }
 }

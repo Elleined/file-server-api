@@ -57,4 +57,11 @@ public abstract class Image extends PrimaryKeyUUID {
             updatable = false
     )
     private Folder folder;
+
+    @Column(
+            name = "file_size_in_mb",
+            nullable = false,
+            updatable = false
+    )
+    private double fileSizeInMB;
 }
