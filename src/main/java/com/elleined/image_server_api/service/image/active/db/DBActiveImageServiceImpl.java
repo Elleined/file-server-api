@@ -2,6 +2,7 @@ package com.elleined.image_server_api.service.image.active.db;
 
 import com.elleined.image_server_api.exception.image.ImageFormatException;
 import com.elleined.image_server_api.exception.image.ImageSizeException;
+import com.elleined.image_server_api.exception.resource.ResourceException;
 import com.elleined.image_server_api.exception.resource.ResourceNotFoundException;
 import com.elleined.image_server_api.exception.resource.ResourceNotOwnedException;
 import com.elleined.image_server_api.mapper.image.ActiveImageMapper;
@@ -70,11 +71,17 @@ public class DBActiveImageServiceImpl implements DBActiveImageService {
             throw new ImageFormatException("Cannot upload image! because extension name is not valid. Please refer to valid extension names!");
         }
 
+        double fileSizeInMB = this.getSizeInMB(image);
+        if (projectService.isStorageMax(project, fileSizeInMB)) {
+            localActiveImageService.saveFailedUpload(project, folder, image); // Save the file anyways HAHAHA. If you don't want this just literally remove this line :)
+            throw new ResourceException("Cannot upload image because you already reached the max storage size for your project which is " + ProjectService.MAX_STORAGE_SIZE_IN_MB);
+        }
+
         Format format = formatService.getByMultipart(image)
                 .orElseThrow(() -> new ResourceNotFoundException("Cannot upload image! format is not valid!"));
 
         String fileName = localActiveImageService.save(project, folder, image);
-        double fileSizeInMB = this.getSizeInMB(image);
+
         ActiveImage activeImage = activeImageMapper.toEntity(description, additionalInformation, format, fileName, folder, fileSizeInMB);
         activeImageRepository.save(activeImage);
         log.debug("Uploading image success!");

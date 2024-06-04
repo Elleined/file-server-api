@@ -20,11 +20,11 @@ public interface ProjectService {
         return project.getFolders().contains(folder);
     }
 
-    default boolean isStorageMax(Project project) {
+    default boolean isStorageMax(Project project, double fileSizeInMB) {
         return project.getFolders().stream()
                 .map(Folder::getActiveImages)
                 .flatMap(Collection::stream)
                 .map(ActiveImage::getFileSizeInMB)
-                .reduce(0D, Double::sum) >= MAX_STORAGE_SIZE_IN_MB;
+                .reduce(0D, Double::sum) + fileSizeInMB >= MAX_STORAGE_SIZE_IN_MB;
     }
 }
