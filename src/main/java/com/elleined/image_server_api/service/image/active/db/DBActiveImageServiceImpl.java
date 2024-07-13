@@ -60,10 +60,6 @@ public class DBActiveImageServiceImpl implements DBActiveImageService {
             throw new ResourceNotOwnedException("Cannot upload image! because this project doesn't have the specified upload folder");
         }
 
-        if (projectService.isStorageMax(project)) {
-            throw new ResourceException("Cannot upload image! because you already reached the max storage per project which is " + ProjectService.MAX_STORAGE_SIZE_IN_MB);
-        }
-
         if (isAboveMaxFileSize(image)) {
             localActiveImageService.saveFailedUpload(project, folder, image); // Save the file anyways HAHAHA. If you don't want this just literally remove this line :)
             throw new ImageSizeException(STR."Cannot upload image! because image exceeds to file size which is \{MAX_FILE_SIZE}");
