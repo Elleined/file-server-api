@@ -5,19 +5,16 @@ import com.elleined.image_server_api.exception.resource.ResourceNotFoundExceptio
 import com.elleined.image_server_api.exception.resource.ResourceNotOwnedException;
 import com.elleined.image_server_api.mapper.folder.FolderMapper;
 import com.elleined.image_server_api.model.folder.Folder;
-import com.elleined.image_server_api.model.image.ActiveImage;
-import com.elleined.image_server_api.model.image.DeletedImage;
 import com.elleined.image_server_api.model.project.Project;
 import com.elleined.image_server_api.repository.FolderRepository;
 import com.elleined.image_server_api.repository.project.ProjectRepository;
-import com.elleined.image_server_api.service.project.ProjectService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
 import java.util.List;
 
 @Slf4j
@@ -26,7 +23,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FolderServiceImpl implements FolderService {
     private final ProjectRepository projectRepository;
-    private final ProjectService projectService;
 
     private final FolderRepository folderRepository;
     private final FolderMapper folderMapper;
@@ -54,15 +50,8 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
-    public List<Folder> getAll(Project project, Pageable pageable) {
-        return projectRepository.findAllFolders(project, pageable).getContent();
-    }
-
-    @Override
-    public List<Folder> getAllById(Project project, List<Integer> ids) {
-        return folderRepository.findAllById(ids).stream()
-                .sorted(Comparator.comparing(Folder::getName))
-                .toList();
+    public Page<Folder> getAll(Project project, Pageable pageable) {
+        return projectRepository.findAllFolders(project, pageable);
     }
 
     @Override
@@ -70,23 +59,6 @@ public class FolderServiceImpl implements FolderService {
         return folderRepository.findAll().stream()
                 .map(Folder::getName)
                 .anyMatch(name::equalsIgnoreCase);
-    }
-
-
-    @Override
-    public List<ActiveImage> getAllActiveImages(Project project, Folder folder, Pageable pageable) {
-        if (!projectService.has(project, folder))
-            throw new ResourceNotOwnedException("Cannot get all active images! because this project doesn't have this folder!");
-
-        return folderRepository.findAllActiveImages(folder, pageable).stream().toList();
-    }
-
-    @Override
-    public List<DeletedImage> getAllDeletedImages(Project project, Folder folder, Pageable pageable) {
-        if (!projectService.has(project, folder))
-            throw new ResourceNotOwnedException("Cannot get all deleted images! because this project doesn't have this folder!");
-
-        return folderRepository.findAllDeletedImages(folder, pageable).stream().toList();
     }
 
     @Override
