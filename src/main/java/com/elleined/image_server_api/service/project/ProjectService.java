@@ -6,13 +6,12 @@ import com.elleined.image_server_api.model.project.Project;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.io.IOException;
 import java.util.Collection;
 
 public interface ProjectService {
     int MAX_STORAGE_SIZE_IN_MB = 1024 * 1024 * 300; // 300MB
 
-    Project save(String name) throws IOException;
+    Project save(String name);
     Project getById(int id);
     Page<Project> getAll(Pageable pageable);
 

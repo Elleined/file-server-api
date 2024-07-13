@@ -37,7 +37,7 @@ public class ActiveImageController {
     public ActiveImageDTO getByUUID(@PathVariable("projectId") int projectId,
                                     @PathVariable("folderId") int folderId,
                                     @PathVariable("uuid") UUID uuid,
-                                    @RequestParam(defaultValue = "false", name = "includeRelatedLinks") boolean includeRelatedLinks) {
+                                    @RequestParam(defaultValue = "false", name = "includeRelatedLinks") boolean includeRelatedLinks) throws IOException {
 
         Project project = projectService.getById(projectId);
         Folder folder = folderService.getById(project, folderId);
@@ -79,7 +79,12 @@ public class ActiveImageController {
 
         return DBActiveImageService.getAll(project, folder, pageable)
                 .map(activeImage -> {
-                    byte[] bytes = localActiveImageService.getImage(project, folder, activeImage.getFileName());
+                    byte[] bytes;
+                    try {
+                        bytes = localActiveImageService.getImage(project, folder, activeImage.getFileName());
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                     return activeImageMapper.toDTO(activeImage, bytes);
                 })
                 .map(dto -> dto.addLinks(includeRelatedLinks));

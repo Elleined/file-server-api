@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public interface LocalActiveImageService {
 
     String save(Project project, Folder folder, MultipartFile image) throws IOException;
-    byte[] getImage(Project project, Folder folder, String fileName);
+    byte[] getImage(Project project, Folder folder, String fileName) throws IOException;
     void transfer(Project project, Folder folder, MultipartFile multipartFile) throws IOException;
     void saveFailedUpload(Project project, Folder folder, MultipartFile image) throws IOException;
 

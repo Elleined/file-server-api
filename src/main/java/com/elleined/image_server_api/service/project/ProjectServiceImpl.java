@@ -11,8 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
-
 @Slf4j
 @Service
 @Transactional
@@ -22,7 +20,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectMapper projectMapper;
 
     @Override
-    public Project save(String name) throws IOException {
+    public Project save(String name) {
         Project project = projectMapper.toEntity(name);
 
         projectRepository.save(project);
