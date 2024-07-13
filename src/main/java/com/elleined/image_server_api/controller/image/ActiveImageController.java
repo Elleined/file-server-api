@@ -11,12 +11,14 @@ import com.elleined.image_server_api.service.image.active.db.DBActiveImageServic
 import com.elleined.image_server_api.service.image.active.local.LocalActiveImageService;
 import com.elleined.image_server_api.service.project.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -47,18 +49,25 @@ public class ActiveImageController {
         return activeImageMapper.toDTO(activeImage, bytes);
     }
 
-    @GetMapping("/{uuid}")
-    public ActiveImageDTO getByUUID(@PathVariable("projectId") int projectId,
-                                    @PathVariable("folderId") int folderId,
-                                    @PathVariable("uuid") UUID uuid) throws IOException {
+    @GetMapping
+    public Page<ActiveImageDTO> getAllActiveImages(@PathVariable("projectId") int projectId,
+                                                   @PathVariable("folderId") int folderId,
+                                                   @RequestParam(required = false, defaultValue = "1", value = "pageNumber") int pageNumber,
+                                                   @RequestParam(required = false, defaultValue = "5", value = "pageSize") int pageSize,
+                                                   @RequestParam(required = false, defaultValue = "ASC", value = "sortDirection") Sort.Direction direction,
+                                                   @RequestParam(required = false, defaultValue = "id", value = "sortBy") String sortBy) throws IOException {
 
         Project project = projectService.getById(projectId);
         Folder folder = folderService.getById(project, folderId);
-        ActiveImage activeImage = DBActiveImageService.getByUUID(project, folder, uuid);
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, direction, sortBy);
 
-        byte[] bytes = localActiveImageService.getImage(project, folder, activeImage.getFileName());
-        return activeImageMapper.toDTO(activeImage, bytes);
+        return DBActiveImageService.getAll(project, folder, pageable)
+                .map(activeImage -> {
+                    byte[] bytes = localActiveImageService.getImage(project, folder, activeImage.getFileName());
+                    return activeImageMapper.toDTO(activeImage, bytes);
+                });
     }
+
 
     @DeleteMapping("/{uuid}")
     public void deleteByUUID(@PathVariable("projectId") int projectId,
@@ -73,23 +82,5 @@ public class ActiveImageController {
         String fileName = activeImage.getFileName();
         MultipartFile activeImageFile = new CustomMultipartFile(fileName, localActiveImageService.getImage(project, folder, fileName));
         localActiveImageService.transfer(project, folder, activeImageFile);
-    }
-
-    @GetMapping("/get-all-by-uuid")
-    public List<ActiveImageDTO> getAllByUUID(@PathVariable("projectId") int projectId,
-                                             @PathVariable("folderId") int folderId,
-                                             @RequestBody List<UUID> uuids) throws IOException {
-
-        Project project = projectService.getById(projectId);
-        Folder folder = folderService.getById(project, folderId);
-        List<ActiveImage> activeImages = DBActiveImageService.getAllByUUID(project, folder, uuids);
-
-        List<ActiveImageDTO> activeImageDTOS = new ArrayList<>();
-        for (ActiveImage activeImage : activeImages) {
-            byte[] bytes = localActiveImageService.getImage(project, folder, activeImage.getFileName());
-            ActiveImageDTO activeImageDTO = activeImageMapper.toDTO(activeImage, bytes);
-            activeImageDTOS.add(activeImageDTO);
-        }
-        return activeImageDTOS;
     }
 }

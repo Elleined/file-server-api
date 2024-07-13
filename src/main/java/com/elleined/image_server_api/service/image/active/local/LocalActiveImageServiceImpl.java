@@ -6,6 +6,7 @@ import com.elleined.image_server_api.model.project.Project;
 import com.elleined.image_server_api.service.folder.FolderService;
 import com.elleined.image_server_api.service.project.ProjectService;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +41,8 @@ public class LocalActiveImageServiceImpl implements LocalActiveImageService {
     }
 
     @Override
-    public byte[] getImage(Project project, Folder folder, String fileName) throws IOException {
+    @SneakyThrows(IOException.class)
+    public byte[] getImage(Project project, Folder folder, String fileName) {
         if (!projectService.has(project, folder))
             throw new ResourceNotOwnedException("Cannot get image from storage! because this project doesn't have the specified upload folder");
 

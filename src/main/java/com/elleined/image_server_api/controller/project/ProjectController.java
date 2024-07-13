@@ -6,6 +6,7 @@ import com.elleined.image_server_api.model.project.Project;
 import com.elleined.image_server_api.service.folder.FolderService;
 import com.elleined.image_server_api.service.project.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -34,21 +35,14 @@ public class ProjectController {
         return projectMapper.toDTO(project);
     }
 
-    @GetMapping("/{id}")
-    public ProjectDTO getById(@PathVariable("id") int id) {
-        Project project = projectService.getById(id);
-        return projectMapper.toDTO(project);
-    }
-
     @GetMapping
-    public List<ProjectDTO> getAll(@RequestParam(required = false, defaultValue = "1", value = "pageNumber") int pageNumber,
+    public Page<ProjectDTO> getAll(@RequestParam(required = false, defaultValue = "1", value = "pageNumber") int pageNumber,
                                    @RequestParam(required = false, defaultValue = "5", value = "pageSize") int pageSize,
                                    @RequestParam(required = false, defaultValue = "ASC", value = "sortDirection") Sort.Direction direction,
                                    @RequestParam(required = false, defaultValue = "id", value = "sortBy") String sortBy) {
 
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, direction, sortBy);
-        return projectService.getAll(pageable).stream()
-                .map(projectMapper::toDTO)
-                .toList();
+        return projectService.getAll(pageable)
+                .map(projectMapper::toDTO);
     }
 }
