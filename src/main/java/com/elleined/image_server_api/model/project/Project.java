@@ -33,10 +33,4 @@ public class Project extends PrimaryKeyIdentity {
 
     @OneToMany(mappedBy = "project")
     private List<Folder> folders;
-
-    public List<Integer> getAllFolderIds() {
-        return this.getFolders().stream()
-                .map(PrimaryKeyIdentity::getId)
-                .toList();
-    }
 }

@@ -1,7 +1,6 @@
 package com.elleined.image_server_api.model.folder;
 
 import com.elleined.image_server_api.model.PrimaryKeyIdentity;
-import com.elleined.image_server_api.model.PrimaryKeyUUID;
 import com.elleined.image_server_api.model.image.ActiveImage;
 import com.elleined.image_server_api.model.image.DeletedImage;
 import com.elleined.image_server_api.model.project.Project;
@@ -12,7 +11,6 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Table(
@@ -48,16 +46,4 @@ public class Folder extends PrimaryKeyIdentity {
 
     @OneToMany(mappedBy = "folder")
     private List<DeletedImage> deletedImages;
-
-    public List<UUID> getAllActiveImageIds() {
-        return getActiveImages().stream()
-                .map(PrimaryKeyUUID::getId)
-                .toList();
-    }
-
-    public List<UUID> getAllDeletedImageIds() {
-        return getDeletedImages().stream()
-                .map(PrimaryKeyUUID::getId)
-                .toList();
-    }
 }
