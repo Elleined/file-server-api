@@ -1,6 +1,8 @@
 package com.elleined.image_server_api.dto.image;
 
 import com.elleined.image_server_api.dto.UUIDDTO;
+import com.elleined.image_server_api.dto.folder.FolderDTO;
+import com.elleined.image_server_api.dto.format.FormatDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,8 +18,8 @@ public class ImageDTO extends UUIDDTO {
     private LocalDateTime lastAccessedAt;
     private String description;
     private String additionalInformation;
-    private int formatId;
+    private FormatDTO formatDTO;
     private String fileName;
-    private int folderId;
+    private FolderDTO folderDTO;
     private double fileSizeInMB;
 }

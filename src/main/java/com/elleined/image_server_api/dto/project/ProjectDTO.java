@@ -14,5 +14,4 @@ import java.util.List;
 @NoArgsConstructor
 public class ProjectDTO extends IntegerDTO {
     private String name;
-    private List<Integer> folderIds;
 }
