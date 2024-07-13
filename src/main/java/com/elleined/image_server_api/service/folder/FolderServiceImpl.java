@@ -47,7 +47,7 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     public Folder getById(Project project, int id) throws ResourceNotFoundException {
-        if (!project.getAllFolderIds().contains(id))
+        if (!project.has(id))
             throw new ResourceNotOwnedException("Cannot get by id! because this project doesn't have a folder with id of " + id);
 
         return folderRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Folder with id of " + id + " doesn't exists!"));

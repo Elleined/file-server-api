@@ -34,7 +34,7 @@ public interface ActiveImageMapper {
             @Mapping(target = "bytes", expression = "java(bytes)")
     })
     ActiveImageDTO toDTO(ActiveImage activeImage,
-                         byte[] bytes);
+                         @Context byte[] bytes);
 
     @Mappings({
             @Mapping(target = "id", expression = "java(java.util.UUID.randomUUID())"),
