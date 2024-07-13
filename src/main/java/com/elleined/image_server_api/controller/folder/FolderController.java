@@ -33,7 +33,7 @@ public class FolderController {
         Folder folder = folderService.save(project, name);
 
         folderService.createFolder(project, folder);
-        return folderMapper.toDTO(folder);
+        return folderMapper.toDTO(folder).addLinks(includeRelatedLinks);
     }
 
     @GetMapping
@@ -49,6 +49,7 @@ public class FolderController {
 
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, direction, sortBy);
         return folderService.getAll(project, pageable)
-                .map(folderMapper::toDTO);
+                .map(folderMapper::toDTO)
+                .map(dto -> dto.addLinks(includeRelatedLinks));
     }
 }

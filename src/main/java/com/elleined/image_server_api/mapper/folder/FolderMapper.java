@@ -5,7 +5,6 @@ import com.elleined.image_server_api.mapper.CustomMapper;
 import com.elleined.image_server_api.mapper.project.ProjectMapper;
 import com.elleined.image_server_api.model.folder.Folder;
 import com.elleined.image_server_api.model.project.Project;
-import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;

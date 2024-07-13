@@ -6,7 +6,10 @@ import com.elleined.image_server_api.model.project.Project;
 import com.elleined.image_server_api.service.folder.FolderService;
 import com.elleined.image_server_api.service.project.ProjectService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.util.List;
@@ -29,6 +32,6 @@ public class ProjectController {
         folderService.saveAll(project, folderNames);
 
         folderService.createFolder(project);
-        return projectMapper.toDTO(project);
+        return projectMapper.toDTO(project).addLinks(includeRelatedLinks);
     }
 }

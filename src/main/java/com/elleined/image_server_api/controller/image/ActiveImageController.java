@@ -44,7 +44,7 @@ public class ActiveImageController {
         ActiveImage activeImage = DBActiveImageService.getByUUID(project, folder, uuid);
 
         byte[] bytes = localActiveImageService.getImage(project, folder, activeImage.getFileName());
-        return activeImageMapper.toDTO(activeImage, bytes);
+        return activeImageMapper.toDTO(activeImage, bytes).addLinks(includeRelatedLinks);
     }
 
     @PostMapping
@@ -61,7 +61,7 @@ public class ActiveImageController {
         ActiveImage activeImage = DBActiveImageService.save(project, folder, description, additionalInformation, image);
 
         byte[] bytes = localActiveImageService.getImage(project, folder, activeImage.getFileName());
-        return activeImageMapper.toDTO(activeImage, bytes);
+        return activeImageMapper.toDTO(activeImage, bytes).addLinks(includeRelatedLinks);
     }
 
     @GetMapping
@@ -81,7 +81,8 @@ public class ActiveImageController {
                 .map(activeImage -> {
                     byte[] bytes = localActiveImageService.getImage(project, folder, activeImage.getFileName());
                     return activeImageMapper.toDTO(activeImage, bytes);
-                });
+                })
+                .map(dto -> dto.addLinks(includeRelatedLinks));
     }
 
 

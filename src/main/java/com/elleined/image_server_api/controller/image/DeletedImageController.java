@@ -50,7 +50,7 @@ public class DeletedImageController {
         Project project = projectService.getById(projectId);
         Folder folder = folderService.getById(project, folderId);
         DeletedImage deletedImage = DBDeletedImageService.getByUUID(project, folder, uuid);
-        return deletedImageMapper.toDTO(deletedImage);
+        return deletedImageMapper.toDTO(deletedImage).addLinks(includeRelatedLinks);
     }
 
     @GetMapping
@@ -67,7 +67,8 @@ public class DeletedImageController {
 
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, direction, sortBy);
         return DBDeletedImageService.getAll(project, folder, pageable)
-                .map(deletedImageMapper::toDTO);
+                .map(deletedImageMapper::toDTO)
+                .map(dto -> dto.addLinks(includeRelatedLinks));
     }
 
     @PutMapping("/{uuid}/restore")
@@ -87,6 +88,6 @@ public class DeletedImageController {
         localDeletedImageService.transfer(project, folder, deletedImageFile);
 
         byte[] bytes = localDeletedImageService.getImage(project, folder, activeImage.getFileName());
-        return activeImageMapper.toDTO(activeImage, bytes);
+        return activeImageMapper.toDTO(activeImage, bytes).addLinks(includeRelatedLinks);
     }
 }

@@ -8,7 +8,6 @@ import org.springframework.data.domain.Pageable;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 
 public interface ProjectService {
     int MAX_STORAGE_SIZE_IN_MB = 1024 * 1024 * 300; // 300MB

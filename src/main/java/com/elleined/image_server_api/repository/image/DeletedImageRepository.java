@@ -1,7 +1,6 @@
 package com.elleined.image_server_api.repository.image;
 
 import com.elleined.image_server_api.model.folder.Folder;
-import com.elleined.image_server_api.model.image.ActiveImage;
 import com.elleined.image_server_api.model.image.DeletedImage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
