@@ -14,15 +14,14 @@ public interface ProjectMapper extends CustomMapper<Project, ProjectDTO> {
     @Mappings({
             @Mapping(target = "id", source = "id"),
             @Mapping(target = "createdAt", source = "createdAt"),
-            @Mapping(target = "name", source = "name"),
-            @Mapping(target = "folderIds", expression = "java(project.getAllFolderIds())")
+            @Mapping(target = "name", source = "name")
     })
     ProjectDTO toDTO(Project project);
 
     @Mappings({
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())"),
-            @Mapping(target = "name", expression = "java(name)"),
+            @Mapping(target = "name", source = "name"),
             @Mapping(target = "folders", expression = "java(new java.util.ArrayList<>())")
     })
     Project toEntity(String name);
