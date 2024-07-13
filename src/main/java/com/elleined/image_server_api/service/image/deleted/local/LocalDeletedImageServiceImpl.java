@@ -41,11 +41,11 @@ public class LocalDeletedImageServiceImpl implements LocalDeletedImageService {
 
     @Override
     public void transfer(Project project, Folder folder, MultipartFile multipartFile) throws IOException {
-        if (!projectService.has(project, folder))
-            throw new ResourceNotOwnedException("Cannot transfer image from storage! because this project doesn't have the specified upload folder");
-
         if (multipartFile == null || multipartFile.isEmpty())
             return;
+
+        if (!projectService.has(project, folder))
+            throw new ResourceNotOwnedException("Cannot transfer image from storage! because this project doesn't have the specified upload folder");
 
         Path destination = folderService.getActiveImagesPath(project, folder);
         Path destinationPath = destination.resolve(Objects.requireNonNull(multipartFile.getOriginalFilename()));

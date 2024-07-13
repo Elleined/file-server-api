@@ -1,16 +1,16 @@
 package com.elleined.image_server_api.dto;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@SuperBuilder
-@NoArgsConstructor
-public abstract class DTO {
+public abstract class DTO extends HateoasDTO {
     private LocalDateTime createdAt;
+
+    public DTO(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 }

@@ -1,6 +1,8 @@
 package com.elleined.image_server_api.mapper.image;
 
 import com.elleined.image_server_api.dto.image.ActiveImageDTO;
+import com.elleined.image_server_api.mapper.folder.FolderMapper;
+import com.elleined.image_server_api.mapper.format.FormatMapper;
 import com.elleined.image_server_api.model.folder.Folder;
 import com.elleined.image_server_api.model.format.Format;
 import com.elleined.image_server_api.model.image.ActiveImage;
@@ -10,7 +12,13 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
-@Mapper(componentModel = "spring")
+@Mapper(
+        componentModel = "spring",
+        uses = {
+                FolderMapper.class,
+                FormatMapper.class
+        }
+)
 public interface ActiveImageMapper {
 
     @Mappings({
@@ -19,9 +27,9 @@ public interface ActiveImageMapper {
             @Mapping(target = "lastAccessedAt", source = "lastAccessedAt"),
             @Mapping(target = "description", source = "description"),
             @Mapping(target = "additionalInformation", source = "additionalInformation"),
-            @Mapping(target = "formatId", source = "format.id"),
+            @Mapping(target = "formatDTO", source = "format"),
             @Mapping(target = "fileName", source = "fileName"),
-            @Mapping(target = "folderId", source = "folder.id"),
+            @Mapping(target = "folderDTO", source = "folder"),
             @Mapping(target = "fileSizeInMB", source = "fileSizeInMB"),
             @Mapping(target = "bytes", expression = "java(bytes)")
     })
@@ -32,12 +40,12 @@ public interface ActiveImageMapper {
             @Mapping(target = "id", expression = "java(java.util.UUID.randomUUID())"),
             @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())"),
             @Mapping(target = "lastAccessedAt", expression = "java(java.time.LocalDateTime.now())"),
-            @Mapping(target = "description", expression = "java(description)"),
-            @Mapping(target = "additionalInformation", expression = "java(additionalInformation)"),
-            @Mapping(target = "format", expression = "java(format)"),
-            @Mapping(target = "fileName", expression = "java(fileName)"),
-            @Mapping(target = "fileSizeInMB", expression = "java(fileSizeInMB)"),
-            @Mapping(target = "folder", expression = "java(folder)")
+            @Mapping(target = "description", source = "description"),
+            @Mapping(target = "additionalInformation", source = "additionalInformation"),
+            @Mapping(target = "format", source = "format"),
+            @Mapping(target = "fileName", source = "fileName"),
+            @Mapping(target = "fileSizeInMB", source = "fileSizeInMB"),
+            @Mapping(target = "folder", source = "folder")
     })
     ActiveImage toEntity(String description,
                          String additionalInformation,

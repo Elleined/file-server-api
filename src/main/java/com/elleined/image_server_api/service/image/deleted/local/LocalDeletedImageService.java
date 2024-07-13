@@ -11,6 +11,5 @@ import java.util.List;
 public interface LocalDeletedImageService {
     byte[] getImage(Project project, Folder folder, String fileName) throws IOException;
     void transfer(Project project, Folder folder, MultipartFile multipartFile) throws IOException;
-
     void permanentlyDeleteDeletedImages(List<DeletedImage> deletedImages) throws IOException;
 }

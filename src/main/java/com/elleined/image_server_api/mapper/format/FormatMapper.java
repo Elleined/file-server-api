@@ -21,7 +21,7 @@ public interface FormatMapper extends CustomMapper<Format, FormatDTO> {
     @Mappings({
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())"),
-            @Mapping(target = "format", expression = "java(format)")
+            @Mapping(target = "format", source = "format")
     })
     Format toEntity(String format);
 }

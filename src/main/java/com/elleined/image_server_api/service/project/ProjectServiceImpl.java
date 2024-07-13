@@ -6,12 +6,10 @@ import com.elleined.image_server_api.model.project.Project;
 import com.elleined.image_server_api.repository.project.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.io.IOException;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -22,7 +20,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectMapper projectMapper;
 
     @Override
-    public Project save(String name) throws IOException {
+    public Project save(String name) {
         Project project = projectMapper.toEntity(name);
 
         projectRepository.save(project);
@@ -36,7 +34,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<Project> getAll(Pageable pageable) {
-        return projectRepository.findAll(pageable).stream().toList();
+    public Page<Project> getAll(Pageable pageable) {
+        return projectRepository.findAll(pageable);
     }
 }
