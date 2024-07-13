@@ -6,10 +6,6 @@ import com.elleined.image_server_api.model.project.Project;
 import com.elleined.image_server_api.service.folder.FolderService;
 import com.elleined.image_server_api.service.project.ProjectService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -25,24 +21,14 @@ public class ProjectController {
     private final FolderService folderService;
 
     @PostMapping
-    public ProjectDTO save(@RequestPart("name") String name,
-                           @RequestPart("folderNames") List<String> folderNames) throws IOException {
+    public ProjectDTO save(@RequestParam("name") String name,
+                           @RequestParam("folderNames") List<String> folderNames,
+                           @RequestParam(defaultValue = "false", name = "includeRelatedLinks") boolean includeRelatedLinks) throws IOException {
 
         Project project = projectService.save(name);
         folderService.saveAll(project, folderNames);
 
         folderService.createFolder(project);
         return projectMapper.toDTO(project);
-    }
-
-    @GetMapping
-    public Page<ProjectDTO> getAll(@RequestParam(required = false, defaultValue = "1", value = "pageNumber") int pageNumber,
-                                   @RequestParam(required = false, defaultValue = "5", value = "pageSize") int pageSize,
-                                   @RequestParam(required = false, defaultValue = "ASC", value = "sortDirection") Sort.Direction direction,
-                                   @RequestParam(required = false, defaultValue = "id", value = "sortBy") String sortBy) {
-
-        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, direction, sortBy);
-        return projectService.getAll(pageable)
-                .map(projectMapper::toDTO);
     }
 }

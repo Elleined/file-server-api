@@ -40,13 +40,27 @@ public class DeletedImageController {
     private final DBDeletedImageService DBDeletedImageService;
     private final DeletedImageMapper deletedImageMapper;
 
+
+    @GetMapping("/{uuid}")
+    public DeletedImageDTO getByUUID(@PathVariable("projectId") int projectId,
+                                     @PathVariable("folderId") int folderId,
+                                     @PathVariable("uuid") UUID uuid,
+                                     @RequestParam(defaultValue = "false", name = "includeRelatedLinks") boolean includeRelatedLinks) {
+
+        Project project = projectService.getById(projectId);
+        Folder folder = folderService.getById(project, folderId);
+        DeletedImage deletedImage = DBDeletedImageService.getByUUID(project, folder, uuid);
+        return deletedImageMapper.toDTO(deletedImage);
+    }
+
     @GetMapping
-    public Page<DeletedImageDTO> getAllDeletedImages(@PathVariable("projectId") int projectId,
-                                                     @PathVariable("folderId") int folderId,
-                                                     @RequestParam(required = false, defaultValue = "1", value = "pageNumber") int pageNumber,
-                                                     @RequestParam(required = false, defaultValue = "5", value = "pageSize") int pageSize,
-                                                     @RequestParam(required = false, defaultValue = "ASC", value = "sortDirection") Sort.Direction direction,
-                                                     @RequestParam(required = false, defaultValue = "id", value = "sortBy") String sortBy) {
+    public Page<DeletedImageDTO> getAll(@PathVariable("projectId") int projectId,
+                                        @PathVariable("folderId") int folderId,
+                                        @RequestParam(required = false, defaultValue = "1", value = "pageNumber") int pageNumber,
+                                        @RequestParam(required = false, defaultValue = "5", value = "pageSize") int pageSize,
+                                        @RequestParam(required = false, defaultValue = "ASC", value = "sortDirection") Sort.Direction direction,
+                                        @RequestParam(required = false, defaultValue = "id", value = "sortBy") String sortBy,
+                                        @RequestParam(defaultValue = "false", name = "includeRelatedLinks") boolean includeRelatedLinks) {
 
         Project project = projectService.getById(projectId);
         Folder folder = folderService.getById(project, folderId);
@@ -59,7 +73,8 @@ public class DeletedImageController {
     @PutMapping("/{uuid}/restore")
     public ActiveImageDTO restore(@PathVariable("projectId") int projectId,
                                   @PathVariable("folderId") int folderId,
-                                  @PathVariable("uuid") UUID uuid) throws IOException {
+                                  @PathVariable("uuid") UUID uuid,
+                                  @RequestParam(defaultValue = "false", name = "includeRelatedLinks") boolean includeRelatedLinks) throws IOException {
 
         Project project = projectService.getById(projectId);
         Folder folder = folderService.getById(project, folderId);

@@ -26,19 +26,34 @@ import java.util.UUID;
 @RequestMapping("/projects/{projectId}/folders/{folderId}/active-images")
 public class ActiveImageController {
     private final ProjectService projectService;
-    
+
     private final FolderService folderService;
 
     private final LocalActiveImageService localActiveImageService;
     private final DBActiveImageService DBActiveImageService;
     private final ActiveImageMapper activeImageMapper;
 
+    @GetMapping("/{uuid}")
+    public ActiveImageDTO getByUUID(@PathVariable("projectId") int projectId,
+                                    @PathVariable("folderId") int folderId,
+                                    @PathVariable("uuid") UUID uuid,
+                                    @RequestParam(defaultValue = "false", name = "includeRelatedLinks") boolean includeRelatedLinks) {
+
+        Project project = projectService.getById(projectId);
+        Folder folder = folderService.getById(project, folderId);
+        ActiveImage activeImage = DBActiveImageService.getByUUID(project, folder, uuid);
+
+        byte[] bytes = localActiveImageService.getImage(project, folder, activeImage.getFileName());
+        return activeImageMapper.toDTO(activeImage, bytes);
+    }
+
     @PostMapping
     public ActiveImageDTO save(@PathVariable("projectId") int projectId,
                                @PathVariable("folderId") int folderId,
                                @RequestPart("image") MultipartFile image,
-                               @RequestPart(value = "description", required = false) String description,
-                               @RequestPart(value = "additionalInformation", required = false) String additionalInformation) throws IOException {
+                               @RequestParam(value = "description", required = false) String description,
+                               @RequestParam(value = "additionalInformation", required = false) String additionalInformation,
+                               @RequestParam(defaultValue = "false", name = "includeRelatedLinks") boolean includeRelatedLinks) throws IOException {
 
         Project project = projectService.getById(projectId);
         Folder folder = folderService.getById(project, folderId);
@@ -50,12 +65,13 @@ public class ActiveImageController {
     }
 
     @GetMapping
-    public Page<ActiveImageDTO> getAllActiveImages(@PathVariable("projectId") int projectId,
-                                                   @PathVariable("folderId") int folderId,
-                                                   @RequestParam(required = false, defaultValue = "1", value = "pageNumber") int pageNumber,
-                                                   @RequestParam(required = false, defaultValue = "5", value = "pageSize") int pageSize,
-                                                   @RequestParam(required = false, defaultValue = "ASC", value = "sortDirection") Sort.Direction direction,
-                                                   @RequestParam(required = false, defaultValue = "id", value = "sortBy") String sortBy) throws IOException {
+    public Page<ActiveImageDTO> getAll(@PathVariable("projectId") int projectId,
+                                       @PathVariable("folderId") int folderId,
+                                       @RequestParam(required = false, defaultValue = "1", value = "pageNumber") int pageNumber,
+                                       @RequestParam(required = false, defaultValue = "5", value = "pageSize") int pageSize,
+                                       @RequestParam(required = false, defaultValue = "ASC", value = "sortDirection") Sort.Direction direction,
+                                       @RequestParam(required = false, defaultValue = "id", value = "sortBy") String sortBy,
+                                       @RequestParam(defaultValue = "false", name = "includeRelatedLinks") boolean includeRelatedLinks) throws IOException {
 
         Project project = projectService.getById(projectId);
         Folder folder = folderService.getById(project, folderId);

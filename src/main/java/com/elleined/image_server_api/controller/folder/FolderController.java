@@ -26,7 +26,8 @@ public class FolderController {
 
     @PostMapping
     public FolderDTO save(@PathVariable("projectId") int projectId,
-                          @RequestParam("folderName") String name) throws IOException {
+                          @RequestParam("folderName") String name,
+                          @RequestParam(defaultValue = "false", name = "includeRelatedLinks") boolean includeRelatedLinks) throws IOException {
 
         Project project = projectService.getById(projectId);
         Folder folder = folderService.save(project, name);
@@ -40,7 +41,8 @@ public class FolderController {
                                   @RequestParam(required = false, defaultValue = "1", value = "pageNumber") int pageNumber,
                                   @RequestParam(required = false, defaultValue = "5", value = "pageSize") int pageSize,
                                   @RequestParam(required = false, defaultValue = "ASC", value = "sortDirection") Sort.Direction direction,
-                                  @RequestParam(required = false, defaultValue = "id", value = "sortBy") String sortBy) {
+                                  @RequestParam(required = false, defaultValue = "id", value = "sortBy") String sortBy,
+                                  @RequestParam(defaultValue = "false", name = "includeRelatedLinks") boolean includeRelatedLinks) {
 
 
         Project project = projectService.getById(projectId);

@@ -24,7 +24,8 @@ public class FormatController {
     public Page<FormatDTO> getAll(@RequestParam(required = false, defaultValue = "1", value = "pageNumber") int pageNumber,
                                   @RequestParam(required = false, defaultValue = "5", value = "pageSize") int pageSize,
                                   @RequestParam(required = false, defaultValue = "ASC", value = "sortDirection") Sort.Direction direction,
-                                  @RequestParam(required = false, defaultValue = "id", value = "sortBy") String sortBy) {
+                                  @RequestParam(required = false, defaultValue = "id", value = "sortBy") String sortBy,
+                                  @RequestParam(defaultValue = "false", name = "includeRelatedLinks") boolean includeRelatedLinks) {
 
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, direction, sortBy);
         return formatService.getAll(pageable)
