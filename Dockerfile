@@ -1,4 +1,4 @@
-FROM openjdk:17-alpine
+FROM alpine/java:21-jdk
 MAINTAINER Elleined
 
 # Docker MySQL Credentials
