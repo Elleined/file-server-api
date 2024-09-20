@@ -31,7 +31,7 @@ public class FormatServiceImpl implements FormatService {
     @Override
     public Format save(String format) {
         if (isAlreadyExists(format))
-            throw new ResourceAlreadyExistsException(STR."Cannot save format! because \{format} already exists");
+            throw new ResourceAlreadyExistsException("Cannot save format! because " + format + " already exists");
 
         Format imageFormat = formatMapper.toEntity(format);
         imageFormatRepository.save(imageFormat);
@@ -41,7 +41,7 @@ public class FormatServiceImpl implements FormatService {
 
     @Override
     public Format getById(int id) {
-        return imageFormatRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(STR."Image format with id of \{id} does not exists!"));
+        return imageFormatRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Image format with id of " + id + " does not exists!"));
     }
 
     @Override

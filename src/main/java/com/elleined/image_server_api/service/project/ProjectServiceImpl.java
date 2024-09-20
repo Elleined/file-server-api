@@ -30,7 +30,7 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Project getById(int id) {
-        return projectRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(STR."Project with id of \{id} does not exists!"));
+        return projectRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Project with id of " + id + " does not exists!"));
     }
 
     @Override

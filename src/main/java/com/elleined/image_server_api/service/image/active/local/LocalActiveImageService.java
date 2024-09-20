@@ -17,6 +17,6 @@ public interface LocalActiveImageService {
     default String getUniqueFileName(MultipartFile image) {
         String currentDateAndTime = LocalDateTime.now().toString();
         String fileName = image.getOriginalFilename();
-        return STR."\{currentDateAndTime}_\{fileName}";
+        return currentDateAndTime + "_" + fileName;
     }
 }

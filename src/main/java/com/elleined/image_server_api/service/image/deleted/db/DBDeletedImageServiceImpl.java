@@ -36,7 +36,7 @@ public class DBDeletedImageServiceImpl implements DBDeletedImageService {
         if (!projectService.has(project, folder))
             throw new ResourceNotOwnedException("Cannot get image by uuid! because this project doesn't have the specified upload folder");
 
-        DeletedImage deletedImage = deletedImageRepository.findById(uuid).orElseThrow(() -> new ResourceNotFoundException(STR."Deleted image with uuid of \{uuid} does not exists!"));
+        DeletedImage deletedImage = deletedImageRepository.findById(uuid).orElseThrow(() -> new ResourceNotFoundException("Deleted image with uuid of " + uuid + " does not exists!"));
 
         deletedImage.setLastAccessedAt(LocalDateTime.now());
         deletedImageRepository.save(deletedImage);

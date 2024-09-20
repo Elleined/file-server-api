@@ -62,7 +62,7 @@ public class DBActiveImageServiceImpl implements DBActiveImageService {
 
         if (isAboveMaxFileSize(image)) {
             localActiveImageService.saveFailedUpload(project, folder, image); // Save the file anyways HAHAHA. If you don't want this just literally remove this line :)
-            throw new ImageSizeException(STR."Cannot upload image! because image exceeds to file size which is \{MAX_FILE_SIZE}");
+            throw new ImageSizeException("Cannot upload image! because image exceeds to file size which is " + MAX_FILE_SIZE);
         }
 
         if (!formatService.isFileExtensionValid(image)) {
@@ -89,7 +89,7 @@ public class DBActiveImageServiceImpl implements DBActiveImageService {
 
     @Override
     public ActiveImage getByUUID(Project project, Folder folder, UUID uuid) {
-        ActiveImage activeImage = activeImageRepository.findById(uuid).orElseThrow(() -> new ResourceNotFoundException(STR."Image with uuid of \{uuid} does not exists!"));
+        ActiveImage activeImage = activeImageRepository.findById(uuid).orElseThrow(() -> new ResourceNotFoundException("Image with uuid of " + uuid + " does not exists!"));
 
         if (!projectService.has(project, folder))
             throw new ResourceNotOwnedException("Cannot get by uuid! because this project doesn't have the specified upload folder");
