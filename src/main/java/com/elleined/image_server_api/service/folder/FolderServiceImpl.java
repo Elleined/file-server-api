@@ -10,11 +10,13 @@ import com.elleined.image_server_api.repository.FolderRepository;
 import com.elleined.image_server_api.repository.project.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.Path;
 import java.util.List;
 
 @Slf4j
@@ -26,6 +28,9 @@ public class FolderServiceImpl implements FolderService {
 
     private final FolderRepository folderRepository;
     private final FolderMapper folderMapper;
+
+    @Value("${uploadPath}")
+    private String uploadPath;
 
     @Override
     public Folder save(Project project, String name) {
@@ -69,5 +74,10 @@ public class FolderServiceImpl implements FolderService {
         return names.stream()
                 .map(name -> save(project, name))
                 .toList();
+    }
+
+    @Override
+    public Path getUploadPath() {
+        return Path.of(uploadPath);
     }
 }

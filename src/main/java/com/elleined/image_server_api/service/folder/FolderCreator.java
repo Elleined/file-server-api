@@ -8,12 +8,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public interface FolderCreator {
-
+    Path getUploadPath();
     default void createFolder() throws IOException {
-        Path uploadDirectory = this.getUploadDirectory();
-
-        if (!Files.exists(uploadDirectory))
-            Files.createDirectories(uploadDirectory);
+        if (!Files.exists(this.getUploadPath()))
+            Files.createDirectories(this.getUploadPath());
     }
 
     // Create the default directories for a project active, deleted, and failed
@@ -56,32 +54,28 @@ public interface FolderCreator {
             Files.createDirectories(failedUploadsFolderPath);
     }
 
-    private Path getUploadDirectory() {
-        return Path.of("src/main/resources/pictures");
-    }
-
     private Path getProjectDirectory(Project project) {
-        return Path.of(this.getUploadDirectory().toString(), project.getName());
+        return Path.of(this.getUploadPath().toString(), project.getName());
     }
 
     private Path getActiveImagesPath(Project project) {
         return Path.of(this.getProjectDirectory(project).toString(), "active");
     }
 
-    private Path getDeletedImagesPath(Project project) {
-        return Path.of(this.getProjectDirectory(project).toString(), "deleted");
-    }
-
-    private Path getFailedUploadsPath(Project project) {
-        return Path.of(this.getProjectDirectory(project).toString(), "failed");
-    }
-
     default Path getActiveImagesPath(Project project, Folder folder) {
         return Path.of(this.getActiveImagesPath(project).toString(), folder.getName());
     }
 
+    private Path getDeletedImagesPath(Project project) {
+        return Path.of(this.getProjectDirectory(project).toString(), "deleted");
+    }
+
     default Path getDeletedImagesPath(Project project, Folder folder) {
         return Path.of(this.getDeletedImagesPath(project).toString(), folder.getName());
+    }
+
+    private Path getFailedUploadsPath(Project project) {
+        return Path.of(this.getProjectDirectory(project).toString(), "failed");
     }
 
     default Path getFailedUploadsPath(Project project, Folder folder) {
