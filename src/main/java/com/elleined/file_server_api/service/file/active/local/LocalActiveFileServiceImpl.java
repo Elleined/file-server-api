@@ -67,7 +67,7 @@ public class LocalActiveFileServiceImpl implements LocalActiveFileService {
         Path source = folderService.getActiveImagesPath(project, folder);
         Path sourcePath = source.resolve(Objects.requireNonNull(multipartFile.getOriginalFilename()));
         Files.delete(sourcePath);
-        log.debug("Transferring image from to {} success!", destinationPath);
+        log.debug("Transferring image from {} to {} success!", sourcePath, destinationPath);
     }
 
     @Override

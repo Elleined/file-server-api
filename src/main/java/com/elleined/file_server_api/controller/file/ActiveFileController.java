@@ -29,6 +29,19 @@ public class ActiveFileController {
     private final DBActiveFileService DBActiveFileService;
     private final ActiveFileMapper activeFileMapper;
 
+    @GetMapping("/{uuid}")
+    public ActiveFileDTO getByUUID(@PathVariable("projectName") String projectName,
+                                   @PathVariable("folderName") String folderName,
+                                   @PathVariable("uuid") UUID uuid) throws IOException {
+
+        Project project = projectService.getByName(projectName);
+        Folder folder = folderService.getByName(project, folderName);
+        ActiveFile activeFile = DBActiveFileService.getByUUID(project, folder, uuid);
+
+        byte[] bytes = localActiveFileService.getImage(project, folder, activeFile.getFileName());
+        return activeFileMapper.toDTO(activeFile, bytes);
+    }
+
     @PostMapping
     public ActiveFileDTO save(@PathVariable("projectName") String projectName,
                               @PathVariable("folderName") String folderName,
@@ -39,10 +52,10 @@ public class ActiveFileController {
         Project project = projectService.getByName(projectName);
         Folder folder = folderService.getByName(project, folderName);
 
-        ActiveFile activeImage = DBActiveFileService.save(project, folder, description, additionalInformation, file);
+        ActiveFile activeFile = DBActiveFileService.save(project, folder, description, additionalInformation, file);
 
-        byte[] bytes = localActiveFileService.getImage(project, folder, activeImage.getFileName());
-        return activeFileMapper.toDTO(activeImage, bytes);
+        byte[] bytes = localActiveFileService.getImage(project, folder, activeFile.getFileName());
+        return activeFileMapper.toDTO(activeFile, bytes);
     }
 
 
@@ -53,11 +66,11 @@ public class ActiveFileController {
 
         Project project = projectService.getByName(projectName);
         Folder folder = folderService.getByName(project, folderName);
-        ActiveFile activeImage = DBActiveFileService.getByUUID(project, folder, uuid);
-        DBActiveFileService.deleteByUUID(project, folder, activeImage);
+        ActiveFile activeFile = DBActiveFileService.getByUUID(project, folder, uuid);
+        DBActiveFileService.deleteByUUID(project, folder, activeFile);
 
-        String fileName = activeImage.getFileName();
-        MultipartFile activeImageFile = new CustomMultipartFile(fileName, localActiveFileService.getImage(project, folder, fileName));
-        localActiveFileService.transfer(project, folder, activeImageFile);
+        String fileName = activeFile.getFileName();
+        MultipartFile activeFileFile = new CustomMultipartFile(fileName, localActiveFileService.getImage(project, folder, fileName));
+        localActiveFileService.transfer(project, folder, activeFileFile);
     }
 }

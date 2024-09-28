@@ -42,15 +42,14 @@ public class DeletedFileController {
 
         Project project = projectService.getByName(projectName);
         Folder folder = folderService.getByName(project, folderName);
-        DeletedFile deletedImage = DBDeletedFileService.getByUUID(project, folder, uuid);
+        DeletedFile deletedFile = DBDeletedFileService.getByUUID(project, folder, uuid);
 
-        ActiveFile activeImage = DBActiveFileService.restore(project, folder, deletedImage);
+        ActiveFile activeImage = DBActiveFileService.restore(project, folder, deletedFile);
 
-        String fileName = deletedImage.getFileName();
-        MultipartFile deletedImageFile = new CustomMultipartFile(fileName, localDeletedFileService.getImage(project, folder, fileName));
-        localDeletedFileService.transfer(project, folder, deletedImageFile);
-
+        String fileName = deletedFile.getFileName();
+        MultipartFile deletedFileFile = new CustomMultipartFile(fileName, localDeletedFileService.getImage(project, folder, fileName));
         byte[] bytes = localDeletedFileService.getImage(project, folder, activeImage.getFileName());
+        localDeletedFileService.transfer(project, folder, deletedFileFile);
         return activeFileMapper.toDTO(activeImage, bytes);
     }
 }
