@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.elleined</groupId>
-	<artifactId>image-server-api</artifactId>
+	<artifactId>file-server-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>image-server-api</name>
+	<name>file-server-api</name>
 	<description>API for managing your application images</description>
 	<properties>
 		<java.version>21</java.version>
@@ -20,10 +20,6 @@
 		<data-faker-version>2.2.2</data-faker-version>
 	</properties>
 	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-hateoas</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
@@ -35,6 +31,11 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -60,11 +61,6 @@
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
 			<version>${org.mapstruct.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -116,7 +112,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<finalName>image-server-api</finalName>
+		<finalName>file-server-api</finalName>
 	</build>
 
 </project>

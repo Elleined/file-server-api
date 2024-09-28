@@ -10,12 +10,12 @@ pipeline {
     }
 
     stages {
-        stage("Clone Image Server API from Github") {
+        stage("Clone File Server API from Github") {
             steps {
-                echo "Cloning Image Server API from Github. Please Wait..."
+                echo "Cloning File Server API from Github. Please Wait..."
                 git branch: 'main',
-                    url: 'https://github.com/Elleined/image-server-api'
-                echo "Cloning Image Server API from Github. Success!"
+                    url: 'https://github.com/Elleined/file-server-api'
+                echo "Cloning File Server API from Github. Success!"
             }
         }
 
@@ -30,7 +30,7 @@ pipeline {
         stage("Create Docker Image") {
             steps {
                 echo "Creating docker image. Please Wait..."
-                sh 'docker build -t image-server-api:latest .'
+                sh 'docker build -t file-server-api:latest .'
                 echo "Creating docker image. Success!"
             }
         }
@@ -46,8 +46,8 @@ pipeline {
         stage("Push docker image to DockerHub") {
             steps {
                 echo "Pushing docker image to DockerHub. Please Wait..."
-                sh 'docker tag image-server-api:latest elleined/image-server-api:latest'
-                sh 'docker push elleined/image-server-api:latest'
+                sh 'docker tag file-server-api:latest elleined/fsa:latest'
+                sh 'docker push elleined/fsa:latest'
                 echo "Pushing docker image to DockerHub. Success!"
             }
         }
