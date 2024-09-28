@@ -7,49 +7,57 @@ import com.elleined.file_server_api.model.project.Project;
 import com.elleined.file_server_api.service.folder.FolderService;
 import com.elleined.file_server_api.service.project.ProjectService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/projects/{projectId}/folders")
+@RequestMapping("/projects/{projectName}/folders")
 public class FolderController {
     private final ProjectService projectService;
 
     private final FolderService folderService;
     private final FolderMapper folderMapper;
 
-    @PostMapping
-    public FolderDTO save(@PathVariable("projectId") int projectId,
-                          @RequestParam("folderName") String name,
-                          @RequestParam(defaultValue = "false", name = "includeRelatedLinks") boolean includeRelatedLinks) throws IOException {
+    @GetMapping("/{id}")
+    public FolderDTO getById(@PathVariable("projectName") String projectName,
+                             @PathVariable("id") int id) {
 
-        Project project = projectService.getById(projectId);
+        Project project = projectService.getByName(projectName);
+        Folder folder = folderService.getById(project, id);
+
+        return folderMapper.toDTO(folder);
+    }
+
+    @GetMapping("/name/{name}")
+    public FolderDTO getById(@PathVariable("projectName") String projectName,
+                             @PathVariable("name") String name) {
+
+        Project project = projectService.getByName(projectName);
+        Folder folder = folderService.getByName(project, name);
+
+        return folderMapper.toDTO(folder);
+    }
+
+    @PostMapping
+    public FolderDTO save(@PathVariable("projectName") String projectName,
+                          @RequestParam("folderName") String name) throws IOException {
+
+        Project project = projectService.getByName(projectName);
         Folder folder = folderService.save(project, name);
 
         folderService.createFolder(project, folder);
-        return folderMapper.toDTO(folder).addLinks(includeRelatedLinks);
+
+        return folderMapper.toDTO(folder);
     }
 
     @GetMapping
-    public Page<FolderDTO> getAll(@PathVariable("projectId") int projectId,
-                                  @RequestParam(required = false, defaultValue = "1", value = "pageNumber") int pageNumber,
-                                  @RequestParam(required = false, defaultValue = "5", value = "pageSize") int pageSize,
-                                  @RequestParam(required = false, defaultValue = "ASC", value = "sortDirection") Sort.Direction direction,
-                                  @RequestParam(required = false, defaultValue = "id", value = "sortBy") String sortBy,
-                                  @RequestParam(defaultValue = "false", name = "includeRelatedLinks") boolean includeRelatedLinks) {
-
-
-        Project project = projectService.getById(projectId);
-
-        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, direction, sortBy);
-        return folderService.getAll(project, pageable)
+    public List<FolderDTO> getAll(@PathVariable("projectName") String projectName) {
+        Project project = projectService.getByName(projectName);
+        return folderService.getAll(project).stream()
                 .map(folderMapper::toDTO)
-                .map(dto -> dto.addLinks(includeRelatedLinks));
+                .toList();
     }
 }

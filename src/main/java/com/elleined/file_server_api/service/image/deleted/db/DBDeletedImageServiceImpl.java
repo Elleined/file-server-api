@@ -2,8 +2,8 @@ package com.elleined.file_server_api.service.image.deleted.db;
 
 import com.elleined.file_server_api.exception.resource.ResourceNotFoundException;
 import com.elleined.file_server_api.exception.resource.ResourceNotOwnedException;
-import com.elleined.file_server_api.model.folder.Folder;
 import com.elleined.file_server_api.model.file.DeletedFile;
+import com.elleined.file_server_api.model.folder.Folder;
 import com.elleined.file_server_api.model.project.Project;
 import com.elleined.file_server_api.repository.image.DeletedImageRepository;
 import com.elleined.file_server_api.service.image.deleted.local.LocalDeletedImageService;

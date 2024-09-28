@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public interface ActiveImageRepository extends JpaRepository<ActiveFile, UUID> {
 
-    @Query("SELECT ai FROM ActiveImage ai WHERE ai.folder = :folder")
+    @Query("SELECT ai FROM ActiveFile ai WHERE ai.folder = :folder")
     Page<ActiveFile> findAll(@Param("folder") Folder folder, Pageable pageable);
 
 }

@@ -6,7 +6,7 @@ import com.elleined.file_server_api.exception.resource.ResourceNotOwnedException
 import com.elleined.file_server_api.mapper.folder.FolderMapper;
 import com.elleined.file_server_api.model.folder.Folder;
 import com.elleined.file_server_api.model.project.Project;
-import com.elleined.file_server_api.repository.FolderRepository;
+import com.elleined.file_server_api.repository.folder.FolderRepository;
 import com.elleined.file_server_api.repository.project.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,8 +55,18 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
+    public Folder getByName(Project project, String name) {
+        return folderRepository.findByName(project, name);
+    }
+
+    @Override
     public Page<Folder> getAll(Project project, Pageable pageable) {
-        return projectRepository.findAllFolders(project, pageable);
+        return folderRepository.findAll(project, pageable);
+    }
+
+    @Override
+    public List<Folder> getAll(Project project) {
+        return folderRepository.findAll(project);
     }
 
     @Override

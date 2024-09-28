@@ -1,21 +1,17 @@
 package com.elleined.file_server_api.service.image.active.db;
 
-import com.elleined.file_server_api.exception.image.ImageFormatException;
 import com.elleined.file_server_api.exception.image.ImageSizeException;
-import com.elleined.file_server_api.exception.resource.ResourceException;
 import com.elleined.file_server_api.exception.resource.ResourceNotFoundException;
 import com.elleined.file_server_api.exception.resource.ResourceNotOwnedException;
 import com.elleined.file_server_api.mapper.image.ActiveImageMapper;
 import com.elleined.file_server_api.mapper.image.DeletedImageMapper;
 import com.elleined.file_server_api.model.file.ActiveFile;
-import com.elleined.file_server_api.model.folder.Folder;
-import com.elleined.file_server_api.model.format.Format;
 import com.elleined.file_server_api.model.file.DeletedFile;
+import com.elleined.file_server_api.model.folder.Folder;
 import com.elleined.file_server_api.model.project.Project;
 import com.elleined.file_server_api.repository.image.ActiveImageRepository;
 import com.elleined.file_server_api.repository.image.DeletedImageRepository;
 import com.elleined.file_server_api.service.folder.FolderService;
-import com.elleined.file_server_api.service.format.FormatService;
 import com.elleined.file_server_api.service.image.active.local.LocalActiveImageService;
 import com.elleined.file_server_api.service.project.ProjectService;
 import lombok.RequiredArgsConstructor;
@@ -46,8 +42,6 @@ public class DBActiveImageServiceImpl implements DBActiveImageService {
 
     private final FolderService folderService;
 
-    private final FormatService formatService;
-
     @Override
     public ActiveFile save(Project project,
                            Folder folder,
@@ -65,23 +59,10 @@ public class DBActiveImageServiceImpl implements DBActiveImageService {
             throw new ImageSizeException("Cannot upload image! because image exceeds to file size which is " + MAX_FILE_SIZE);
         }
 
-        if (!formatService.isFileExtensionValid(image)) {
-            localActiveImageService.saveFailedUpload(project, folder, image); // Save the file anyways HAHAHA. If you don't want this just literally remove this line :)
-            throw new ImageFormatException("Cannot upload image! because extension name is not valid. Please refer to valid extension names!");
-        }
-
         double fileSizeInMB = this.getSizeInMB(image);
-        if (projectService.isStorageMax(project, fileSizeInMB)) {
-            localActiveImageService.saveFailedUpload(project, folder, image); // Save the file anyways HAHAHA. If you don't want this just literally remove this line :)
-            throw new ResourceException("Cannot upload image because you already reached the max storage size for your project which is " + ProjectService.MAX_STORAGE_SIZE_IN_MB);
-        }
-
-        Format format = formatService.getByMultipart(image)
-                .orElseThrow(() -> new ResourceNotFoundException("Cannot upload image! format is not valid!"));
-
         String fileName = localActiveImageService.save(project, folder, image);
 
-        ActiveFile activeImage = activeImageMapper.toEntity(description, additionalInformation, format, fileName, folder, fileSizeInMB);
+        ActiveFile activeImage = activeImageMapper.toEntity(description, additionalInformation, fileName, folder, fileSizeInMB);
         activeImageRepository.save(activeImage);
         log.debug("Uploading image success!");
         return activeImage;

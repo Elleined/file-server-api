@@ -40,19 +40,19 @@ public class LocalDeletedImageServiceImpl implements LocalDeletedImageService {
     }
 
     @Override
-    public void transfer(Project project, Folder folder, MultipartFile multipartFile) throws IOException {
-        if (multipartFile == null || multipartFile.isEmpty())
+    public void transfer(Project project, Folder folder, MultipartFile file) throws IOException {
+        if (file == null || file.isEmpty())
             return;
 
         if (!projectService.has(project, folder))
             throw new ResourceNotOwnedException("Cannot transfer image from storage! because this project doesn't have the specified upload folder");
 
         Path destination = folderService.getActiveImagesPath(project, folder);
-        Path destinationPath = destination.resolve(Objects.requireNonNull(multipartFile.getOriginalFilename()));
-        multipartFile.transferTo(destinationPath);
+        Path destinationPath = destination.resolve(Objects.requireNonNull(file.getOriginalFilename()));
+        file.transferTo(destinationPath);
 
         Path source = folderService.getDeletedImagesPath(project, folder);
-        Path sourcePath = source.resolve(Objects.requireNonNull(multipartFile.getOriginalFilename()));
+        Path sourcePath = source.resolve(Objects.requireNonNull(file.getOriginalFilename()));
         Files.delete(sourcePath);
         log.debug("Transferring image to {} success!", destinationPath);
     }

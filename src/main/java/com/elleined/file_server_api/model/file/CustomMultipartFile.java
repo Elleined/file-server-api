@@ -2,7 +2,10 @@ package com.elleined.file_server_api.model.file;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class CustomMultipartFile implements MultipartFile {
 
@@ -50,7 +53,7 @@ public class CustomMultipartFile implements MultipartFile {
     }
 
     @Override
-    public void transferTo(File destination) throws IOException {
+    public void transferTo(java.io.File destination) throws IOException {
         try(FileOutputStream fos = new FileOutputStream(destination)) {
             fos.write(bytes);
         }

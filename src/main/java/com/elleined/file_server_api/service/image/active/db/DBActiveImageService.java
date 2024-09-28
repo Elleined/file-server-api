@@ -1,8 +1,8 @@
 package com.elleined.file_server_api.service.image.active.db;
 
-import com.elleined.file_server_api.model.folder.Folder;
 import com.elleined.file_server_api.model.file.ActiveFile;
 import com.elleined.file_server_api.model.file.DeletedFile;
+import com.elleined.file_server_api.model.folder.Folder;
 import com.elleined.file_server_api.model.project.Project;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +18,7 @@ public interface DBActiveImageService {
                     Folder folder,
                     String description,
                     String additionalInformation,
-                    MultipartFile image) throws IOException;
+                    MultipartFile file) throws IOException;
 
     ActiveFile getByUUID(Project project, Folder folder, UUID uuid);
 
@@ -28,13 +28,13 @@ public interface DBActiveImageService {
 
     ActiveFile restore(Project project, Folder folder, DeletedFile deletedImage);
 
-    default boolean isAboveMaxFileSize(MultipartFile image) {
-        return image.getSize() > MAX_FILE_SIZE;
+    default boolean isAboveMaxFileSize(MultipartFile file) {
+        return file.getSize() > MAX_FILE_SIZE;
     }
 
-    default double getSizeInMB(MultipartFile image) {
+    default double getSizeInMB(MultipartFile file) {
         final double magicMultiplierToConvertBytesIntoMB = 0.00000095367432;
-        double fileSizeInMB = image.getSize() * magicMultiplierToConvertBytesIntoMB;
+        double fileSizeInMB = file.getSize() * magicMultiplierToConvertBytesIntoMB;
         return Math.round(fileSizeInMB * 10000.0) / 10000.0;
     }
 }
