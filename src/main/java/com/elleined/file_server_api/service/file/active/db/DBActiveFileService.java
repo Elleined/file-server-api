@@ -1,4 +1,4 @@
-package com.elleined.file_server_api.service.image.active.db;
+package com.elleined.file_server_api.service.file.active.db;
 
 import com.elleined.file_server_api.model.file.ActiveFile;
 import com.elleined.file_server_api.model.file.DeletedFile;
@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.UUID;
 
-public interface DBActiveImageService {
+public interface DBActiveFileService {
     int MAX_FILE_SIZE = 1024 * 1024 * 3; // 3MB
 
     ActiveFile save(Project project,

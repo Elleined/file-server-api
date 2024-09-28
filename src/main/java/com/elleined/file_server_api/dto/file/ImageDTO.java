@@ -1,4 +1,4 @@
-package com.elleined.file_server_api.dto.image;
+package com.elleined.file_server_api.dto.file;
 
 import com.elleined.file_server_api.dto.UUIDDTO;
 import com.elleined.file_server_api.dto.folder.FolderDTO;

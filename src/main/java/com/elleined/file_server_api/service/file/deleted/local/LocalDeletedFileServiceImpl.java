@@ -1,4 +1,4 @@
-package com.elleined.file_server_api.service.image.deleted.local;
+package com.elleined.file_server_api.service.file.deleted.local;
 
 import com.elleined.file_server_api.exception.resource.ResourceNotOwnedException;
 import com.elleined.file_server_api.model.PrimaryKeyUUID;
@@ -23,7 +23,7 @@ import java.util.Objects;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class LocalDeletedImageServiceImpl implements LocalDeletedImageService {
+public class LocalDeletedFileServiceImpl implements LocalDeletedFileService {
     private final ProjectService projectService;
     private final FolderService folderService;
 

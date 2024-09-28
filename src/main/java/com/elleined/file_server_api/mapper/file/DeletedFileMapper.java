@@ -1,6 +1,6 @@
-package com.elleined.file_server_api.mapper.image;
+package com.elleined.file_server_api.mapper.file;
 
-import com.elleined.file_server_api.dto.image.DeletedImageDTO;
+import com.elleined.file_server_api.dto.file.DeletedFileDTO;
 import com.elleined.file_server_api.mapper.CustomMapper;
 import com.elleined.file_server_api.mapper.folder.FolderMapper;
 import com.elleined.file_server_api.model.file.ActiveFile;
@@ -15,7 +15,7 @@ import org.mapstruct.Mappings;
                 FolderMapper.class,
         }
 )
-public interface DeletedImageMapper extends CustomMapper<DeletedFile, DeletedImageDTO> {
+public interface DeletedFileMapper extends CustomMapper<DeletedFile, DeletedFileDTO> {
 
     @Override
     @Mappings({
@@ -28,7 +28,7 @@ public interface DeletedImageMapper extends CustomMapper<DeletedFile, DeletedIma
             @Mapping(target = "fileSizeInMB", source = "fileSizeInMB"),
             @Mapping(target = "folderDTO", source = "folder")
     })
-    DeletedImageDTO toDTO(DeletedFile deletedImage);
+    DeletedFileDTO toDTO(DeletedFile deletedImage);
 
     @Mappings({
             @Mapping(target = "id", source = "id"),

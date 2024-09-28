@@ -1,6 +1,6 @@
-package com.elleined.file_server_api.mapper.image;
+package com.elleined.file_server_api.mapper.file;
 
-import com.elleined.file_server_api.dto.image.ActiveImageDTO;
+import com.elleined.file_server_api.dto.file.ActiveFileDTO;
 import com.elleined.file_server_api.mapper.folder.FolderMapper;
 import com.elleined.file_server_api.model.file.ActiveFile;
 import com.elleined.file_server_api.model.file.DeletedFile;
@@ -16,7 +16,7 @@ import org.mapstruct.Mappings;
                 FolderMapper.class
         }
 )
-public interface ActiveImageMapper {
+public interface ActiveFileMapper {
 
     @Mappings({
             @Mapping(target = "id", source = "id"),
@@ -29,8 +29,8 @@ public interface ActiveImageMapper {
             @Mapping(target = "fileSizeInMB", source = "fileSizeInMB"),
             @Mapping(target = "bytes", expression = "java(bytes)")
     })
-    ActiveImageDTO toDTO(ActiveFile activeImage,
-                         @Context byte[] bytes);
+    ActiveFileDTO toDTO(ActiveFile activeImage,
+                        @Context byte[] bytes);
 
     @Mappings({
             @Mapping(target = "id", expression = "java(java.util.UUID.randomUUID())"),

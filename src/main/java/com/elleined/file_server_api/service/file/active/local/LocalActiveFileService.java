@@ -1,4 +1,4 @@
-package com.elleined.file_server_api.service.image.active.local;
+package com.elleined.file_server_api.service.file.active.local;
 
 import com.elleined.file_server_api.model.folder.Folder;
 import com.elleined.file_server_api.model.project.Project;
@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
-public interface LocalActiveImageService {
+public interface LocalActiveFileService {
 
     String save(Project project, Folder folder, MultipartFile file) throws IOException;
     byte[] getImage(Project project, Folder folder, String fileName) throws IOException;

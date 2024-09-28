@@ -1,4 +1,4 @@
-package com.elleined.file_server_api.service.image.active.local;
+package com.elleined.file_server_api.service.file.active.local;
 
 import com.elleined.file_server_api.exception.resource.ResourceNotOwnedException;
 import com.elleined.file_server_api.model.folder.Folder;
@@ -21,7 +21,7 @@ import java.util.Objects;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class LocalActiveImageServiceImpl implements LocalActiveImageService {
+public class LocalActiveFileServiceImpl implements LocalActiveFileService {
     private final ProjectService projectService;
     private final FolderService folderService;
 

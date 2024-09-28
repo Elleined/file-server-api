@@ -30,10 +30,4 @@ public class ProjectController {
         folderService.createFolder(project);
         return projectMapper.toDTO(project);
     }
-
-    @GetMapping("/{name}")
-    public ProjectDTO getByName(@PathVariable("name") String name) {
-        Project project = projectService.getByName(name);
-        return projectMapper.toDTO(project);
-    }
 }

@@ -1,12 +1,12 @@
-package com.elleined.file_server_api.service.image.deleted.db;
+package com.elleined.file_server_api.service.file.deleted.db;
 
 import com.elleined.file_server_api.exception.resource.ResourceNotFoundException;
 import com.elleined.file_server_api.exception.resource.ResourceNotOwnedException;
 import com.elleined.file_server_api.model.file.DeletedFile;
 import com.elleined.file_server_api.model.folder.Folder;
 import com.elleined.file_server_api.model.project.Project;
-import com.elleined.file_server_api.repository.image.DeletedImageRepository;
-import com.elleined.file_server_api.service.image.deleted.local.LocalDeletedImageService;
+import com.elleined.file_server_api.repository.file.DeletedFileRepository;
+import com.elleined.file_server_api.service.file.deleted.local.LocalDeletedFileService;
 import com.elleined.file_server_api.service.project.ProjectService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,22 +24,22 @@ import java.util.UUID;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class DBDeletedImageServiceImpl implements DBDeletedImageService {
-    private final DeletedImageRepository deletedImageRepository;
+public class DBDeletedFileServiceImpl implements DBDeletedFileService {
+    private final DeletedFileRepository deletedFileRepository;
 
     private final ProjectService projectService;
 
-    private final LocalDeletedImageService localDeletedImageService;
+    private final LocalDeletedFileService localDeletedFileService;
 
     @Override
     public DeletedFile getByUUID(Project project, Folder folder, UUID uuid) {
         if (!projectService.has(project, folder))
             throw new ResourceNotOwnedException("Cannot get image by uuid! because this project doesn't have the specified upload folder");
 
-        DeletedFile deletedImage = deletedImageRepository.findById(uuid).orElseThrow(() -> new ResourceNotFoundException("Deleted image with uuid of " + uuid + " does not exists!"));
+        DeletedFile deletedImage = deletedFileRepository.findById(uuid).orElseThrow(() -> new ResourceNotFoundException("Deleted image with uuid of " + uuid + " does not exists!"));
 
         deletedImage.setLastAccessedAt(LocalDateTime.now());
-        deletedImageRepository.save(deletedImage);
+        deletedFileRepository.save(deletedImage);
 
         return deletedImage;
     }
@@ -49,19 +49,19 @@ public class DBDeletedImageServiceImpl implements DBDeletedImageService {
         if (!projectService.has(project, folder))
             throw new ResourceNotOwnedException("Cannot get all deleted images! because this project doesn't have this folder!");
 
-        return deletedImageRepository.findAll(folder, pageable);
+        return deletedFileRepository.findAll(folder, pageable);
     }
 
     @Override
     public void permanentlyDeleteDeletedImages() throws IOException {
         LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
 
-        List<DeletedFile> deletedImages = deletedImageRepository.findAll().stream()
+        List<DeletedFile> deletedImages = deletedFileRepository.findAll().stream()
                 .filter(deletedImage -> deletedImage.getLastAccessedAt().isBefore(oneMonthAgo) ||
                         deletedImage.getLastAccessedAt().equals(oneMonthAgo))
                 .toList();
 
-        localDeletedImageService.permanentlyDeleteDeletedImages(deletedImages);
-        deletedImageRepository.deleteAll(deletedImages);
+        localDeletedFileService.permanentlyDeleteDeletedImages(deletedImages);
+        deletedFileRepository.deleteAll(deletedImages);
     }
 }

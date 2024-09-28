@@ -21,26 +21,6 @@ public class FolderController {
     private final FolderService folderService;
     private final FolderMapper folderMapper;
 
-    @GetMapping("/{id}")
-    public FolderDTO getById(@PathVariable("projectName") String projectName,
-                             @PathVariable("id") int id) {
-
-        Project project = projectService.getByName(projectName);
-        Folder folder = folderService.getById(project, id);
-
-        return folderMapper.toDTO(folder);
-    }
-
-    @GetMapping("/name/{name}")
-    public FolderDTO getById(@PathVariable("projectName") String projectName,
-                             @PathVariable("name") String name) {
-
-        Project project = projectService.getByName(projectName);
-        Folder folder = folderService.getByName(project, name);
-
-        return folderMapper.toDTO(folder);
-    }
-
     @PostMapping
     public FolderDTO save(@PathVariable("projectName") String projectName,
                           @RequestParam("folderName") String name) throws IOException {
