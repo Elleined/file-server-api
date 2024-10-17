@@ -9,4 +9,4 @@ RUN mkdir -p /uploads
 RUN chmod -R 777 /uploads
 WORKDIR /app
 COPY --from=build /app/target/*.jar .
-CMD ["java", "-jar", "email-sender-api.jar"]
+CMD ["java", "-jar", "file-server-api.jar"]
