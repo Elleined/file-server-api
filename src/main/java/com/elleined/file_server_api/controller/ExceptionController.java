@@ -1,16 +1,15 @@
 package com.elleined.file_server_api.controller;
 
 import com.elleined.file_server_api.dto.APIResponse;
-import com.elleined.file_server_api.exception.field.FieldException;
-import com.elleined.file_server_api.exception.image.ImageException;
+import com.elleined.file_server_api.exception.SystemException;
 import com.elleined.file_server_api.exception.resource.ResourceException;
-import jakarta.transaction.SystemException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.util.List;
 
@@ -23,9 +22,13 @@ public class ExceptionController {
         return new ResponseEntity<>(responseMessage, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<APIResponse> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException ex) {
+        var responseMessage = new APIResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+        return new ResponseEntity<>(responseMessage, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler({
-            FieldException.class,
-            ImageException.class,
             SystemException.class,
     })
     public ResponseEntity<APIResponse> handleSystemException(RuntimeException ex) {

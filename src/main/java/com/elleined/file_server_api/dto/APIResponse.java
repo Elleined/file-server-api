@@ -1,6 +1,5 @@
 package com.elleined.file_server_api.dto;
 
-
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 

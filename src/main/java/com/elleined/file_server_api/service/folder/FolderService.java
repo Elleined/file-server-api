@@ -1,31 +1,73 @@
 package com.elleined.file_server_api.service.folder;
 
-import com.elleined.file_server_api.exception.resource.ResourceNotFoundException;
-import com.elleined.file_server_api.model.file.ActiveFile;
-import com.elleined.file_server_api.model.file.DeletedFile;
-import com.elleined.file_server_api.model.folder.Folder;
-import com.elleined.file_server_api.model.project.Project;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-import java.util.List;
+public interface FolderService {
+    Path getUploadPath();
 
-public interface FolderService extends FolderCreator {
-    Folder save(Project project, String name);
-    List<Folder> saveAll(Project project, List<String> names);
+    // Create the default directories for a project active, deleted, and failed results to /projectName/active, /projectName/deleted, and /projectName/failed
+    default void createProjectDirectory(String project) throws IOException {
+        Path projectDirectory = this.getProjectDirectory(project);
+        Path activeImagesPath = this.getActiveImagesPath(project);
+        Path deletedImagesPath = this.getDeletedImagesPath(project);
+        Path failedUploadsPath = this.getFailedUploadsPath(project);
 
-    Folder getById(Project project, int id) throws ResourceNotFoundException;
-    Folder getByName(Project project, String name);
-    Page<Folder> getAll(Project project, Pageable pageable);
-    List<Folder> getAll(Project project);
+        if (!Files.exists(projectDirectory))
+            Files.createDirectories(projectDirectory);
 
-    boolean isNameAlreadyExists(String name);
+        if (!Files.exists(activeImagesPath))
+            Files.createDirectories(activeImagesPath);
 
-    default boolean has(Folder folder, ActiveFile activeImage) {
-        return folder.getActiveImages().contains(activeImage);
+        if (!Files.exists(deletedImagesPath))
+            Files.createDirectories(deletedImagesPath);
+
+        if (!Files.exists(failedUploadsPath))
+            Files.createDirectories(failedUploadsPath);
     }
 
-    default boolean has(Folder folder, DeletedFile deletedImage) {
-        return folder.getDeletedImages().contains(deletedImage);
+    // Create the folder inside the active, deleted, and failed will result to /active/folderName, /deleted/folderName, and /failed/folderName
+    default void createProjectFolderDirectory(String projectName, String folderName) throws IOException {
+        Path activeImagesFolderPath = this.getActiveImagesPath(projectName, folderName);
+        Path deletedImagesFolderPath = this.getDeletedImagesPath(projectName, folderName);
+        Path failedUploadsFolderPath = this.getFailedUploadsPath(projectName, folderName);
+
+        if (!Files.exists(activeImagesFolderPath))
+            Files.createDirectories(activeImagesFolderPath);
+
+        if (!Files.exists(deletedImagesFolderPath))
+            Files.createDirectories(deletedImagesFolderPath);
+
+        if (!Files.exists(failedUploadsFolderPath))
+            Files.createDirectories(failedUploadsFolderPath);
+    }
+
+    private Path getProjectDirectory(String projectName) {
+        return Path.of(this.getUploadPath().toString()).resolve(projectName);
+    }
+
+    private Path getActiveImagesPath(String projectName) {
+        return this.getProjectDirectory(projectName).resolve("active");
+    }
+
+    default Path getActiveImagesPath(String projectName, String folderName) {
+        return this.getActiveImagesPath(projectName).resolve(folderName);
+    }
+
+    private Path getDeletedImagesPath(String projectName) {
+        return this.getProjectDirectory(projectName).resolve("deleted");
+    }
+
+    default Path getDeletedImagesPath(String projectName, String folderName) {
+        return this.getDeletedImagesPath(projectName).resolve(folderName);
+    }
+
+    private Path getFailedUploadsPath(String projectName) {
+        return this.getProjectDirectory(projectName).resolve("failed");
+    }
+
+    default Path getFailedUploadsPath(String projectName, String folderName) {
+        return this.getFailedUploadsPath(projectName).resolve(folderName);
     }
 }
