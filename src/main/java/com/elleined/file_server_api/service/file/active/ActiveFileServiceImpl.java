@@ -3,6 +3,7 @@ package com.elleined.file_server_api.service.file.active;
 import com.elleined.file_server_api.service.folder.FolderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +20,9 @@ import java.util.Objects;
 public class ActiveFileServiceImpl implements ActiveFileService {
     private final FolderService folderService;
 
+    @Value("${UPLOAD_PATH}")
+    private String uploadPath;
+
     @Override
     public String save(String projectName, String folderName, MultipartFile image) throws IOException {
         String uniqueFileName = this.getUniqueFileName(image);
@@ -32,7 +36,12 @@ public class ActiveFileServiceImpl implements ActiveFileService {
 
     @Override
     public File getByName(String projectName, String folderName, String fileName) {
-        return null;
+        return Path.of(uploadPath)
+                .resolve(projectName)
+                .resolve("active")
+                .resolve(folderName)
+                .resolve(fileName)
+                .toFile();
     }
 
     @Override
@@ -45,14 +54,5 @@ public class ActiveFileServiceImpl implements ActiveFileService {
 
         Files.move(sourcePath, destinationPath);
         log.debug("Transferring image from {} to {} success!", sourcePath, destinationPath);
-    }
-
-    @Override
-    public void saveFailedUpload(String projectName, String folderName, MultipartFile image) throws IOException {
-        String uniqueFileName = this.getUniqueFileName(image);
-        Path filePath = folderService.getFailedUploadsPath(projectName, folderName).resolve(uniqueFileName);
-
-        Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-        log.debug("Saving image to storage success!");
     }
 }
