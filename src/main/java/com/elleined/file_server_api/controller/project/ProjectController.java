@@ -25,7 +25,9 @@ public class ProjectController {
                        @RequestParam("folderNames") List<String> folderNames) throws IOException {
 
         folderService.createProjectDirectory(name);
-        folderNames.forEach(folderName -> {
+        folderNames.stream()
+                .map(String::strip)
+                .forEach(folderName -> {
             try {
                 folderService.createProjectFolderDirectory(name, folderName);
             } catch (IOException e) {
