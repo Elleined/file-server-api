@@ -3,9 +3,11 @@ package com.elleined.file_server_api.service.file.active;
 import com.elleined.file_server_api.service.folder.FolderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,6 +19,9 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ActiveFileServiceImpl implements ActiveFileService {
     private final FolderService folderService;
+
+    @Value("${UPLOAD_PATH}")
+    private String uploadPath;
 
     @Override
     public String save(String projectName, String folderName, MultipartFile image) throws IOException {

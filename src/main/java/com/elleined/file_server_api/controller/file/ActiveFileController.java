@@ -3,7 +3,7 @@ package com.elleined.file_server_api.controller.file;
 import com.elleined.file_server_api.exception.resource.ResourceNotFoundException;
 import com.elleined.file_server_api.service.file.active.ActiveFileService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import org.apache.tika.Tika;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,6 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Path;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,20 +21,14 @@ import java.nio.file.Path;
 public class ActiveFileController {
     private final ActiveFileService activeFileService;
 
-    @Value("${UPLOAD_PATH}")
-    private String uploadPath;
+    private final Tika tika;
 
     @GetMapping("/{fileName:.+}")
     ResponseEntity<StreamingResponseBody> getByName(@PathVariable("projectName") String projectName,
                                                     @PathVariable("folderName") String folderName,
-                                                    @PathVariable("fileName") String fileName) {
+                                                    @PathVariable("fileName") String fileName) throws IOException {
 
-        File file = Path.of(uploadPath)
-                .resolve(projectName)
-                .resolve("active")
-                .resolve(folderName)
-                .resolve(fileName)
-                .toFile();
+        File file = activeFileService.getByName(projectName, folderName, fileName);
 
         if (!file.exists())
             throw new ResourceNotFoundException("File not exists");
@@ -48,15 +41,20 @@ public class ActiveFileController {
                     outputStream.write(buffer, 0, bytesRead);
                     outputStream.flush(); // Flush the output stream
                 }
-            } catch (IOException ignored) {
-                System.out.println("Streaming file failed! ");
+            } catch (IOException ex) {
+                System.out.println("Streaming the file failed! " + ex.getMessage());
             }
         };
 
+        String contentType = tika.detect(file);
+        String contentDisposition = contentType.startsWith("image/")
+                ? "inline"
+                : "attachment";
+
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition + "; filename=\"" + fileName + "\"")
                 .contentLength(file.length())
-                .contentType(MediaType.valueOf(ActiveFileService.getContentType(fileName)))
+                .contentType(MediaType.valueOf(contentType))
                 .body(responseBody);
     }
 

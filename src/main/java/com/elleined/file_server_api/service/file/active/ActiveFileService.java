@@ -12,15 +12,4 @@ public interface ActiveFileService {
     default String getUniqueFileName(MultipartFile file) {
         return UUID.randomUUID() + "_" + file.getOriginalFilename();
     }
-
-    static String getContentType(String filename) {
-        return switch (filename.substring(filename.lastIndexOf('.') + 1).toLowerCase()) {
-            case "png" -> "image/png";
-            case "jpg", "jpeg" -> "image/jpeg";
-            case "gif" -> "image/gif";
-            case "pdf" -> "application/pdf";
-            case "txt" -> "text/plain";
-            default -> "application/octet-stream";
-        };
-    }
 }
