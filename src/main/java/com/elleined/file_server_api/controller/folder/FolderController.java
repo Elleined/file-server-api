@@ -16,7 +16,7 @@ public class FolderController {
     public String save(@PathVariable("projectName") String projectName,
                        @RequestParam("folderName") String name) throws IOException {
 
-        folderService.createProjectFolderDirectory(projectName, name);
+        folderService.createProjectFolderDirectory(projectName, name.strip());
         return name;
     }
 }
