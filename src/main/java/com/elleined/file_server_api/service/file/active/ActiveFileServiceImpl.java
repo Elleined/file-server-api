@@ -45,4 +45,14 @@ public class ActiveFileServiceImpl implements ActiveFileService {
         Files.move(sourcePath, destinationPath);
         log.debug("Transferring file {} from {} to {} success!", fileName, sourcePath, destinationPath);
     }
+
+    @Override
+    public File getByName(String projectName, String folderName, String fileName) {
+        return Path.of(uploadPath)
+                .resolve(projectName)
+                .resolve("active")
+                .resolve(folderName)
+                .resolve(fileName)
+                .toFile();
+    }
 }

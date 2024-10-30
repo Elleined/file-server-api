@@ -2,6 +2,7 @@ package com.elleined.file_server_api.service.file.active;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -12,4 +13,6 @@ public interface ActiveFileService {
     default String getUniqueFileName(MultipartFile file) {
         return UUID.randomUUID() + "_" + file.getOriginalFilename();
     }
+
+    File getByName(String projectName, String folderName, String fileName);
 }
