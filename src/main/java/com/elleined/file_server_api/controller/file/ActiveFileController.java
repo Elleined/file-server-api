@@ -2,7 +2,6 @@ package com.elleined.file_server_api.controller.file;
 
 import com.elleined.file_server_api.exception.resource.ResourceNotFoundException;
 import com.elleined.file_server_api.service.file.active.ActiveFileService;
-import com.elleined.file_server_api.service.folder.FolderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -38,7 +37,6 @@ public class ActiveFileController {
                 .resolve(fileName)
                 .toFile();
 
-        // Check if the file exists
         if (!file.exists())
             throw new ResourceNotFoundException("File not exists");
 
@@ -69,7 +67,6 @@ public class ActiveFileController {
 
         return activeFileService.save(projectName, folderName, file);
     }
-
 
     @DeleteMapping("/{fileName:.+}")
     public void deleteByName(@PathVariable("projectName") String projectName,

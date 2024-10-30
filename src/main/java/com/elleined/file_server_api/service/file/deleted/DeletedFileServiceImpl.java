@@ -28,6 +28,6 @@ public class DeletedFileServiceImpl implements DeletedFileService {
         Path sourcePath = source.resolve(Objects.requireNonNull(fileName));
 
         Files.move(sourcePath, destinationPath);
-        log.debug("Transferring image from {} to {} success!", sourcePath, destinationPath);
+        log.debug("Transferring file {} from {} to {} success!", fileName, sourcePath, destinationPath);
     }
 }
