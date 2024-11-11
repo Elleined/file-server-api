@@ -24,14 +24,13 @@ public class ActiveFileServiceImpl implements ActiveFileService {
     private String uploadPath;
 
     @Override
-    public String save(String projectName, String folderName, MultipartFile image) throws IOException {
-        String uniqueFileName = this.getUniqueFileName(image);
-        Path filePath = folderService.getActiveImagesPath(projectName, folderName).resolve(uniqueFileName);
+    public String save(String projectName, String folderName, MultipartFile file, String fileName) throws IOException {
+        Path filePath = folderService.getActiveImagesPath(projectName, folderName).resolve(fileName);
 
-        Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-        log.debug("Saving file named {} to {} storage success!", uniqueFileName, filePath);
+        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        log.debug("Saving file named {} to {} storage success!", fileName, filePath);
 
-        return uniqueFileName;
+        return fileName;
     }
 
     @Override

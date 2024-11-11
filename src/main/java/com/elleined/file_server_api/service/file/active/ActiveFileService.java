@@ -7,12 +7,9 @@ import java.io.IOException;
 import java.util.UUID;
 
 public interface ActiveFileService {
-    String save(String projectName, String folderName, MultipartFile file) throws IOException;
     void delete(String projectName, String folderName, String fileName) throws IOException;
 
-    default String getUniqueFileName(MultipartFile file) {
-        return UUID.randomUUID() + "_" + file.getOriginalFilename();
-    }
-
     File getByName(String projectName, String folderName, String fileName);
+
+    String save(String projectName, String folderName, MultipartFile file, String fileName) throws IOException;
 }

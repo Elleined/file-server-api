@@ -61,9 +61,10 @@ public class ActiveFileController {
     @PostMapping
     public String save(@PathVariable("projectName") String projectName,
                        @PathVariable("folderName") String folderName,
-                       @RequestPart("file") MultipartFile file) throws IOException {
+                       @RequestPart("file") MultipartFile file,
+                       @RequestParam("fileName") String fileName) throws IOException {
 
-        return activeFileService.save(projectName, folderName, file);
+        return activeFileService.save(projectName, folderName, file, fileName);
     }
 
     @DeleteMapping("/{fileName:.+}")
