@@ -74,4 +74,14 @@ public class ActiveFileController {
 
         activeFileService.delete(projectName, folderName, fileName);
     }
+
+    @PutMapping("/{fileName:.+}")
+    public String update(@PathVariable("projectName") String projectName,
+                         @PathVariable("folderName") String folderName,
+                         @PathVariable("oldFileName") String oldFileName,
+                         @RequestPart("file") MultipartFile file,
+                         @RequestParam("fileName") String fileName) throws IOException {
+
+        return activeFileService.update(projectName, folderName, oldFileName, file, fileName);
+    }
 }
