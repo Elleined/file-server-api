@@ -21,13 +21,9 @@ public class DeletedFileServiceImpl implements DeletedFileService {
         if (fileName == null || fileName.isEmpty())
             return;
 
-        Path destination = folderService.getActiveImagesPath(projectName, folderName);
-        Path destinationPath = destination.resolve(Objects.requireNonNull(fileName));
+        Path destination = folderService.getActiveImagesPath(projectName, folderName).resolve(fileName);
+        Path source = folderService.getDeletedImagesPath(projectName, folderName).resolve(fileName);
 
-        Path source = folderService.getDeletedImagesPath(projectName, folderName);
-        Path sourcePath = source.resolve(Objects.requireNonNull(fileName));
-
-        Files.move(sourcePath, destinationPath);
-        log.debug("Transferring file {} from {} to {} success!", fileName, sourcePath, destinationPath);
-    }
+        Files.move(source, destination);
+        log.debug("Transferring file {} from {} to {} success!", fileName, source, destination);    }
 }

@@ -34,15 +34,19 @@ public class ActiveFileServiceImpl implements ActiveFileService {
     }
 
     @Override
+    public String update(String projectName, String folderName, String oldFileName, MultipartFile file, String fileName) throws IOException {
+        this.save(projectName, folderName, file, fileName);
+        this.delete(projectName, folderName, oldFileName);
+        return fileName;
+    }
+
+    @Override
     public void delete(String projectName, String folderName, String fileName) throws IOException {
-        Path destination = folderService.getDeletedImagesPath(projectName, folderName);
-        Path destinationPath = destination.resolve(Objects.requireNonNull(fileName));
+        Path destination = folderService.getDeletedImagesPath(projectName, folderName).resolve(fileName);
+        Path source = folderService.getActiveImagesPath(projectName, folderName).resolve(fileName);
 
-        Path source = folderService.getActiveImagesPath(projectName, folderName);
-        Path sourcePath = source.resolve(Objects.requireNonNull(fileName));
-
-        Files.move(sourcePath, destinationPath);
-        log.debug("Transferring file {} from {} to {} success!", fileName, sourcePath, destinationPath);
+        Files.move(source, destination);
+        log.debug("Transferring file {} from {} to {} success!", fileName, source, destination);
     }
 
     @Override
