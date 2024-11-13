@@ -11,5 +11,5 @@ public interface ActiveFileService {
     File getByName(String projectName, String folderName, String fileName);
 
     String save(String projectName, String folderName, MultipartFile file, String fileName) throws IOException;
-    String update(String projectName, String folderName, String oldFileName, MultipartFile file, String fileName) throws IOException;
+    void update(String projectName, String folderName, String oldFileName, MultipartFile file, String fileName) throws IOException;
 }

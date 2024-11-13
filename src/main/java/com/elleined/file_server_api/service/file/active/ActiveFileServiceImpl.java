@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Objects;
 
 @Slf4j
 @Service
@@ -34,10 +33,13 @@ public class ActiveFileServiceImpl implements ActiveFileService {
     }
 
     @Override
-    public String update(String projectName, String folderName, String oldFileName, MultipartFile file, String fileName) throws IOException {
+    public void update(String projectName, String folderName, String oldFileName, MultipartFile file, String fileName) throws IOException {
+        Path filePath = folderService.getActiveImagesPath(projectName, folderName).resolve(fileName);
+        if (Files.exists(filePath))
+            return;
+
         this.save(projectName, folderName, file, fileName);
         this.delete(projectName, folderName, oldFileName);
-        return fileName;
     }
 
     @Override
@@ -45,7 +47,7 @@ public class ActiveFileServiceImpl implements ActiveFileService {
         Path destination = folderService.getDeletedImagesPath(projectName, folderName).resolve(fileName);
         Path source = folderService.getActiveImagesPath(projectName, folderName).resolve(fileName);
 
-        Files.move(source, destination);
+        Files.move(source, destination, StandardCopyOption.REPLACE_EXISTING);
         log.debug("Transferring file {} from {} to {} success!", fileName, source, destination);
     }
 

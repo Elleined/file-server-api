@@ -82,6 +82,7 @@ public class ActiveFileController {
                          @RequestPart("file") MultipartFile file,
                          @RequestParam("fileName") String fileName) throws IOException {
 
-        return activeFileService.update(projectName, folderName, oldFileName, file, fileName);
+        activeFileService.update(projectName, folderName, oldFileName, file, fileName);
+        return fileName;
     }
 }
