@@ -75,7 +75,7 @@ public class ActiveFileController {
         activeFileService.delete(projectName, folderName, fileName);
     }
 
-    @PutMapping("/{fileName:.+}")
+    @PutMapping("/{oldFileName:.+}")
     public String update(@PathVariable("projectName") String projectName,
                          @PathVariable("folderName") String folderName,
                          @PathVariable("oldFileName") String oldFileName,
