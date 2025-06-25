@@ -1,9 +1,17 @@
-HELP.md
-target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+# Gradle-specific
+.gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+**/out/
 
+# Gradle Wrapper
+gradle/wrapper/gradle-wrapper.jar
+gradle/wrapper/gradle-wrapper.properties
+!gradlew
+!gradlew.bat
+
+# IDEs
 ### STS ###
 .apt_generated
 .classpath
@@ -14,7 +22,7 @@ target/
 .sts4-cache
 
 ### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -25,17 +33,16 @@ target/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-**/src/main/**/resources/pictures
-**/src/main/**/resources/pictures/
-**/src/main/**/resources/pictures/**/active
-**/src/main/**/resources/pictures/**/deleted
 
 ### VS Code ###
 .vscode/
 
-*.env
-.env
+# Logs
+*.log
 
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Others
+HELP.md
