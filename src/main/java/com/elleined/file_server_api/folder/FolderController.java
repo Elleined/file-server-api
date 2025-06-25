@@ -11,9 +11,9 @@ import java.io.IOException;
 public class FolderController {
     private final FolderService folderService;
 
-    @PostMapping
+    @PostMapping("/{folderName}")
     public String save(@PathVariable("projectName") String projectName,
-                       @RequestParam("folderName") String name) throws IOException {
+                       @PathVariable("folderName") String name) throws IOException {
 
         folderService.createProjectFolderDirectory(projectName, name.strip());
         return name;

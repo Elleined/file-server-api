@@ -8,23 +8,24 @@ import java.io.File;
 import java.io.IOException;
 
 public interface FileService {
-    void delete(@NotBlank String projectName,
-                @NotBlank String folderName,
-                @NotBlank String fileName) throws IOException;
-
-    File getByName(@NotBlank String projectName,
-                   @NotBlank String folderName,
-                   @NotBlank String fileName);
 
     String save(@NotBlank String projectName,
                 @NotBlank String folderName,
                 @NotNull MultipartFile file,
                 @NotBlank String fileName) throws IOException;
 
+    File get(@NotBlank String projectName,
+             @NotBlank String folderName,
+             @NotBlank String fileName);
+
     void update(@NotBlank String projectName,
                 @NotBlank String folderName,
                 @NotBlank String oldFileName,
                 @NotNull MultipartFile file,
+                @NotBlank String fileName) throws IOException;
+
+    void delete(@NotBlank String projectName,
+                @NotBlank String folderName,
                 @NotBlank String fileName) throws IOException;
 
     void restore(@NotBlank String projectName,

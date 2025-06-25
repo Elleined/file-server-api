@@ -39,6 +39,19 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
+    public File get(String projectName,
+                    String folderName,
+                    String fileName) {
+
+        return Path.of(uploadPath)
+                .resolve(projectName)
+                .resolve("active")
+                .resolve(folderName)
+                .resolve(fileName)
+                .toFile();
+    }
+
+    @Override
     public void update(String projectName,
                        String folderName,
                        String oldFileName,
@@ -70,26 +83,10 @@ public class FileServiceImpl implements FileService {
                         String folderName,
                         String fileName) throws IOException {
 
-        if (fileName == null || fileName.isEmpty())
-            return;
-
         Path destination = folderService.getActiveImagesPath(projectName, folderName).resolve(fileName);
         Path source = folderService.getDeletedImagesPath(projectName, folderName).resolve(fileName);
 
         Files.move(source, destination);
         log.debug("Transferring file {} from {} to {} success!", fileName, source, destination);
-    }
-
-    @Override
-    public File getByName(String projectName,
-                          String folderName,
-                          String fileName) {
-
-        return Path.of(uploadPath)
-                .resolve(projectName)
-                .resolve("active")
-                .resolve(folderName)
-                .resolve(fileName)
-                .toFile();
     }
 }

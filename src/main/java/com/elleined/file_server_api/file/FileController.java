@@ -27,8 +27,7 @@ public class FileController {
                                                     @PathVariable("folderName") String folderName,
                                                     @PathVariable("fileName") String fileName) throws IOException {
 
-        File file = fileService.getByName(projectName, folderName, fileName);
-
+        File file = fileService.get(projectName, folderName, fileName);
         if (!file.exists())
             throw new SystemException("File not exists");
 
@@ -67,9 +66,9 @@ public class FileController {
     }
 
     @DeleteMapping("/{fileName:.+}")
-    public void deleteByName(@PathVariable("projectName") String projectName,
-                             @PathVariable("folderName") String folderName,
-                             @PathVariable("fileName") String fileName) throws IOException {
+    public void delete(@PathVariable("projectName") String projectName,
+                       @PathVariable("folderName") String folderName,
+                       @PathVariable("fileName") String fileName) throws IOException {
 
         fileService.delete(projectName, folderName, fileName);
     }
