@@ -1,4 +1,4 @@
-package com.elleined.file_server_api.file.active;
+package com.elleined.file_server_api.file;
 
 import com.elleined.file_server_api.folder.FolderService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import java.nio.file.StandardCopyOption;
 @Service
 @Validated
 @RequiredArgsConstructor
-public class ActiveFileServiceImpl implements ActiveFileService {
+public class FileServiceImpl implements FileService {
     private final FolderService folderService;
 
     @Value("${UPLOAD_PATH}")
@@ -50,6 +50,21 @@ public class ActiveFileServiceImpl implements ActiveFileService {
         Path source = folderService.getActiveImagesPath(projectName, folderName).resolve(fileName);
 
         Files.move(source, destination, StandardCopyOption.REPLACE_EXISTING);
+        log.debug("Transferring file {} from {} to {} success!", fileName, source, destination);
+    }
+
+    @Override
+    public void restore(String projectName,
+                        String folderName,
+                        String fileName) throws IOException {
+
+        if (fileName == null || fileName.isEmpty())
+            return;
+
+        Path destination = folderService.getActiveImagesPath(projectName, folderName).resolve(fileName);
+        Path source = folderService.getDeletedImagesPath(projectName, folderName).resolve(fileName);
+
+        Files.move(source, destination);
         log.debug("Transferring file {} from {} to {} success!", fileName, source, destination);
     }
 

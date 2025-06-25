@@ -1,4 +1,4 @@
-package com.elleined.file_server_api.file.active;
+package com.elleined.file_server_api.file;
 
 import com.elleined.file_server_api.exception.SystemException;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +16,9 @@ import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/projects/{projectName}/folders/{folderName}/active-images")
-public class ActiveFileController {
-    private final ActiveFileService activeFileService;
+@RequestMapping("/projects/{projectName}/folders/{folderName}/files")
+public class FileController {
+    private final FileService fileService;
 
     private final Tika tika;
 
@@ -27,7 +27,7 @@ public class ActiveFileController {
                                                     @PathVariable("folderName") String folderName,
                                                     @PathVariable("fileName") String fileName) throws IOException {
 
-        File file = activeFileService.getByName(projectName, folderName, fileName);
+        File file = fileService.getByName(projectName, folderName, fileName);
 
         if (!file.exists())
             throw new SystemException("File not exists");
@@ -63,7 +63,7 @@ public class ActiveFileController {
                        @RequestPart("file") MultipartFile file,
                        @RequestParam("fileName") String fileName) throws IOException {
 
-        return activeFileService.save(projectName, folderName, file, fileName);
+        return fileService.save(projectName, folderName, file, fileName);
     }
 
     @DeleteMapping("/{fileName:.+}")
@@ -71,7 +71,7 @@ public class ActiveFileController {
                              @PathVariable("folderName") String folderName,
                              @PathVariable("fileName") String fileName) throws IOException {
 
-        activeFileService.delete(projectName, folderName, fileName);
+        fileService.delete(projectName, folderName, fileName);
     }
 
     @PutMapping("/{oldFileName:.+}")
@@ -81,7 +81,16 @@ public class ActiveFileController {
                          @RequestPart("file") MultipartFile file,
                          @RequestParam("fileName") String fileName) throws IOException {
 
-        activeFileService.update(projectName, folderName, oldFileName, file, fileName);
+        fileService.update(projectName, folderName, oldFileName, file, fileName);
+        return fileName;
+    }
+
+    @PutMapping("/{fileName}/restore")
+    public String restore(@PathVariable("projectName") String projectName,
+                          @PathVariable("folderName") String folderName,
+                          @PathVariable("fileName") String fileName) throws IOException {
+
+        fileService.restore(projectName, folderName, fileName);
         return fileName;
     }
 }
