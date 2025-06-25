@@ -1,5 +1,6 @@
 package com.elleined.file_server_api.folder;
 
+import com.elleined.file_server_api.exception.FileServerAPIException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,7 +8,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.CompletableFuture;
 
 @Slf4j
@@ -21,8 +25,20 @@ public class FolderServiceImpl implements FolderService {
 
     @Async
     @Override
-    public void save(String folder) {
-        this.sanitize(folder);
+    public void save(String folder) throws IOException {
+        Path uploadPath = this.getUploadPath();
+        Path folderPath = uploadPath.resolve(folder);
+
+        if (!folderPath.startsWith(uploadPath))
+            throw new FileServerAPIException("Attempted traversal attack");
+
+        if (Files.isSymbolicLink(folderPath))
+            throw new FileServerAPIException("Symbolic links are not allowed");
+
+        if (Files.exists(folderPath))
+            throw new FileServerAPIException("Folder already exists");
+
+        Files.createDirectories(folderPath);
     }
 
     @Async
@@ -33,6 +49,9 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     public Path getUploadPath() {
-        return this.sanitize(uploadPath);
+        return Paths.get(uploadPath.strip())
+                .normalize()
+                .toAbsolutePath()
+                .normalize();
     }
 }
