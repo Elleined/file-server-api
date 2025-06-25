@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Slf4j
 @Service
@@ -19,11 +20,16 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     public Path save(String folder) {
-        return null;
+        return this.sanitize(folder);
     }
 
     @Override
     public void delete(String folder) {
 
+    }
+
+    @Override
+    public Path getUploadPath() {
+        return this.sanitize(uploadPath);
     }
 }

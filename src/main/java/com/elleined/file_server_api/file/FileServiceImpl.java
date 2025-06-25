@@ -30,7 +30,7 @@ public class FileServiceImpl implements FileService {
 
         Path filePath = folderService.getActiveImagesPath(projectName, folder).resolve(file);
 
-        Files.copy(attachment.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
         log.debug("Saving file named {} to {} storage success!", file, filePath);
 
         return file;
@@ -57,7 +57,7 @@ public class FileServiceImpl implements FileService {
         if (Files.exists(filePath))
             return;
 
-        this.save(folder, fileName);
+        this.save(folder, file);
         this.delete(folder, oldFile);
     }
 

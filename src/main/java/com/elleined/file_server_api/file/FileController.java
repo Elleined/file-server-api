@@ -1,6 +1,6 @@
 package com.elleined.file_server_api.file;
 
-import com.elleined.file_server_api.exception.SystemException;
+import com.elleined.file_server_api.exception.FileServerAPIException;
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;
 import org.springframework.http.HttpHeaders;
@@ -16,20 +16,19 @@ import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/projects/{projectName}/folders/{folderName}/files")
+@RequestMapping("//folders/{folder}/files")
 public class FileController {
     private final FileService fileService;
 
     private final Tika tika;
 
-    @GetMapping("/{fileName:.+}")
-    ResponseEntity<StreamingResponseBody> getByName(@PathVariable("projectName") String projectName,
-                                                    @PathVariable("folderName") String folderName,
-                                                    @PathVariable("fileName") String fileName) throws IOException {
+    @GetMapping("/{file:.+}")
+    ResponseEntity<StreamingResponseBody> getByName(@PathVariable("folder") String folder,
+                                                    @PathVariable("file") String file) throws IOException {
 
-        File file = fileService.get(folderName, fileName);
+        File file = fileService.get(folder, file);
         if (!file.exists())
-            throw new SystemException("File not exists");
+            throw new FileServerAPIException("File not exists");
 
         StreamingResponseBody responseBody = outputStream -> {
             try (FileInputStream inputStream = new FileInputStream(file)) {
@@ -50,46 +49,31 @@ public class FileController {
                 : "attachment";
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition + "; filename=\"" + fileName + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition + "; filename=\"" + file + "\"")
                 .contentLength(file.length())
                 .contentType(MediaType.valueOf(contentType))
                 .body(responseBody);
     }
 
     @PostMapping
-    public String save(@PathVariable("projectName") String projectName,
-                       @PathVariable("folderName") String folderName,
-                       @RequestPart("file") MultipartFile file,
-                       @RequestParam("fileName") String fileName) throws IOException {
+    public String save(@PathVariable("folder") String folder,
+                       @RequestPart("file") MultipartFile file) throws IOException {
 
-        return fileService.save(folderName, fileName);
+        return fileService.save(folder, file);
     }
 
-    @DeleteMapping("/{fileName:.+}")
-    public void delete(@PathVariable("projectName") String projectName,
-                       @PathVariable("folderName") String folderName,
-                       @PathVariable("fileName") String fileName) throws IOException {
+    @DeleteMapping("/{file:.+}")
+    public void delete(@PathVariable("folder") String folder,
+                       @PathVariable("file") String file) throws IOException {
 
-        fileService.delete(folderName, fileName);
+        fileService.delete(folder, file);
     }
 
-    @PutMapping("/{oldFileName:.+}")
-    public String update(@PathVariable("projectName") String projectName,
-                         @PathVariable("folderName") String folderName,
-                         @PathVariable("oldFileName") String oldFileName,
-                         @RequestPart("file") MultipartFile file,
-                         @RequestParam("fileName") String fileName) throws IOException {
+    @PutMapping("/{oldFile:.+}")
+    public String update(@PathVariable("folder") String folder,
+                         @PathVariable("oldFile") String oldFile,
+                         @RequestPart("file") MultipartFile file) throws IOException {
 
-        fileService.update(folderName, oldFileName, file);
-        return fileName;
-    }
-
-    @PutMapping("/{fileName}/restore")
-    public String restore(@PathVariable("projectName") String projectName,
-                          @PathVariable("folderName") String folderName,
-                          @PathVariable("fileName") String fileName) throws IOException {
-
-        fileService.restore(projectName, folderName, fileName);
-        return fileName;
+        return fileService.update(folder, oldFile, file);;
     }
 }

@@ -1,21 +1,21 @@
 package com.elleined.file_server_api.folder;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/projects/{projectName}/folders")
+@RequestMapping("/folders")
 public class FolderController {
     private final FolderService folderService;
 
-    @PostMapping("/{folderName}")
-    public String save(@PathVariable("projectName") String projectName,
-                       @PathVariable("folderName") String name) throws IOException {
-
-        folderService.createProjectFolderDirectory(projectName, name.strip());
-        return name;
+    @PostMapping("/{folder}")
+    public String save(@PathVariable("folder") String folder) {
+        return folderService.save(folder)
+                .getFileName()
+                .toString();
     }
 }
