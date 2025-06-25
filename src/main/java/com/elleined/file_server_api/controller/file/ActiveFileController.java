@@ -1,6 +1,6 @@
 package com.elleined.file_server_api.controller.file;
 
-import com.elleined.file_server_api.exception.resource.ResourceNotFoundException;
+import com.elleined.file_server_api.exception.SystemException;
 import com.elleined.file_server_api.service.file.active.ActiveFileService;
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;
@@ -31,7 +31,7 @@ public class ActiveFileController {
         File file = activeFileService.getByName(projectName, folderName, fileName);
 
         if (!file.exists())
-            throw new ResourceNotFoundException("File not exists");
+            throw new SystemException("File not exists");
 
         StreamingResponseBody responseBody = outputStream -> {
             try (FileInputStream inputStream = new FileInputStream(file)) {

@@ -1,8 +1,5 @@
-package com.elleined.file_server_api.controller;
+package com.elleined.file_server_api.exception;
 
-import java.lang.String;
-import com.elleined.file_server_api.exception.SystemException;
-import com.elleined.file_server_api.exception.resource.ResourceException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,13 +19,8 @@ public class ExceptionController {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(ResourceException.class)
-    public ResponseEntity<String> handleResourceException(ResourceException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-    }
-
     @ExceptionHandler(SystemException.class)
-    public ResponseEntity<String> handleSystemException(RuntimeException ex) {
+    public ResponseEntity<String> handleSystemException(SystemException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
