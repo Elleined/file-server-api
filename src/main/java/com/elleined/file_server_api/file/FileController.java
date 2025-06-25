@@ -27,7 +27,7 @@ public class FileController {
                                                     @PathVariable("folderName") String folderName,
                                                     @PathVariable("fileName") String fileName) throws IOException {
 
-        File file = fileService.get(projectName, folderName, fileName);
+        File file = fileService.get(folderName, fileName);
         if (!file.exists())
             throw new SystemException("File not exists");
 
@@ -62,7 +62,7 @@ public class FileController {
                        @RequestPart("file") MultipartFile file,
                        @RequestParam("fileName") String fileName) throws IOException {
 
-        return fileService.save(projectName, folderName, file, fileName);
+        return fileService.save(folderName, fileName);
     }
 
     @DeleteMapping("/{fileName:.+}")
@@ -70,7 +70,7 @@ public class FileController {
                        @PathVariable("folderName") String folderName,
                        @PathVariable("fileName") String fileName) throws IOException {
 
-        fileService.delete(projectName, folderName, fileName);
+        fileService.delete(folderName, fileName);
     }
 
     @PutMapping("/{oldFileName:.+}")
@@ -80,7 +80,7 @@ public class FileController {
                          @RequestPart("file") MultipartFile file,
                          @RequestParam("fileName") String fileName) throws IOException {
 
-        fileService.update(projectName, folderName, oldFileName, file, fileName);
+        fileService.update(folderName, oldFileName, file);
         return fileName;
     }
 

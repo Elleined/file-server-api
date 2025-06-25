@@ -9,26 +9,16 @@ import java.io.IOException;
 
 public interface FileService {
 
-    String save(@NotBlank String projectName,
-                @NotBlank String folderName,
-                @NotNull MultipartFile file,
-                @NotBlank String fileName) throws IOException;
+    String save(@NotBlank String folder,
+                @NotNull MultipartFile file) throws IOException;
 
-    File get(@NotBlank String projectName,
-             @NotBlank String folderName,
-             @NotBlank String fileName);
+    File get(@NotBlank String folder,
+             @NotBlank String file);
 
-    void update(@NotBlank String projectName,
-                @NotBlank String folderName,
-                @NotBlank String oldFileName,
-                @NotNull MultipartFile file,
-                @NotBlank String fileName) throws IOException;
+    void update(@NotBlank String folder,
+                @NotBlank String oldFile,
+                @NotNull MultipartFile file) throws IOException;
 
-    void delete(@NotBlank String projectName,
-                @NotBlank String folderName,
-                @NotBlank String fileName) throws IOException;
-
-    void restore(@NotBlank String projectName,
-                 @NotBlank String folderName,
-                 @NotBlank String fileName) throws IOException;
+    void delete(@NotBlank String folder,
+                @NotBlank String file) throws IOException;
 }

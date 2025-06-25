@@ -25,68 +25,50 @@ public class FileServiceImpl implements FileService {
     private String uploadPath;
 
     @Override
-    public String save(String projectName,
-                       String folderName,
-                       MultipartFile file,
-                       String fileName) throws IOException {
+    public String save(String folder,
+                       MultipartFile file) throws IOException {
 
-        Path filePath = folderService.getActiveImagesPath(projectName, folderName).resolve(fileName);
+        Path filePath = folderService.getActiveImagesPath(projectName, folder).resolve(file);
 
-        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-        log.debug("Saving file named {} to {} storage success!", fileName, filePath);
+        Files.copy(attachment.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+        log.debug("Saving file named {} to {} storage success!", file, filePath);
 
-        return fileName;
+        return file;
     }
 
     @Override
-    public File get(String projectName,
-                    String folderName,
-                    String fileName) {
+    public File get(String folder,
+                    String file) {
 
         return Path.of(uploadPath)
                 .resolve(projectName)
                 .resolve("active")
-                .resolve(folderName)
-                .resolve(fileName)
+                .resolve(folder)
+                .resolve(file)
                 .toFile();
     }
 
     @Override
-    public void update(String projectName,
-                       String folderName,
-                       String oldFileName,
-                       MultipartFile file,
-                       String fileName) throws IOException {
+    public void update(String folder,
+                       String oldFile,
+                       MultipartFile file) throws IOException {
 
-        Path filePath = folderService.getActiveImagesPath(projectName, folderName).resolve(fileName);
+        Path filePath = folderService.getActiveImagesPath(projectName, folder).resolve(fileName);
         if (Files.exists(filePath))
             return;
 
-        this.save(projectName, folderName, file, fileName);
-        this.delete(projectName, folderName, oldFileName);
+        this.save(folder, fileName);
+        this.delete(folder, oldFile);
     }
 
     @Override
-    public void delete(String projectName,
-                       String folderName,
-                       String fileName) throws IOException {
+    public void delete(String folder,
+                       String file) throws IOException {
 
-        Path destination = folderService.getDeletedImagesPath(projectName, folderName).resolve(fileName);
-        Path source = folderService.getActiveImagesPath(projectName, folderName).resolve(fileName);
+        Path destination = folderService.getDeletedImagesPath(projectName, folder).resolve(file);
+        Path source = folderService.getActiveImagesPath(projectName, folder).resolve(file);
 
         Files.move(source, destination, StandardCopyOption.REPLACE_EXISTING);
-        log.debug("Transferring file {} from {} to {} success!", fileName, source, destination);
-    }
-
-    @Override
-    public void restore(String projectName,
-                        String folderName,
-                        String fileName) throws IOException {
-
-        Path destination = folderService.getActiveImagesPath(projectName, folderName).resolve(fileName);
-        Path source = folderService.getDeletedImagesPath(projectName, folderName).resolve(fileName);
-
-        Files.move(source, destination);
-        log.debug("Transferring file {} from {} to {} success!", fileName, source, destination);
+        log.debug("Transferring file {} from {} to {} success!", file, source, destination);
     }
 }
