@@ -25,7 +25,11 @@ public class FileServiceImpl implements FileService {
     private String uploadPath;
 
     @Override
-    public String save(String projectName, String folderName, MultipartFile file, String fileName) throws IOException {
+    public String save(String projectName,
+                       String folderName,
+                       MultipartFile file,
+                       String fileName) throws IOException {
+
         Path filePath = folderService.getActiveImagesPath(projectName, folderName).resolve(fileName);
 
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
@@ -35,7 +39,12 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void update(String projectName, String folderName, String oldFileName, MultipartFile file, String fileName) throws IOException {
+    public void update(String projectName,
+                       String folderName,
+                       String oldFileName,
+                       MultipartFile file,
+                       String fileName) throws IOException {
+
         Path filePath = folderService.getActiveImagesPath(projectName, folderName).resolve(fileName);
         if (Files.exists(filePath))
             return;
@@ -45,7 +54,10 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void delete(String projectName, String folderName, String fileName) throws IOException {
+    public void delete(String projectName,
+                       String folderName,
+                       String fileName) throws IOException {
+
         Path destination = folderService.getDeletedImagesPath(projectName, folderName).resolve(fileName);
         Path source = folderService.getActiveImagesPath(projectName, folderName).resolve(fileName);
 
@@ -69,7 +81,10 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public File getByName(String projectName, String folderName, String fileName) {
+    public File getByName(String projectName,
+                          String folderName,
+                          String fileName) {
+
         return Path.of(uploadPath)
                 .resolve(projectName)
                 .resolve("active")
