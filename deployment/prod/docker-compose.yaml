@@ -1,0 +1,32 @@
+services:
+  file-server-api:
+    image: elleined/file-server-api:${IMAGE_TAG}
+    container_name: ${CONTAINER_NAME}
+    restart: always
+    environment:
+      - TZ=Asia/Manila
+      - UPLOAD_PATH=${UPLOAD_PATH}
+      - PORT=${PORT}
+      - MAX_FILE_SIZE_IN_MB=${MAX_FILE_SIZE_IN_MB}
+      - LOG_LEVEL=${LOG_LEVEL}
+    ports:
+      - "${PORT}:${PORT}"
+    networks:
+      - fsa-network
+    volumes:
+      - ${HOST_UPLOAD_PATH}:${UPLOAD_PATH}
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "http://${CONTAINER_NAME}:${PORT}/${CONTEXT_PATH}/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+networks:
+  fsa-network:
+    name: ${NETWORK_NAME}
+    external: false
+    ipam:
+      driver: default
