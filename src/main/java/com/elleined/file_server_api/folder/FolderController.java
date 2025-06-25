@@ -1,10 +1,8 @@
 package com.elleined.file_server_api.folder;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -13,9 +11,14 @@ public class FolderController {
     private final FolderService folderService;
 
     @PostMapping("/{folder}")
-    public String save(@PathVariable("folder") String folder) {
-        return folderService.save(folder)
-                .getFileName()
-                .toString();
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void save(@PathVariable("folder") String folder) {
+        folderService.save(folder);
+    }
+
+    @DeleteMapping("/{folder}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void delete(@PathVariable("folder") String folder) {
+        folderService.delete(folder);
     }
 }

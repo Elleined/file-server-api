@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public interface FolderService {
-    Path save(@NotBlank String folder);
+    void save(@NotBlank String folder);
     void delete(@NotBlank String folder);
 
     Path getUploadPath();
@@ -20,14 +20,9 @@ public interface FolderService {
                 .toAbsolutePath()
                 .normalize();
 
-        Path uploadPath = this.getUploadPath();
-
-        if (!sanitize.startsWith(uploadPath))
-            throw new FileServerAPIException("Attempted path traversal attack");
-
         if (Files.isSymbolicLink(sanitize))
             throw new FileServerAPIException("Symbolic links are not allowed");
 
-        return sanitize;
+        return sanitize.resolve(folder);
     }
 }
