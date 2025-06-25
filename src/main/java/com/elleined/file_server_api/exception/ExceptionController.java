@@ -19,8 +19,8 @@ public class ExceptionController {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(SystemException.class)
-    public ResponseEntity<String> handleSystemException(SystemException ex) {
+    @ExceptionHandler(FileServerAPIException.class)
+    public ResponseEntity<String> handleSystemException(FileServerAPIException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
