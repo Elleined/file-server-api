@@ -27,8 +27,11 @@ public class FolderServiceImpl implements FolderService {
     @Override
     public void save(String folder) throws IOException {
         Path uploadPath = this.getUploadPath();
-        Path folderPath = uploadPath.resolve(folder);
+        Path sanitizeFolder = Paths.get(folder.strip())
+                .getFileName()
+                .normalize();
 
+        Path folderPath = uploadPath.resolve(sanitizeFolder).normalize();
         if (!folderPath.startsWith(uploadPath))
             throw new FileServerAPIException("Attempted traversal attack");
 
@@ -50,7 +53,6 @@ public class FolderServiceImpl implements FolderService {
     @Override
     public Path getUploadPath() {
         return Paths.get(uploadPath.strip())
-                .normalize()
                 .toAbsolutePath()
                 .normalize();
     }
