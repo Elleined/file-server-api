@@ -1,7 +1,11 @@
 package com.elleined.file_server_api.file.deleted;
 
+import jakarta.validation.constraints.NotBlank;
+
 import java.io.IOException;
 
 public interface DeletedFileService {
-    void restore(String projectName, String folderName, String fileName) throws IOException;
+    void restore(@NotBlank String projectName,
+                 @NotBlank String folderName,
+                 @NotBlank String fileName) throws IOException;
 }

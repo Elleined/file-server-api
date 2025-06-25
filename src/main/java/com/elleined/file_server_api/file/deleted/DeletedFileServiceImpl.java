@@ -4,6 +4,7 @@ import com.elleined.file_server_api.folder.FolderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,6 +12,7 @@ import java.nio.file.Path;
 
 @Slf4j
 @Service
+@Validated
 @RequiredArgsConstructor
 public class DeletedFileServiceImpl implements DeletedFileService {
     private final FolderService folderService;

@@ -7,26 +7,6 @@ import java.nio.file.Path;
 public interface FolderService {
     Path getUploadPath();
 
-    // Create the default directories for a project active, deleted, and failed results to /projectName/active, /projectName/deleted, and /projectName/failed
-    default void createProjectDirectory(String project) throws IOException {
-        Path projectDirectory = this.getProjectDirectory(project);
-        Path activeImagesPath = this.getActiveImagesPath(project);
-        Path deletedImagesPath = this.getDeletedImagesPath(project);
-        Path failedUploadsPath = this.getFailedUploadsPath(project);
-
-        if (!Files.exists(projectDirectory))
-            Files.createDirectories(projectDirectory);
-
-        if (!Files.exists(activeImagesPath))
-            Files.createDirectories(activeImagesPath);
-
-        if (!Files.exists(deletedImagesPath))
-            Files.createDirectories(deletedImagesPath);
-
-        if (!Files.exists(failedUploadsPath))
-            Files.createDirectories(failedUploadsPath);
-    }
-
     // Create the folder inside the active, deleted, and failed will result to /active/folderName, /deleted/folderName, and /failed/folderName
     default void createProjectFolderDirectory(String projectName, String folderName) throws IOException {
         Path activeImagesFolderPath = this.getActiveImagesPath(projectName, folderName);

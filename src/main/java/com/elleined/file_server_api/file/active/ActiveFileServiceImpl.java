@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -15,6 +16,7 @@ import java.nio.file.StandardCopyOption;
 
 @Slf4j
 @Service
+@Validated
 @RequiredArgsConstructor
 public class ActiveFileServiceImpl implements ActiveFileService {
     private final FolderService folderService;
