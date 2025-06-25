@@ -1,4 +1,4 @@
-package com.elleined.file_server_api.service.file.deleted;
+package com.elleined.file_server_api.file.deleted;
 
 import java.io.IOException;
 

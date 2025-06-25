@@ -1,6 +1,6 @@
-package com.elleined.file_server_api.service.file.active;
+package com.elleined.file_server_api.file.active;
 
-import com.elleined.file_server_api.service.folder.FolderService;
+import com.elleined.file_server_api.folder.FolderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

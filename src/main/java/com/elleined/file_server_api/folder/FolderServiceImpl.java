@@ -1,4 +1,4 @@
-package com.elleined.file_server_api.service.folder;
+package com.elleined.file_server_api.folder;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

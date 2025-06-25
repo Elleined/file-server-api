@@ -1,6 +1,6 @@
 package com.elleined.file_server_api.controller.project;
 
-import com.elleined.file_server_api.service.folder.FolderService;
+import com.elleined.file_server_api.folder.FolderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -1,6 +1,5 @@
-package com.elleined.file_server_api.controller.file;
+package com.elleined.file_server_api.file.deleted;
 
-import com.elleined.file_server_api.service.file.deleted.DeletedFileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;

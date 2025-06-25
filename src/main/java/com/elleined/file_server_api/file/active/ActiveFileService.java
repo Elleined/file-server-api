@@ -1,4 +1,4 @@
-package com.elleined.file_server_api.service.file.active;
+package com.elleined.file_server_api.file.active;
 
 import org.springframework.web.multipart.MultipartFile;
 

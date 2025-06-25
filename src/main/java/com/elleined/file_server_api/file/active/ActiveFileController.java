@@ -1,7 +1,6 @@
-package com.elleined.file_server_api.controller.file;
+package com.elleined.file_server_api.file.active;
 
 import com.elleined.file_server_api.exception.SystemException;
-import com.elleined.file_server_api.service.file.active.ActiveFileService;
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;
 import org.springframework.http.HttpHeaders;
