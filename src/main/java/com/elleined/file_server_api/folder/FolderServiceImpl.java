@@ -23,7 +23,7 @@ public class FolderServiceImpl implements FolderService {
     @Override
     public void create(String folder) throws IOException {
         Path uploadPath = this.getUploadPath();
-        Path sanitizeFolder = Paths.get(folder.strip())
+        Path sanitizeFolder = Paths.get(folder)
                 .getFileName()
                 .normalize();
 
@@ -32,16 +32,16 @@ public class FolderServiceImpl implements FolderService {
             throw new FileServerAPIException("Attempted traversal attack");
 
         if (Files.exists(folderPath, LinkOption.NOFOLLOW_LINKS))
-            throw new FileServerAPIException("Folder will be created if not exists");
+            throw new FileServerAPIException("Folder already exists");
 
         Files.createDirectories(folderPath);
-        log.info("Folder created successfully {}", folderPath);
+        log.info("Folder created successfully {}", folderPath.toAbsolutePath());
     }
 
     @Override
     public void remove(String folder) throws IOException {
         Path uploadPath = this.getUploadPath();
-        Path sanitizeFolder = Paths.get(folder.strip())
+        Path sanitizeFolder = Paths.get(folder)
                 .getFileName()
                 .normalize();
 
@@ -49,8 +49,11 @@ public class FolderServiceImpl implements FolderService {
         if (!folderPath.startsWith(uploadPath))
             throw new FileServerAPIException("Attempted traversal attack");
 
+        if (folderPath.equals(uploadPath))
+            throw new FileServerAPIException("Cannot delete root upload folder");
+
         if (!Files.exists(folderPath, LinkOption.NOFOLLOW_LINKS))
-            throw new FileServerAPIException("The specified folder will be deleted if exists");
+            throw new FileServerAPIException("Folder does not exist");
 
         Files.walkFileTree(folderPath, new SimpleFileVisitor<>() {
             @Override
@@ -66,7 +69,7 @@ public class FolderServiceImpl implements FolderService {
             }
         });
 
-        log.info("Folder deleted successfully {}", folderPath);
+        log.info("Folder deleted successfully {}", folderPath.toAbsolutePath());
     }
 
     @Override
