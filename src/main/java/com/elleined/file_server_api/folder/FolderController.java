@@ -1,6 +1,5 @@
 package com.elleined.file_server_api.folder;
 
-import com.elleined.file_server_api.exception.FileServerAPIException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -16,12 +15,12 @@ public class FolderController {
     @PostMapping("/{folder}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void save(@PathVariable("folder") String folder) throws IOException {
-        folderService.save(folder);
+        folderService.create(folder);
     }
 
     @DeleteMapping("/{folder}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void delete(@PathVariable("folder") String folder) {
-        folderService.delete(folder);
+    public void delete(@PathVariable("folder") String folder) throws IOException {
+        folderService.remove(folder);
     }
 }

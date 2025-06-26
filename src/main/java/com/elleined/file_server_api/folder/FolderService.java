@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 public interface FolderService {
-    void save(@NotBlank String folder) throws IOException;
-    void delete(@NotBlank String folder);
+    void create(@NotBlank String folder) throws IOException;
+    void remove(@NotBlank String folder) throws IOException;
     Path getUploadPath();
 }
