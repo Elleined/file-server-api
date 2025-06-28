@@ -32,7 +32,6 @@ public class FolderServiceImpl implements FolderService {
     @Async
     @Override
     public void create(String folder) throws IOException {
-        Path uploadPath = this.getUploadPath();
 
         // 1. Check for null or blank of specified folder
         if (this.isNullOrBlank(folder))
@@ -46,6 +45,9 @@ public class FolderServiceImpl implements FolderService {
         // 3. Check if specified folder contain invalid characters
         if (!this.isAlphaNumeric(folder))
             throw new FileServerAPIException("Folder name cannot contain invalid characters");
+
+        // 3.5 Getting the upload path
+        Path uploadPath = this.getUploadPath();
 
         // 4. Normalize the folder
         Path folderPath = this.normalize(uploadPath, folder);
