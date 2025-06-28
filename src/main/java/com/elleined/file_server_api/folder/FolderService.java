@@ -19,23 +19,15 @@ public interface FolderService {
         return folder == null || folder.isBlank();
     }
 
-    default boolean hasInvalidLength(String folder) {
-        return folder.length() > 25;
+    default boolean hasInvalidLength(String folder, int maxLength) {
+        return folder.length() > maxLength;
     }
 
-    default boolean hasInvalidCharacters(String folder) {
-        return folder.contains(".") ||
-                folder.contains("/") ||
-                folder.contains("\\") ||
-                folder.contains("%");
+    default boolean isAlphaNumeric(String folder) {
+        return folder.matches("^[a-zA-Z0-9]+$");
     }
 
-    default boolean isSymbolicLink(Path folder) {
-        return Files.isSymbolicLink(folder);
-    }
-
-    default Path normalize(String folder) throws IOException {
-        Path uploadPath = this.getUploadPath();
+    default Path normalize(Path uploadPath, String folder) {
         Path normalizePath = Paths.get(folder.strip())
                 .getFileName()
                 .normalize();
@@ -43,8 +35,11 @@ public interface FolderService {
         return uploadPath.resolve(normalizePath).normalize();
     }
 
-    default boolean isInUploadPath(Path folderPath) throws IOException {
-        Path uploadPath = this.getUploadPath();
+    default boolean isSymbolicLink(Path folderPath) {
+        return Files.isSymbolicLink(folderPath);
+    }
+
+    default boolean isInUploadPath(Path uploadPath, Path folderPath) {
         return folderPath.startsWith(uploadPath);
     }
 

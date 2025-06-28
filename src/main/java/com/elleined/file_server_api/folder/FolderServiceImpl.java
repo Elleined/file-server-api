@@ -38,23 +38,24 @@ public class FolderServiceImpl implements FolderService {
         if (this.isNullOrBlank(folder))
             throw new FileServerAPIException("Folder name cannot be null or blank");
 
-        // 2. Check if specified folder size with max of 25
-        if (this.hasInvalidLength(folder))
-            throw new FileServerAPIException("Folder name cannot be longer than 25 characters");
+        // 2. Check if specified folder size
+        final int maxLength = 20;
+        if (this.hasInvalidLength(folder, maxLength))
+            throw new FileServerAPIException("Folder name cannot be longer than " + maxLength + " characters");
 
         // 3. Check if specified folder contain invalid characters
-        if (this.hasInvalidCharacters(folder))
+        if (!this.isAlphaNumeric(folder))
             throw new FileServerAPIException("Folder name cannot contain invalid characters");
 
         // 4. Normalize the folder
-        Path folderPath = this.normalize(folder);
+        Path folderPath = this.normalize(uploadPath, folder);
 
         // 5. Check if folderPath is symlink
         if (this.isSymbolicLink(folderPath))
             throw new FileServerAPIException("Symbolic links are not allowed");
 
         // 6. Checks if the folderPath is within the upload directory
-        if (!this.isInUploadPath(folderPath))
+        if (!this.isInUploadPath(uploadPath, folderPath))
             throw new FileServerAPIException("Attempted traversal attack");
 
         // 7. Finally check if the folder name already exists
