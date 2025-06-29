@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.IOException;
 
 public interface FileService {
-    String save(@NotBlank String folder,
+    FileDTO save(@NotBlank String folder,
                 @NotNull MultipartFile file) throws IOException;
 
     void deleteByName(@NotBlank String folder,
