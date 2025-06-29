@@ -14,12 +14,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 
-/*
-    normalize method: removes the unnecessary dot(.) and slash(/, \) of specified folder
-    toAbsolutePath method: get the absolute path of the specified path
-    getFileName method: only get the last entry of specified folder
-*/
-
 @Slf4j
 @Service
 @Validated
