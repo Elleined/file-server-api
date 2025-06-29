@@ -29,67 +29,82 @@ public class FolderServiceImpl implements FolderService {
     @Value("${UPLOAD_PATH}")
     private String uploadPath;
 
+    @Value("${FOLDER_MAX_LENGTH}")
+    private int maxLength;
+
     @Async
     @Override
     public void create(String folder) throws IOException {
-
-        // 1. Check for null or blank of specified folder
-        if (this.isNullOrBlank(folder))
+        // Check for null or blank of specified folder
+        if (FolderValidator.isNullOrBlank(folder))
             throw new FileServerAPIException("Folder name cannot be null or blank");
 
-        // 2. Check if specified folder size
-        final int maxLength = 20;
-        if (this.hasInvalidLength(folder, maxLength))
+        // Check if specified folder size
+        if (FolderValidator.hasInvalidLength(folder, maxLength))
             throw new FileServerAPIException("Folder name cannot be longer than " + maxLength + " characters");
 
-        // 3. Check if specified folder contain invalid characters
-        if (!this.isAlphaNumeric(folder))
+        // Check if specified folder contain invalid characters
+        if (!FolderValidator.isAlphaNumeric(folder))
             throw new FileServerAPIException("Folder name cannot contain invalid characters");
 
-        // 3.5 Getting the upload path
+        // Getting the upload path
         Path uploadPath = this.getUploadPath();
 
-        // 4. Normalize the folder
-        Path folderPath = this.normalize(uploadPath, folder);
+        // Normalize the folder
+        Path folderPath = FolderValidator.normalize(uploadPath, folder);
 
-        // 5. Check if folderPath is symlink
-        if (this.isSymbolicLink(folderPath))
+        // Check if folderPath is symlink
+        if (FolderValidator.isSymbolicLink(folderPath))
             throw new FileServerAPIException("Symbolic links are not allowed");
 
-        // 6. Checks if the folderPath is within the upload directory
-        if (!this.isInUploadPath(uploadPath, folderPath))
+        // Checks if the folderPath is within the upload directory
+        if (!FolderValidator.isInUploadPath(uploadPath, folderPath))
             throw new FileServerAPIException("Attempted traversal attack");
 
-        // 7. Finally check if the folder name already exists
-        if (this.exists(folderPath))
+        // Finally check if the folder name already exists
+        if (FolderValidator.exists(folderPath))
             throw new FileServerAPIException("Folder name already exists");
 
         Files.createDirectories(folderPath, PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-r--r--")));
-        log.info("Folder created successfully {}", folderPath.toAbsolutePath());
+        log.info("Folder created successfully {}", folder);
     }
 
     @Async
     @Override
     public void remove(String folder) throws IOException {
-        Path uploadPath = this.getUploadPath();
-        Path sanitizeFolder = Paths.get(folder.strip())
-                .getFileName()
-                .normalize();
-        System.out.println("Raw " + folder);
-        System.out.println("Sanitize " + sanitizeFolder);
-        Path folderPath = uploadPath.resolve(sanitizeFolder).normalize();
+        // Check for null or blank of specified folder
+        if (FolderValidator.isNullOrBlank(folder))
+            throw new FileServerAPIException("Folder name cannot be null or blank");
 
-        if (!folderPath.startsWith(uploadPath))
+        // Check if specified folder size
+        if (FolderValidator.hasInvalidLength(folder, maxLength))
+            throw new FileServerAPIException("Folder name cannot be longer than " + maxLength + " characters");
+
+        // Check if specified folder contain invalid characters
+        if (!FolderValidator.isAlphaNumeric(folder))
+            throw new FileServerAPIException("Folder name cannot contain invalid characters");
+
+        //  Getting the upload path
+        Path uploadPath = this.getUploadPath();
+
+        // Normalize the folder
+        Path folderPath = FolderValidator.normalize(uploadPath, folder);
+
+        // Check if folderPath is symlink
+        if (FolderValidator.isSymbolicLink(folderPath))
+            throw new FileServerAPIException("Symbolic links are not allowed");
+
+        // Checks if the folderPath is within the upload directory
+        if (!FolderValidator.isInUploadPath(uploadPath, folderPath))
             throw new FileServerAPIException("Attempted traversal attack");
 
+        // Check if the folder to be deleted is the upload directory
         if (folderPath.equals(uploadPath))
             throw new FileServerAPIException("Cannot delete root upload folder");
 
-        if (Files.isSymbolicLink(folderPath))
-            throw new FileServerAPIException("Symbolic links are not allowed");
-
-        if (!Files.exists(folderPath, LinkOption.NOFOLLOW_LINKS))
-            throw new FileServerAPIException("Folder does not exist");
+        // Finally check if the folder does not exists
+        if (!FolderValidator.exists(folderPath))
+            throw new FileServerAPIException("Folder does not exists");
 
         Files.walkFileTree(folderPath, new SimpleFileVisitor<>() {
             @Override
@@ -105,7 +120,7 @@ public class FolderServiceImpl implements FolderService {
             }
         });
 
-        log.info("Folder deleted successfully {}", folderPath.toAbsolutePath());
+        log.info("Folder deleted successfully {}", folder);
     }
 
     @Override
