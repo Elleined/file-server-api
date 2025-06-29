@@ -125,7 +125,37 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     public Path get(String folder) throws IOException {
-        return null;
+        // Check for null or blank of specified folder
+        if (FolderValidator.isNullOrBlank(folder))
+            throw new FileServerAPIException("Folder name cannot be null or blank");
+
+        // Check if specified folder size
+        if (FolderValidator.hasInvalidLength(folder, maxLength))
+            throw new FileServerAPIException("Folder name cannot be longer than " + maxLength + " characters");
+
+        // Check if specified folder contain invalid characters
+        if (!FolderValidator.isAlphaNumeric(folder))
+            throw new FileServerAPIException("Folder name cannot contain invalid characters");
+
+        //  Getting the upload path
+        Path uploadPath = this.getUploadPath();
+
+        // Normalize the folder
+        Path folderPath = FolderValidator.normalize(uploadPath, folder);
+
+        // Check if folderPath is symlink
+        if (FolderValidator.isSymbolicLink(folderPath))
+            throw new FileServerAPIException("Symbolic links are not allowed");
+
+        // Checks if the folderPath is within the upload directory
+        if (!FolderValidator.isInUploadPath(uploadPath, folderPath))
+            throw new FileServerAPIException("Attempted traversal attack");
+
+        // Finally check if the folder does not exists
+        if (!FolderValidator.exists(folderPath))
+            throw new FileServerAPIException("Folder does not exists");
+
+        return folderPath;
     }
 
     @Override
