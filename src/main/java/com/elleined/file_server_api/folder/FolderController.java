@@ -13,12 +13,12 @@ public class FolderController {
     private final FolderService folderService;
 
     @PostMapping("/{folder}")
-    public void save(@PathVariable("folder") String folder) throws IOException {
+    public void create(@PathVariable("folder") String folder) throws IOException {
         folderService.create(folder);
     }
 
     @DeleteMapping("/{folder}")
-    public void delete(@PathVariable("folder") String folder) throws IOException {
+    public void remove(@PathVariable("folder") String folder) throws IOException {
         folderService.remove(folder);
     }
 }

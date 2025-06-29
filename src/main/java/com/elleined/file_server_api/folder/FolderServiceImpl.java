@@ -1,6 +1,8 @@
 package com.elleined.file_server_api.folder;
 
 import com.elleined.file_server_api.exception.FileServerAPIException;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,7 +13,6 @@ import org.springframework.validation.annotation.Validated;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 
 @Slf4j
@@ -29,18 +30,6 @@ public class FolderServiceImpl implements FolderService {
     @Async
     @Override
     public void create(String folder) throws IOException {
-        // Check for null or blank of specified folder
-        if (FolderValidator.isNullOrBlank(folder))
-            throw new FileServerAPIException("Folder name cannot be null or blank");
-
-        // Check if specified folder size
-        if (FolderValidator.hasInvalidLength(folder, maxLength))
-            throw new FileServerAPIException("Folder name cannot be longer than " + maxLength + " characters");
-
-        // Check if specified folder contain invalid characters
-        if (!FolderValidator.isAlphaNumeric(folder))
-            throw new FileServerAPIException("Folder name cannot contain invalid characters");
-
         // Getting the upload path
         Path uploadPath = this.getUploadPath();
 
@@ -66,18 +55,6 @@ public class FolderServiceImpl implements FolderService {
     @Async
     @Override
     public void remove(String folder) throws IOException {
-        // Check for null or blank of specified folder
-        if (FolderValidator.isNullOrBlank(folder))
-            throw new FileServerAPIException("Folder name cannot be null or blank");
-
-        // Check if specified folder size
-        if (FolderValidator.hasInvalidLength(folder, maxLength))
-            throw new FileServerAPIException("Folder name cannot be longer than " + maxLength + " characters");
-
-        // Check if specified folder contain invalid characters
-        if (!FolderValidator.isAlphaNumeric(folder))
-            throw new FileServerAPIException("Folder name cannot contain invalid characters");
-
         //  Getting the upload path
         Path uploadPath = this.getUploadPath();
 
@@ -118,19 +95,7 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
-    public Path get(String folder) throws IOException {
-        // Check for null or blank of specified folder
-        if (FolderValidator.isNullOrBlank(folder))
-            throw new FileServerAPIException("Folder name cannot be null or blank");
-
-        // Check if specified folder size
-        if (FolderValidator.hasInvalidLength(folder, maxLength))
-            throw new FileServerAPIException("Folder name cannot be longer than " + maxLength + " characters");
-
-        // Check if specified folder contain invalid characters
-        if (!FolderValidator.isAlphaNumeric(folder))
-            throw new FileServerAPIException("Folder name cannot contain invalid characters");
-
+    public Path retrieve(String folder) throws IOException {
         //  Getting the upload path
         Path uploadPath = this.getUploadPath();
 
