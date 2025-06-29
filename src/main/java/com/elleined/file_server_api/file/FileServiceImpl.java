@@ -2,6 +2,7 @@ package com.elleined.file_server_api.file;
 
 import com.elleined.file_server_api.exception.FileServerAPIException;
 import com.elleined.file_server_api.folder.FolderService;
+import com.elleined.file_server_api.folder.FolderValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -17,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.*;
@@ -72,7 +74,10 @@ public class FileServiceImpl implements FileService {
 
         // Resolving the file path for saving
         Path folderPath = folderService.getByName(folder);
-        Path filePath = folderPath.resolve(fileName).normalize();
+        Path normalizePath = Paths.get(fileName.strip())
+                .getFileName()
+                .normalize();
+        Path filePath = folderPath.resolve(normalizePath).normalize();
 
         // Re-encoding the file to remove embedded code
         if (realMimeType.startsWith("image/")) { // (Image Flattening)

@@ -11,9 +11,9 @@ import java.io.IOException;
 public class FolderController {
     private final FolderService folderService;
 
-    @PostMapping("/{folder}")
-    public void save(@PathVariable("folder") String folder) throws IOException {
-        folderService.save(folder);
+    @PostMapping
+    public String save() throws IOException {
+        return folderService.save();
     }
 
     @DeleteMapping("/{folder}")

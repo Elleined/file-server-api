@@ -8,17 +8,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 public interface FolderService {
-    void save(@Size(max = 25)
-              @NotBlank
-              @Pattern(regexp = "^[a-zA-Z0-9]+$") String folder) throws IOException;
+    String save() throws IOException;
 
-    void deleteByName(@Size(max = 25)
-                      @NotBlank
-                      @Pattern(regexp = "^[a-zA-Z0-9]+$") String folder) throws IOException;
+    void deleteByName(@Size(max = 36) @NotBlank @Pattern(regexp = "^[a-zA-Z0-9-]+$") String folder) throws IOException;
 
-    Path getByName(@Size(max = 25)
-                   @NotBlank
-                   @Pattern(regexp = "^[a-zA-Z0-9]+$") String folder) throws IOException;
+    Path getByName(@Size(max = 36) @NotBlank @Pattern(regexp = "^[a-zA-Z0-9-]+$") String folder) throws IOException;
 
     Path getUploadPath() throws IOException;
 }

@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -22,9 +23,10 @@ public class FolderServiceImpl implements FolderService {
     @Value("${UPLOAD_PATH}")
     private String uploadPath;
 
-    @Async
     @Override
-    public void save(String folder) throws IOException {
+    public String save() throws IOException {
+        String folder = UUID.randomUUID().toString();
+
         Path uploadPath = this.getUploadPath();
         Path folderPath = FolderValidator.normalize(uploadPath, folder);
 
@@ -39,6 +41,8 @@ public class FolderServiceImpl implements FolderService {
 
         Files.createDirectories(folderPath, PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-r--r--")));
         log.info("Folder created successfully {}", folder);
+
+        return folder;
     }
 
     @Async

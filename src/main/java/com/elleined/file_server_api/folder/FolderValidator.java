@@ -6,16 +6,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public interface FolderValidator {
-    static Path normalize(Path uploadPath, String folder) {
+    static Path normalize(Path destinationPath, String folder) {
         Path normalizePath = Paths.get(folder.strip())
                 .getFileName()
                 .normalize();
 
-        return uploadPath.resolve(normalizePath).normalize();
+        return destinationPath.resolve(normalizePath).normalize();
     }
 
-    static boolean isNotInUploadPath(Path uploadPath, Path folderPath) {
-        return !folderPath.startsWith(uploadPath);
+    static boolean isNotInUploadPath(Path destinationPath, Path folderPath) {
+        return !folderPath.startsWith(destinationPath);
     }
 
     static boolean exists(Path folderPath) {
