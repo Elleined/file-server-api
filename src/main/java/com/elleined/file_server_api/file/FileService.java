@@ -6,11 +6,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 public interface FileService {
     FileDTO save(@NotBlank UUID folder,
-                 @NotNull MultipartFile file) throws IOException;
+                 @NotNull MultipartFile file) throws NoSuchAlgorithmException, IOException;
 
     void deleteByName(@NotBlank UUID folder,
                       @NotBlank String file) throws IOException;

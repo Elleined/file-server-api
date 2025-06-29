@@ -16,11 +16,14 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 @Slf4j
@@ -33,7 +36,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public FileDTO save(@NotBlank UUID folder,
-                        MultipartFile file) throws IOException {
+                        MultipartFile file) throws NoSuchAlgorithmException, IOException {
 
         // Check for multiple file extensions
         String[] parts = Objects.requireNonNull(file.getOriginalFilename()).split("\\.");
@@ -79,6 +82,10 @@ public class FileServiceImpl implements FileService {
                 .normalize();
         Path filePath = folderPath.resolve(normalizePath).normalize();
 
+        // Checksum checking (for deduplication and prevent tampering)
+        String checksum = computeSHA256Base64UrlSafe(file);
+        System.out.println(checksum);
+
         // Re-encoding the file to remove embedded code
         if (realMimeType.startsWith("image/")) { // (Image Flattening)
             BufferedImage image = ImageIO.read(file.getInputStream());
@@ -86,13 +93,11 @@ public class FileServiceImpl implements FileService {
         } else { // (PDF Flattening)
         }
 
-        // Checksum checking (for deduplication and prevent tampering)
-
         // Set permission to 644 for rw-r--r--
         Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("rw-r--r--");
         Files.setPosixFilePermissions(filePath, permissions);
 
-        return new FileDTO(fileName, realExtension, "", realMimeType);
+        return new FileDTO(fileName, realExtension, checksum, realMimeType);
     }
 
     @Async
@@ -106,5 +111,21 @@ public class FileServiceImpl implements FileService {
     public File getByName(@NotBlank UUID folder,
                           String file) throws IOException {
         return null;
+    }
+
+    public static String computeSHA256Base64UrlSafe(MultipartFile file) throws NoSuchAlgorithmException, IOException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+
+        try (InputStream is = file.getInputStream()) {
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+
+            while ((bytesRead = is.read(buffer)) != -1) {
+                digest.update(buffer, 0, bytesRead);
+            }
+        }
+
+        byte[] hash = digest.digest();
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
     }
 }

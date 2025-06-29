@@ -4,15 +4,14 @@ import com.elleined.file_server_api.exception.FileServerAPIException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
-import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
@@ -46,6 +45,7 @@ public class FolderServiceImpl implements FolderService {
         return folder;
     }
 
+    @Async
     @Override
     public void deleteByName(UUID folder) throws IOException {
         Path uploadPath = this.getUploadPath();

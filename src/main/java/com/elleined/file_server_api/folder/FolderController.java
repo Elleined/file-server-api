@@ -18,7 +18,7 @@ public class FolderController {
     }
 
     @DeleteMapping("/{folder}")
-    public void deleteByName(@PathVariable("folder") UUID uuid) throws IOException {
-        folderService.deleteByName(uuid);
+    public void deleteByName(@PathVariable("folder") UUID folder) throws IOException {
+        folderService.deleteByName(folder);
     }
 }

@@ -19,7 +19,11 @@ public class FileController {
     public FileDTO save(@PathVariable("folder") UUID folder,
                         @RequestPart("file") MultipartFile file) throws IOException {
 
-        return fileService.save(folder, file);
+        try {
+            return fileService.save(folder, file);
+        } catch (java.security.NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @DeleteMapping("/{file:.+}")
