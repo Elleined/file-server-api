@@ -4,10 +4,11 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.UUID;
 
 public interface FolderValidator {
-    static Path normalize(Path destinationPath, String folder) {
-        Path normalizePath = Paths.get(folder.strip())
+    static Path normalize(Path destinationPath, UUID folder) {
+        Path normalizePath = Paths.get(folder.toString())
                 .getFileName()
                 .normalize();
 

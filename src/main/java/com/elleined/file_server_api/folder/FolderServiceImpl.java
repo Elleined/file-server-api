@@ -27,7 +27,7 @@ public class FolderServiceImpl implements FolderService {
         UUID folder = UUID.randomUUID();
 
         Path uploadPath = this.getUploadPath();
-        Path folderPath = FolderValidator.normalize(uploadPath, folder.toString());
+        Path folderPath = FolderValidator.normalize(uploadPath, folder);
 
         if (FolderValidator.isSymbolicLink(folderPath))
             throw new FileServerAPIException("Folder creation failed! symbolic links are not allowed");
@@ -45,9 +45,9 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
-    public void deleteByName(UUID uuid) throws IOException {
+    public void deleteByName(UUID folder) throws IOException {
         Path uploadPath = this.getUploadPath();
-        Path folderPath = FolderValidator.normalize(uploadPath, uuid.toString());
+        Path folderPath = FolderValidator.normalize(uploadPath, folder);
 
         if (FolderValidator.isSymbolicLink(folderPath))
             throw new FileServerAPIException("Folder removal failed! symbolic links are not allowed");
@@ -75,13 +75,13 @@ public class FolderServiceImpl implements FolderService {
             }
         });
 
-        log.info("Folder deleted successfully {}", uuid);
+        log.info("Folder deleted successfully {}", folder);
     }
 
     @Override
-    public Path getByName(UUID uuid) throws IOException {
+    public Path getByName(UUID folder) throws IOException {
         Path uploadPath = this.getUploadPath();
-        Path folderPath = FolderValidator.normalize(uploadPath, uuid.toString());
+        Path folderPath = FolderValidator.normalize(uploadPath, folder);
 
         if (FolderValidator.isSymbolicLink(folderPath))
             throw new FileServerAPIException("Folder retrieving failed! symbolic links are not allowed");
