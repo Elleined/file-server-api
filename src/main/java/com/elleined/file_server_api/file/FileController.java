@@ -15,7 +15,7 @@ public class FileController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public String save(@PathVariable("folder") String folder,
+    public FileDTO save(@PathVariable("folder") String folder,
                        @RequestPart("file") MultipartFile file) throws IOException {
 
         return fileService.save(folder, file);

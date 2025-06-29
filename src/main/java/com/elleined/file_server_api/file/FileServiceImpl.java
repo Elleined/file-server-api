@@ -47,9 +47,9 @@ public class FileServiceImpl implements FileService {
         // Check file size limit
 
         // Check mime type extension
-        String mimeType = tika.detect(file.getInputStream());
+        String realMimeType = tika.detect(file.getInputStream());
         List<String> allowedMimeTypes = List.of("image/png", "image/jpeg", "image/gif", "application/pdf");
-        if (!allowedMimeTypes.contains(mimeType))
+        if (!allowedMimeTypes.contains(realMimeType))
             throw new FileServerAPIException("File upload failed! only the following mime types are allowed: " + String.join(", ", allowedMimeTypes));
 
         // Check if file extension and mime type match
@@ -59,25 +59,25 @@ public class FileServiceImpl implements FileService {
                 "image/gif", "gif",
                 "application/pdf", "pdf"
         );
-        String realFileExtension = mimeTypeMap.get(mimeType);
-        if (!extension.equals(realFileExtension))
+        String realExtension = mimeTypeMap.get(realMimeType);
+        if (!extension.equals(realExtension))
             throw new FileServerAPIException("File upload failed! file extension and mime type do not match");
 
-        // Check if file extension is allowed
-        if (!allowedFileExtensions.contains(realFileExtension))
+        // Check if a real file extension is allowed
+        if (!allowedFileExtensions.contains(realExtension))
             throw new FileServerAPIException("File upload failed! only the following mime types are allowed: " + String.join(", ", allowedMimeTypes));
 
         // Building the real file name
-        String fileName = UUID.randomUUID() + "." + realFileExtension;
+        String fileName = UUID.randomUUID() + "." + realExtension;
 
         // Resolving the file path for saving
         Path folderPath = folderService.getByName(folder);
         Path filePath = folderPath.resolve(fileName).normalize();
 
         // Re-encoding the file to remove embedded code
-        if (mimeType.startsWith("image/")) { // (Image Flattening)
+        if (realMimeType.startsWith("image/")) { // (Image Flattening)
             BufferedImage image = ImageIO.read(file.getInputStream());
-            ImageIO.write(image, realFileExtension, filePath.toFile());
+            ImageIO.write(image, realExtension, filePath.toFile());
         } else { // (PDF Flattening)
         }
 
@@ -87,7 +87,7 @@ public class FileServiceImpl implements FileService {
         Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("rw-r--r--");
         Files.setPosixFilePermissions(filePath, permissions);
 
-        return new FileDTO(fileName, realFileExtension, "", mimeType);
+        return new FileDTO(fileName, realExtension, "", realMimeType);
     }
 
     @Async

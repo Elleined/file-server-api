@@ -8,6 +8,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.elleined.file_server_api.folder.FolderService;
 import org.apache.tika.Tika;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,9 +17,11 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 
 @ExtendWith(MockitoExtension.class)
 class FileServiceImplTest {
@@ -31,6 +35,7 @@ class FileServiceImplTest {
     @InjectMocks
     private FileServiceImpl fileService;
 
+
     @Test
     void save_HappyPath() throws IOException {
         // Pre defined values
@@ -38,11 +43,14 @@ class FileServiceImplTest {
         // Expected Value
 
         // Mock data
-        MultipartFile file = new MockMultipartFile("attachment", "attachment.jpg", "text/plain", getClass().getClassLoader().getResourceAsStream("linux-mint.png"));
+
+        MultipartFile file = new MockMultipartFile("attachment", "attachment.png", "text/plain", getClass().getClassLoader().getResourceAsStream("linux-mint.png"));
 
         // Set up method
 
         // Stubbing methods
+        when(folderService.getByName(anyString())).thenReturn(Paths.get("/home/denielle/fsa_uploads/folder"));
+
 
         // Calling the method
         assertDoesNotThrow(() -> fileService.save("folder", file));
