@@ -24,7 +24,7 @@ public class FolderServiceImpl implements FolderService {
 
     @Async
     @Override
-    public void create(String folder) throws IOException {
+    public void save(String folder) throws IOException {
         Path uploadPath = this.getUploadPath();
         Path folderPath = FolderValidator.normalize(uploadPath, folder);
 
@@ -43,7 +43,7 @@ public class FolderServiceImpl implements FolderService {
 
     @Async
     @Override
-    public void remove(String folder) throws IOException {
+    public void deleteByName(String folder) throws IOException {
         Path uploadPath = this.getUploadPath();
         Path folderPath = FolderValidator.normalize(uploadPath, folder);
 
@@ -77,7 +77,7 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
-    public Path retrieve(String folder) throws IOException {
+    public Path getByName(String folder) throws IOException {
         Path uploadPath = this.getUploadPath();
         Path folderPath = FolderValidator.normalize(uploadPath, folder);
 
