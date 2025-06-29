@@ -2,7 +2,7 @@ package com.elleined.file_server_api.file;
 
 import com.elleined.file_server_api.exception.FileServerAPIException;
 import com.elleined.file_server_api.folder.FolderService;
-import com.elleined.file_server_api.folder.FolderValidator;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -32,7 +32,7 @@ public class FileServiceImpl implements FileService {
     private final Tika tika;
 
     @Override
-    public FileDTO save(String folder,
+    public FileDTO save(@NotBlank UUID folder,
                         MultipartFile file) throws IOException {
 
         // Check for multiple file extensions
@@ -97,13 +97,13 @@ public class FileServiceImpl implements FileService {
 
     @Async
     @Override
-    public void deleteByName(String folder,
+    public void deleteByName(@NotBlank UUID folder,
                              String file) throws IOException {
 
     }
 
     @Override
-    public File getByName(String folder,
+    public File getByName(@NotBlank UUID folder,
                           String file) throws IOException {
         return null;
     }

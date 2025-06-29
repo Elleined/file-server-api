@@ -4,7 +4,6 @@ import com.elleined.file_server_api.exception.FileServerAPIException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -24,11 +23,11 @@ public class FolderServiceImpl implements FolderService {
     private String uploadPath;
 
     @Override
-    public String save() throws IOException {
-        String folder = UUID.randomUUID().toString();
+    public UUID save() throws IOException {
+        UUID folder = UUID.randomUUID();
 
         Path uploadPath = this.getUploadPath();
-        Path folderPath = FolderValidator.normalize(uploadPath, folder);
+        Path folderPath = FolderValidator.normalize(uploadPath, folder.toString());
 
         if (FolderValidator.isSymbolicLink(folderPath))
             throw new FileServerAPIException("Folder creation failed! symbolic links are not allowed");
@@ -45,11 +44,10 @@ public class FolderServiceImpl implements FolderService {
         return folder;
     }
 
-    @Async
     @Override
-    public void deleteByName(String folder) throws IOException {
+    public void deleteByName(UUID uuid) throws IOException {
         Path uploadPath = this.getUploadPath();
-        Path folderPath = FolderValidator.normalize(uploadPath, folder);
+        Path folderPath = FolderValidator.normalize(uploadPath, uuid.toString());
 
         if (FolderValidator.isSymbolicLink(folderPath))
             throw new FileServerAPIException("Folder removal failed! symbolic links are not allowed");
@@ -77,13 +75,13 @@ public class FolderServiceImpl implements FolderService {
             }
         });
 
-        log.info("Folder deleted successfully {}", folder);
+        log.info("Folder deleted successfully {}", uuid);
     }
 
     @Override
-    public Path getByName(String folder) throws IOException {
+    public Path getByName(UUID uuid) throws IOException {
         Path uploadPath = this.getUploadPath();
-        Path folderPath = FolderValidator.normalize(uploadPath, folder);
+        Path folderPath = FolderValidator.normalize(uploadPath, uuid.toString());
 
         if (FolderValidator.isSymbolicLink(folderPath))
             throw new FileServerAPIException("Folder retrieving failed! symbolic links are not allowed");

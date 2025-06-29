@@ -25,9 +25,4 @@ public interface FolderValidator {
     static boolean isSymbolicLink(Path folderPath) {
         return Files.isSymbolicLink(folderPath);
     }
-
-    static boolean isAllowed(Path folderPath) {
-        return Files.isWritable(folderPath) &&
-                Files.isReadable(folderPath);
-    }
 }

@@ -1,18 +1,16 @@
 package com.elleined.file_server_api.folder;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.UUID;
 
 public interface FolderService {
-    String save() throws IOException;
-
-    void deleteByName(@Size(max = 36) @NotBlank @Pattern(regexp = "^[a-zA-Z0-9-]+$") String folder) throws IOException;
-
-    Path getByName(@Size(max = 36) @NotBlank @Pattern(regexp = "^[a-zA-Z0-9-]+$") String folder) throws IOException;
+    UUID save() throws IOException;
+    void deleteByName(@Size(max = 36) @NotBlank UUID uuid) throws IOException;
+    Path getByName(@Size(max = 36) @NotBlank UUID uuid) throws IOException;
 
     Path getUploadPath() throws IOException;
 }

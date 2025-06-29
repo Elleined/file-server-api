@@ -6,14 +6,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
 public interface FileService {
-    FileDTO save(@NotBlank String folder,
-                @NotNull MultipartFile file) throws IOException;
+    FileDTO save(@NotBlank UUID folder,
+                 @NotNull MultipartFile file) throws IOException;
 
-    void deleteByName(@NotBlank String folder,
+    void deleteByName(@NotBlank UUID folder,
                       @NotBlank String file) throws IOException;
 
-    File getByName(@NotBlank String folder,
+    File getByName(@NotBlank UUID folder,
                    @NotBlank String file) throws IOException;
 }

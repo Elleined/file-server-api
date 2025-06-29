@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -12,12 +13,12 @@ public class FolderController {
     private final FolderService folderService;
 
     @PostMapping
-    public String save() throws IOException {
+    public UUID save() throws IOException {
         return folderService.save();
     }
 
     @DeleteMapping("/{folder}")
-    public void deleteByName(@PathVariable("folder") String folder) throws IOException {
-        folderService.deleteByName(folder);
+    public void deleteByName(@PathVariable("folder") UUID uuid) throws IOException {
+        folderService.deleteByName(uuid);
     }
 }
