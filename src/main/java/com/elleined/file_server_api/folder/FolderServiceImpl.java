@@ -1,8 +1,6 @@
 package com.elleined.file_server_api.folder;
 
 import com.elleined.file_server_api.exception.FileServerAPIException;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,29 +22,20 @@ public class FolderServiceImpl implements FolderService {
     @Value("${UPLOAD_PATH}")
     private String uploadPath;
 
-    @Value("${FOLDER_MAX_LENGTH}")
-    private int maxLength;
-
     @Async
     @Override
     public void create(String folder) throws IOException {
-        // Getting the upload path
         Path uploadPath = this.getUploadPath();
-
-        // Normalize the folder
         Path folderPath = FolderValidator.normalize(uploadPath, folder);
 
-        // Check if folderPath is symlink
         if (FolderValidator.isSymbolicLink(folderPath))
-            throw new FileServerAPIException("Symbolic links are not allowed");
+            throw new FileServerAPIException("Folder creation failed! symbolic links are not allowed");
 
-        // Checks if the folderPath is within the upload directory
-        if (!FolderValidator.isInUploadPath(uploadPath, folderPath))
-            throw new FileServerAPIException("Attempted traversal attack");
+        if (FolderValidator.isNotInUploadPath(uploadPath, folderPath))
+            throw new FileServerAPIException("Folder creation failed! attempted traversal attack!");
 
-        // Finally check if the folder name already exists
         if (FolderValidator.exists(folderPath))
-            throw new FileServerAPIException("Folder name already exists");
+            throw new FileServerAPIException("Folder creation failed! folder name already exists");
 
         Files.createDirectories(folderPath, PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-r--r--")));
         log.info("Folder created successfully {}", folder);
@@ -55,27 +44,20 @@ public class FolderServiceImpl implements FolderService {
     @Async
     @Override
     public void remove(String folder) throws IOException {
-        //  Getting the upload path
         Path uploadPath = this.getUploadPath();
-
-        // Normalize the folder
         Path folderPath = FolderValidator.normalize(uploadPath, folder);
 
-        // Check if folderPath is symlink
         if (FolderValidator.isSymbolicLink(folderPath))
-            throw new FileServerAPIException("Symbolic links are not allowed");
+            throw new FileServerAPIException("Folder removal failed! symbolic links are not allowed");
 
-        // Checks if the folderPath is within the upload directory
-        if (!FolderValidator.isInUploadPath(uploadPath, folderPath))
-            throw new FileServerAPIException("Attempted traversal attack");
+        if (FolderValidator.isNotInUploadPath(uploadPath, folderPath))
+            throw new FileServerAPIException("Folder removal failed! attempted traversal attack");
 
-        // Check if the folder to be deleted is the upload directory
         if (folderPath.equals(uploadPath))
-            throw new FileServerAPIException("Cannot delete root upload folder");
+            throw new FileServerAPIException("Folder removal failed! cannot delete root upload folder");
 
-        // Finally check if the folder does not exists
         if (!FolderValidator.exists(folderPath))
-            throw new FileServerAPIException("Folder does not exists");
+            throw new FileServerAPIException("Folder removal failed! folder does not exists");
 
         Files.walkFileTree(folderPath, new SimpleFileVisitor<>() {
             @Override
@@ -96,23 +78,17 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     public Path retrieve(String folder) throws IOException {
-        //  Getting the upload path
         Path uploadPath = this.getUploadPath();
-
-        // Normalize the folder
         Path folderPath = FolderValidator.normalize(uploadPath, folder);
 
-        // Check if folderPath is symlink
         if (FolderValidator.isSymbolicLink(folderPath))
-            throw new FileServerAPIException("Symbolic links are not allowed");
+            throw new FileServerAPIException("Folder retrieving failed! symbolic links are not allowed");
 
-        // Checks if the folderPath is within the upload directory
-        if (!FolderValidator.isInUploadPath(uploadPath, folderPath))
-            throw new FileServerAPIException("Attempted traversal attack");
+        if (FolderValidator.isNotInUploadPath(uploadPath, folderPath))
+            throw new FileServerAPIException("Folder retrieving failed! attempted traversal attack");
 
-        // Finally check if the folder does not exists
         if (!FolderValidator.exists(folderPath))
-            throw new FileServerAPIException("Folder does not exists");
+            throw new FileServerAPIException("Folder retrieving failed! folder does not exists");
 
         return folderPath;
     }

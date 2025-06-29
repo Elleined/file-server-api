@@ -14,16 +14,16 @@ public interface FolderValidator {
         return uploadPath.resolve(normalizePath).normalize();
     }
 
-    static boolean isSymbolicLink(Path folderPath) {
-        return Files.isSymbolicLink(folderPath);
-    }
-
-    static boolean isInUploadPath(Path uploadPath, Path folderPath) {
-        return folderPath.startsWith(uploadPath);
+    static boolean isNotInUploadPath(Path uploadPath, Path folderPath) {
+        return !folderPath.startsWith(uploadPath);
     }
 
     static boolean exists(Path folderPath) {
         return Files.exists(folderPath, LinkOption.NOFOLLOW_LINKS);
+    }
+
+    static boolean isSymbolicLink(Path folderPath) {
+        return Files.isSymbolicLink(folderPath);
     }
 
     static boolean isAllowed(Path folderPath) {
