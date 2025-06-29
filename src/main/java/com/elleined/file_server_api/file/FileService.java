@@ -11,9 +11,9 @@ public interface FileService {
     String save(@NotBlank String folder,
                 @NotNull MultipartFile file) throws IOException;
 
-    void delete(@NotBlank String folder,
-                @NotBlank String file) throws IOException;
+    void deleteByName(@NotBlank String folder,
+                      @NotBlank String file) throws IOException;
 
-    File get(@NotBlank String folder,
-             @NotBlank String file) throws IOException;
+    File getByName(@NotBlank String folder,
+                   @NotBlank String file) throws IOException;
 }

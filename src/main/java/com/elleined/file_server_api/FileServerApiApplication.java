@@ -13,9 +13,4 @@ public class FileServerApiApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(FileServerApiApplication.class, args);
 	}
-
-	@Bean
-	public Tika tika() {
-		return new Tika();
-	}
 }
