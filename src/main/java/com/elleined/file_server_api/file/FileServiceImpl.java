@@ -2,27 +2,25 @@ package com.elleined.file_server_api.file;
 
 import com.elleined.file_server_api.exception.FileServerAPIException;
 import com.elleined.file_server_api.folder.FolderService;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.tika.Tika;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.unit.DataSize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
@@ -34,8 +32,11 @@ public class FileServiceImpl implements FileService {
     private final FolderService folderService;
     private final Tika tika;
 
+    @Value("${MAX_FILE_SIZE_IN_MB}")
+    private DataSize maxFileSize;
+
     @Override
-    public FileDTO save(@NotBlank UUID folder,
+    public FileDTO save(UUID folder,
                         MultipartFile file) throws NoSuchAlgorithmException, IOException {
 
         // Check for multiple file extensions
@@ -50,6 +51,8 @@ public class FileServiceImpl implements FileService {
             throw new FileServerAPIException("File upload failed! only the following file extensions are allowed: " + String.join(", ", allowedFileExtensions));
 
         // Check file size limit
+        if (file.getSize() > maxFileSize.toBytes())
+            throw new FileServerAPIException("File upload failed! file size limit exceeded");
 
         // Check mime type extension
         String realMimeType = tika.detect(file.getInputStream());
@@ -83,7 +86,7 @@ public class FileServiceImpl implements FileService {
         Path filePath = folderPath.resolve(normalizePath).normalize();
 
         // Checksum checking (for deduplication and prevent tampering)
-        String checksum = computeSHA256Base64UrlSafe(file);
+        String checksum = FileService.computeChecksum(file);
         System.out.println(checksum);
 
         // Re-encoding the file to remove embedded code
@@ -102,30 +105,25 @@ public class FileServiceImpl implements FileService {
 
     @Async
     @Override
-    public void deleteByName(@NotBlank UUID folder,
-                             String file) throws IOException {
+    public void deleteByName(UUID folder,
+                             String file) {
 
     }
 
     @Override
-    public File getByName(@NotBlank UUID folder,
-                          String file) throws IOException {
+    public MultipartFile getByName(UUID folder,
+                                   String file) {
+
         return null;
     }
 
-    public static String computeSHA256Base64UrlSafe(MultipartFile file) throws NoSuchAlgorithmException, IOException {
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+    @Override
+    public boolean isChecksumMatched(UUID folder,
+                                     String file,
+                                     String checksum) throws IOException, NoSuchAlgorithmException {
 
-        try (InputStream is = file.getInputStream()) {
-            byte[] buffer = new byte[8192];
-            int bytesRead;
-
-            while ((bytesRead = is.read(buffer)) != -1) {
-                digest.update(buffer, 0, bytesRead);
-            }
-        }
-
-        byte[] hash = digest.digest();
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
+        MultipartFile fetchedFile = this.getByName(folder, file);
+        String fetchedFileChecksum = FileService.computeChecksum(fetchedFile);
+        return fetchedFileChecksum.equals(checksum);
     }
 }

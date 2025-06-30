@@ -2,6 +2,7 @@ package com.elleined.file_server_api.file;
 
 import com.elleined.file_server_api.folder.FolderService;
 import org.apache.tika.Tika;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -9,6 +10,8 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -30,6 +33,11 @@ class FileServiceImplTest {
 
     @InjectMocks
     private FileServiceImpl fileService;
+
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(fileService, "maxFileSize", DataSize.ofMegabytes(3));
+    }
 
 
     @Test
