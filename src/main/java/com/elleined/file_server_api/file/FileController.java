@@ -39,23 +39,12 @@ public class FileController {
         fileService.deleteByName(folder, file);
     }
 
-    @GetMapping("/{file.+}/verify-checksum")
+    @GetMapping("/{file.+}")
     public ResponseEntity<StreamingResponseBody> getByName(@PathVariable("folder") UUID folder,
-                                                           @PathVariable("file") String file) {
+                                                           @PathVariable("file") String file) throws IOException {
 
         MultipartFile fetchedFile = fileService.getByName(folder, file);
-        if (fetchedFile == null || fetchedFile.isEmpty())
-            throw new FileServerAPIException("File retrieval failed! file does not exists");
-
-        StreamingResponseBody responseBody = outputStream -> {
-            try (InputStream inputStream = fetchedFile.getInputStream()) {
-                byte[] buffer = new byte[8192];
-                int bytesRead;
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
-                }
-            }
-        };
+        StreamingResponseBody responseBody = FileService.stream(fetchedFile);
 
         String contentType = tika.detect(file);
         String contentDisposition = contentType.startsWith("image/")
@@ -65,7 +54,7 @@ public class FileController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition + "; filename=\"" + fetchedFile.getOriginalFilename() + "\"")
                 .contentLength(file.length())
-                .contentType(MediaType.valueOf(contentType))
+                .contentType(MediaType.parseMediaType(contentType))
                 .body(responseBody);
     }
 

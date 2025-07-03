@@ -17,6 +17,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
@@ -86,7 +87,7 @@ public class FileServiceImpl implements FileService {
         Path filePath = folderPath.resolve(normalizePath).normalize();
 
         // Checksum checking (for deduplication and prevent tampering)
-        String checksum = FileService.computeChecksum(file);
+        String checksum = FileUtil.computeChecksum(file);
         System.out.println(checksum);
 
         // Re-encoding the file to remove embedded code
@@ -99,7 +100,7 @@ public class FileServiceImpl implements FileService {
         // Set permission to 644 for rw-r--r--
         Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("rw-r--r--");
         Files.setPosixFilePermissions(filePath, permissions);
-
+        
         return new FileDTO(fileName, realExtension, checksum, realMimeType);
     }
 
@@ -112,7 +113,18 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public MultipartFile getByName(UUID folder,
-                                   String file) {
+                                   String file) throws IOException {
+
+        // Resolving the file path for saving
+        Path folderPath = folderService.getByName(folder);
+        Path normalizePath = Paths.get(file.strip())
+                .getFileName()
+                .normalize();
+        Path filePath = folderPath.resolve(normalizePath).normalize();
+
+        // Checking if file exists
+        if (!Files.exists(filePath,  LinkOption.NOFOLLOW_LINKS))
+            throw new FileServerAPIException("File reading failed! file does not exists");
 
         return null;
     }
@@ -123,7 +135,7 @@ public class FileServiceImpl implements FileService {
                                      String checksum) throws IOException, NoSuchAlgorithmException {
 
         MultipartFile fetchedFile = this.getByName(folder, file);
-        String fetchedFileChecksum = FileService.computeChecksum(fetchedFile);
+        String fetchedFileChecksum = FileUtil.computeChecksum(fetchedFile);
         return fetchedFileChecksum.equals(checksum);
     }
 }

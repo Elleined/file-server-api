@@ -2,7 +2,9 @@ package com.elleined.file_server_api.file;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,29 +18,12 @@ public interface FileService {
                  @NotNull MultipartFile file) throws NoSuchAlgorithmException, IOException;
 
     void deleteByName(@NotBlank UUID folder,
-                      @NotBlank String file);
+                      @Size(max = 41) @NotBlank String file);
 
     MultipartFile getByName(@NotBlank UUID folder,
-                            @NotBlank String file);
+                            @Size(max = 41) @NotBlank String file) throws IOException;
 
     boolean isChecksumMatched(@NotBlank UUID folder,
-                              @NotBlank String file,
-                              @NotBlank String checksum) throws IOException, NoSuchAlgorithmException;
-
-
-    static String computeChecksum(MultipartFile file) throws NoSuchAlgorithmException, IOException {
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-
-        try (InputStream is = file.getInputStream()) {
-            byte[] buffer = new byte[8192]; // 8kb
-            int bytesRead;
-
-            while ((bytesRead = is.read(buffer)) != -1) {
-                digest.update(buffer, 0, bytesRead);
-            }
-        }
-
-        byte[] hash = digest.digest();
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
-    }
+                              @Size(max = 41) @NotBlank String file,
+                              @Size(max = 41) @NotBlank String checksum) throws IOException, NoSuchAlgorithmException;
 }
