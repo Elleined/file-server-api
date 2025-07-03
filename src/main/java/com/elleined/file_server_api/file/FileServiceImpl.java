@@ -98,7 +98,7 @@ public class FileServiceImpl implements FileService {
         }
 
         // Set permission to 644 for rw-r--r--
-        Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("rw-r--r--");
+        Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("rw-------");
         Files.setPosixFilePermissions(filePath, permissions);
         
         return new FileDTO(fileName, realExtension, checksum, realMimeType);

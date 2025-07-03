@@ -44,7 +44,7 @@ public class FileController {
                                                            @PathVariable("file") String file) throws IOException {
 
         MultipartFile fetchedFile = fileService.getByName(folder, file);
-        StreamingResponseBody responseBody = FileService.stream(fetchedFile);
+        StreamingResponseBody responseBody = FileUtil.stream(fetchedFile);
 
         String contentType = tika.detect(file);
         String contentDisposition = contentType.startsWith("image/")

@@ -4,9 +4,11 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.Set;
 import java.util.UUID;
 
-public interface FolderValidator {
+public interface FolderUtil {
     static Path normalize(Path destinationPath, UUID folder) {
         Path normalizePath = Paths.get(folder.toString())
                 .getFileName()
@@ -17,13 +19,5 @@ public interface FolderValidator {
 
     static boolean isNotInUploadPath(Path destinationPath, Path folderPath) {
         return !folderPath.startsWith(destinationPath);
-    }
-
-    static boolean exists(Path folderPath) {
-        return Files.exists(folderPath, LinkOption.NOFOLLOW_LINKS);
-    }
-
-    static boolean isSymbolicLink(Path folderPath) {
-        return Files.isSymbolicLink(folderPath);
     }
 }

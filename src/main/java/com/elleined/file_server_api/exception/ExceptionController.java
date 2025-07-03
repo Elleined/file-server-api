@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
+import java.io.IOException;
 import java.util.List;
 
 @ControllerAdvice
@@ -20,7 +21,12 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(FileServerAPIException.class)
-    public ResponseEntity<String> handleSystemException(FileServerAPIException ex) {
+    public ResponseEntity<String> handleFileServerAPIException(FileServerAPIException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<String> handleIOException(IOException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
