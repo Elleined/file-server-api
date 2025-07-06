@@ -1,39 +1,37 @@
 package com.elleined.file_server_api.folder;
 
-import org.junit.jupiter.api.BeforeEach;
+import com.elleined.file_server_api.exception.FileServerAPIException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.PosixFilePermission;
-import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FolderServiceImplTest {
 
+    @Mock
+    private FolderUtil folderUtil;
+
     @InjectMocks
     private FolderServiceImpl folderService;
 
-    // Don't modify
-    private final static String uploadPath = "./src/test/resources";
-
-    @BeforeEach
-    void setUp() {
-        ReflectionTestUtils.setField(folderService, "uploadPath", uploadPath);
-    }
+    @TempDir
+    private Path tempDir;
 
     @Test
-    void save_AndGet_AndRemove_HappyPath() {
+    void save_AndGet_AndRemove_HappyPath() throws IOException {
         // Pre defined values
 
         // Expected Value
@@ -41,6 +39,10 @@ class FolderServiceImplTest {
         // Mock data
 
         // Set up method
+        when(folderUtil.getUploadPath()).thenReturn(tempDir);
+        when(folderUtil.isInUploadPath(any(Path.class))).thenReturn(true);
+        when(folderUtil.isSymbolicLink(any(Path.class))).thenReturn(false);
+        when(folderUtil.exists(any(Path.class))).thenReturn(false);
 
         // Stubbing methods
 
@@ -50,6 +52,10 @@ class FolderServiceImplTest {
         assertDoesNotThrow(() -> folderService.deleteByName(folder));
 
         // Behavior Verifications
+        verify(folderUtil, times(3)).getUploadPath();
+        verify(folderUtil, times(3)).isInUploadPath(any(Path.class));
+        verify(folderUtil).isSymbolicLink(any(Path.class));
+        verify(folderUtil).exists(any(Path.class));
 
         // Assertions
         assertNotNull(folder);
@@ -57,7 +63,7 @@ class FolderServiceImplTest {
     }
 
     @Test
-    void save_ShouldThrowFileServerException_ForNotInUploadPath() {
+    void save_HappyPath() throws IOException {
         // Pre defined values
 
         // Expected Value
@@ -65,18 +71,52 @@ class FolderServiceImplTest {
         // Mock data
 
         // Set up method
+        when(folderUtil.getUploadPath()).thenReturn(tempDir);
+        when(folderUtil.isInUploadPath(any(Path.class))).thenReturn(true);
+        when(folderUtil.isSymbolicLink(any(Path.class))).thenReturn(false);
+        when(folderUtil.exists(any(Path.class))).thenReturn(false);
 
         // Stubbing methods
 
         // Calling the method
+        UUID folder = assertDoesNotThrow(() -> folderService.save());
 
         // Behavior Verifications
+        verify(folderUtil).getUploadPath();
+        verify(folderUtil).isInUploadPath(any(Path.class));
+        verify(folderUtil).isSymbolicLink(any(Path.class));
+        verify(folderUtil).exists(any(Path.class));
+
+        // Assertions
+        assertNotNull(folder);
+    }
+
+    @Test
+    void save_ShouldThrowFileServerException_IfNotInUploadPath() throws IOException {
+        // Pre defined values
+
+        // Expected Value
+
+        // Mock data
+
+        // Set up method
+        when(folderUtil.getUploadPath()).thenReturn(tempDir);
+        when(folderUtil.isInUploadPath(any(Path.class))).thenReturn(false);
+
+        // Stubbing methods
+
+        // Calling the method
+        assertThrowsExactly(FileServerAPIException.class, () -> folderService.save());
+
+        // Behavior Verifications
+        verify(folderUtil).getUploadPath();
+        verify(folderUtil).isInUploadPath(any(Path.class));
 
         // Assertions
     }
 
     @Test
-    void deleteByName_ShouldThrowConstraintViolationException_ForFolderLengthMoreThan37Characters() {
+    void save_ShouldThrowFileServerException_IfFolderIsSymbolicLink() throws IOException {
         // Pre defined values
 
         // Expected Value
@@ -84,43 +124,79 @@ class FolderServiceImplTest {
         // Mock data
 
         // Set up method
+        when(folderUtil.getUploadPath()).thenReturn(tempDir);
+        when(folderUtil.isInUploadPath(any(Path.class))).thenReturn(true);
+        when(folderUtil.isSymbolicLink(any(Path.class))).thenReturn(true);
 
         // Stubbing methods
 
         // Calling the method
+        assertThrowsExactly(FileServerAPIException.class, () -> folderService.save());
 
         // Behavior Verifications
+        verify(folderUtil).getUploadPath();
+        verify(folderUtil).isInUploadPath(any(Path.class));
+        verify(folderUtil).isSymbolicLink(any(Path.class));
 
         // Assertions
     }
 
     @Test
-    void getUploadPath_HappyPath() throws IOException {
+    void save_ShouldThrowFileServerException_IfFolderAlreadyExists() throws IOException {
         // Pre defined values
 
         // Expected Value
 
         // Mock data
-        Path expected = Paths.get(uploadPath)
-                .toRealPath(LinkOption.NOFOLLOW_LINKS);
 
-        Set<PosixFilePermission> expectedPathPermissions = Set.of(
-                PosixFilePermission.OWNER_READ,
-                PosixFilePermission.OWNER_WRITE,
-                PosixFilePermission.OWNER_EXECUTE
-        );
         // Set up method
+        when(folderUtil.getUploadPath()).thenReturn(tempDir);
+        when(folderUtil.isInUploadPath(any(Path.class))).thenReturn(true);
+        when(folderUtil.isSymbolicLink(any(Path.class))).thenReturn(false);
+        when(folderUtil.exists(any(Path.class))).thenReturn(true);
 
         // Stubbing methods
 
         // Calling the method
-        Path actual = assertDoesNotThrow(() -> folderService.getUploadPath());
+        assertThrowsExactly(FileServerAPIException.class, () -> folderService.save());
 
-        Set<PosixFilePermission> actualPathPermissions = Files.getPosixFilePermissions(actual, LinkOption.NOFOLLOW_LINKS);
         // Behavior Verifications
+        verify(folderUtil).getUploadPath();
+        verify(folderUtil).isInUploadPath(any(Path.class));
+        verify(folderUtil).isSymbolicLink(any(Path.class));
+        verify(folderUtil).exists(any(Path.class));
 
         // Assertions
-        assertEquals(expected, actual);
-        assertEquals(expectedPathPermissions, actualPathPermissions, "Change the uploadPath folder permission to 700 or rwx------ to pass this test");
+    }
+
+    @Test
+    void deleteByName_HappyPath() throws IOException {
+        // Pre defined values
+
+        // Expected Value
+
+        // Mock data
+
+        // Set up method
+
+        // Stubbing methods
+        when(folderUtil.getUploadPath()).thenReturn(tempDir);
+        when(folderUtil.isInUploadPath(any(Path.class))).thenReturn(true);
+
+        // Calling the method
+        UUID folder = UUID.randomUUID();
+        Path folderPath = tempDir.resolve(folder.toString());
+        Files.createDirectory(folderPath);
+        assertTrue(Files.exists(folderPath, LinkOption.NOFOLLOW_LINKS));
+
+
+        assertDoesNotThrow(() -> folderService.deleteByName(folder));
+
+        // Behavior Verifications
+        verify(folderUtil).getUploadPath();
+        verify(folderUtil).isInUploadPath(any(Path.class));
+
+        // Assertions
+        assertFalse(Files.exists(folderPath, LinkOption.NOFOLLOW_LINKS));
     }
 }

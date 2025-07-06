@@ -28,16 +28,16 @@ public class FolderServiceImpl implements FolderService {
         Path uploadPath = folderUtil.getUploadPath();
         Path folderPath = uploadPath.resolve(folder.toString()).normalize();
 
-        if (FolderUtil.isNotInUploadPath(uploadPath, folderPath))
+        if (!folderUtil.isInUploadPath(folderPath))
             throw new FileServerAPIException("Folder creation failed! attempted traversal attack!");
 
-        if (Files.isSymbolicLink(folderPath))
+        if (folderUtil.isSymbolicLink(folderPath))
             throw new FileServerAPIException("Folder creation failed! symbolic links are not allowed");
 
-        if (Files.exists(folderPath, LinkOption.NOFOLLOW_LINKS))
+        if (folderUtil.exists(folderPath))
             throw new FileServerAPIException("Folder creation failed! folder name already exists");
 
-        Files.createDirectories(folderPath, PosixFilePermissions.asFileAttribute(
+        Files.createDirectory(folderPath, PosixFilePermissions.asFileAttribute(
                 PosixFilePermissions.fromString("rwx------")));
 
         log.info("Folder created successfully {}", folder);
@@ -51,7 +51,7 @@ public class FolderServiceImpl implements FolderService {
         Path folderPath = uploadPath.resolve(folder.toString())
                 .toRealPath(LinkOption.NOFOLLOW_LINKS);
 
-        if (FolderUtil.isNotInUploadPath(uploadPath, folderPath))
+        if (!folderUtil.isInUploadPath(folderPath))
             throw new FileServerAPIException("Folder removal failed! attempted traversal attack");
 
         if (folderPath.equals(uploadPath))
@@ -80,7 +80,7 @@ public class FolderServiceImpl implements FolderService {
         Path folderPath = uploadPath.resolve(folder.toString())
                 .toRealPath(LinkOption.NOFOLLOW_LINKS);
 
-        if (FolderUtil.isNotInUploadPath(uploadPath, folderPath))
+        if (!folderUtil.isInUploadPath(folderPath))
             throw new FileServerAPIException("Folder retrieving failed! attempted traversal attack");
 
         return folderPath;

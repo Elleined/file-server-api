@@ -5,9 +5,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +20,18 @@ public class FolderUtilImpl implements FolderUtil {
     private String uploadPath;
 
     public Path getUploadPath() throws IOException {
-        return Paths.get(uploadPath.strip())
+        final Path path = Paths.get(uploadPath.strip())
                 .toRealPath(LinkOption.NOFOLLOW_LINKS);
+
+        final Set<PosixFilePermission> permissions = Set.of(
+                PosixFilePermission.OWNER_READ,
+                PosixFilePermission.OWNER_WRITE,
+                PosixFilePermission.OWNER_EXECUTE
+        );
+
+        if (!Files.getPosixFilePermissions(path, LinkOption.NOFOLLOW_LINKS).equals(permissions))
+            Files.setPosixFilePermissions(path, permissions);
+
+        return path;
     }
 }
