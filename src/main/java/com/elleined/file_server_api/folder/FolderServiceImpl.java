@@ -3,7 +3,6 @@ package com.elleined.file_server_api.folder;
 import com.elleined.file_server_api.exception.FileServerAPIException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -19,16 +18,15 @@ import java.util.UUID;
 @Validated
 @RequiredArgsConstructor
 public class FolderServiceImpl implements FolderService {
-
-    @Value("${UPLOAD_PATH}")
-    private String uploadPath;
+    
+    private final FolderUtil folderUtil;
 
     @Override
     public UUID save() throws IOException {
         UUID folder = UUID.randomUUID();
 
-        Path uploadPath = this.getUploadPath();
-        Path folderPath = FolderUtil.normalize(uploadPath, folder);
+        Path uploadPath = folderUtil.getUploadPath();
+        Path folderPath = uploadPath.resolve(folder.toString()).normalize();
 
         if (FolderUtil.isNotInUploadPath(uploadPath, folderPath))
             throw new FileServerAPIException("Folder creation failed! attempted traversal attack!");
@@ -39,7 +37,9 @@ public class FolderServiceImpl implements FolderService {
         if (Files.exists(folderPath, LinkOption.NOFOLLOW_LINKS))
             throw new FileServerAPIException("Folder creation failed! folder name already exists");
 
-        Files.createDirectories(folderPath, PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rwx------")));
+        Files.createDirectories(folderPath, PosixFilePermissions.asFileAttribute(
+                PosixFilePermissions.fromString("rwx------")));
+
         log.info("Folder created successfully {}", folder);
         return folder;
     }
@@ -47,8 +47,8 @@ public class FolderServiceImpl implements FolderService {
     @Async
     @Override
     public void deleteByName(UUID folder) throws IOException {
-        Path uploadPath = this.getUploadPath();
-        Path folderPath = FolderUtil.normalize(uploadPath, folder)
+        Path uploadPath = folderUtil.getUploadPath();
+        Path folderPath = uploadPath.resolve(folder.toString())
                 .toRealPath(LinkOption.NOFOLLOW_LINKS);
 
         if (FolderUtil.isNotInUploadPath(uploadPath, folderPath))
@@ -76,8 +76,8 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     public Path getByName(UUID folder) throws IOException {
-        Path uploadPath = this.getUploadPath();
-        Path folderPath = FolderUtil.normalize(uploadPath, folder)
+        Path uploadPath = folderUtil.getUploadPath();
+        Path folderPath = uploadPath.resolve(folder.toString())
                 .toRealPath(LinkOption.NOFOLLOW_LINKS);
 
         if (FolderUtil.isNotInUploadPath(uploadPath, folderPath))
@@ -86,9 +86,4 @@ public class FolderServiceImpl implements FolderService {
         return folderPath;
     }
 
-    @Override
-    public Path getUploadPath() throws IOException {
-        return Paths.get(uploadPath.strip())
-                .toRealPath(LinkOption.NOFOLLOW_LINKS);
-    }
 }

@@ -1,11 +1,5 @@
 package com.elleined.file_server_api.folder;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,12 +16,15 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.util.Set;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 @ExtendWith(MockitoExtension.class)
 class FolderServiceImplTest {
 
     @InjectMocks
     private FolderServiceImpl folderService;
 
+    // Don't modify
     private final static String uploadPath = "./src/test/resources";
 
     @BeforeEach
@@ -60,7 +57,26 @@ class FolderServiceImplTest {
     }
 
     @Test
-    void save_ShouldThrow_ForFolderLengthMoreThan37Characters() {
+    void save_ShouldThrowFileServerException_ForNotInUploadPath() {
+        // Pre defined values
+
+        // Expected Value
+
+        // Mock data
+
+        // Set up method
+
+        // Stubbing methods
+
+        // Calling the method
+
+        // Behavior Verifications
+
+        // Assertions
+    }
+
+    @Test
+    void deleteByName_ShouldThrowConstraintViolationException_ForFolderLengthMoreThan37Characters() {
         // Pre defined values
 
         // Expected Value

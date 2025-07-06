@@ -6,11 +6,13 @@ File Server API written in Java
 1. Run the local project
     - Supply the right environment variable in deployment/dev/.env first!
     - Add it to IDE environment variables
+    - Make sure uploadPath has 700 permissions or rwx------
 
 ## prod
 1. Run the project
-    - Supply the right environment variable in deployment/prod/.env first!
-    - Run these command
+   - Supply the right environment variable in deployment/prod/.env first!
+   - Make sure uploadPath has 700 permissions or rwx------
+   - Run these command
 ```
 docker compose up -d
 ```

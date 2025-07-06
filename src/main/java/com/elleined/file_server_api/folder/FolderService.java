@@ -15,6 +15,4 @@ public interface FolderService {
 
     Path getByName(@Size(max = 36)
                    @NotBlank UUID folder) throws IOException;
-
-    Path getUploadPath() throws IOException;
 }
