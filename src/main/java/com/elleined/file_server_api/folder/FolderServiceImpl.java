@@ -28,7 +28,7 @@ public class FolderServiceImpl implements FolderService {
 
         Path folder = Files.createDirectory(folderPath, PosixFilePermissions.asFileAttribute(
                 PosixFilePermissions.fromString("rwx------"))
-        );
+        ).toRealPath(LinkOption.NOFOLLOW_LINKS);
 
         log.info("Folder created successfully {}", folder);
         return UUID.fromString(folder.getFileName().toString());
