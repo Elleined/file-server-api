@@ -1,6 +1,5 @@
 package com.elleined.file_server_api.folder;
 
-import com.elleined.file_server_api.exception.FileServerAPIException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,31 +22,23 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     public UUID save() throws IOException {
-        UUID folder = UUID.randomUUID();
+        Path folderPath = folderUtil.getUploadPath()
+                .resolve(UUID.randomUUID().toString())
+                .normalize();
 
-        Path uploadPath = folderUtil.getUploadPath();
-        Path folderPath = uploadPath.resolve(folder.toString()).normalize();
-
-        if (!folderUtil.isInUploadPath(folderPath))
-            throw new FileServerAPIException("Folder creation failed! attempted traversal attack!");
-
-        Files.createDirectory(folderPath, PosixFilePermissions.asFileAttribute(
-                PosixFilePermissions.fromString("rwx------")));
+        Path folder = Files.createDirectory(folderPath, PosixFilePermissions.asFileAttribute(
+                PosixFilePermissions.fromString("rwx------"))
+        );
 
         log.info("Folder created successfully {}", folder);
-        return folder;
+        return UUID.fromString(folder.getFileName().toString());
     }
 
     @Override
     public Path getByName(UUID folder) throws IOException {
-        Path uploadPath = folderUtil.getUploadPath();
-        Path folderPath = uploadPath.resolve(folder.toString())
+        return folderUtil.getUploadPath()
+                .resolve(folder.toString())
                 .toRealPath(LinkOption.NOFOLLOW_LINKS);
-
-        if (!folderUtil.isInUploadPath(folderPath))
-            throw new FileServerAPIException("Folder retrieving failed! attempted traversal attack");
-
-        return folderPath;
     }
 
 }

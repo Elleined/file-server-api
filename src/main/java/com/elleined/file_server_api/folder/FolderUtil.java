@@ -5,8 +5,4 @@ import java.nio.file.Path;
 
 public interface FolderUtil {
     Path getUploadPath() throws IOException;
-
-    default boolean isInUploadPath(Path folderPath) throws IOException {
-        return folderPath.startsWith(getUploadPath());
-    }
 }

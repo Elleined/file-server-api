@@ -9,7 +9,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Set;
 
@@ -98,51 +101,5 @@ class FolderUtilImplTest {
         // Behavior Verifications
 
         // Assertions
-    }
-
-    @Test
-    void isInUploadPath_HappyPath() throws IOException {
-        // Pre defined values
-
-        // Expected Value
-
-        // Mock data
-
-        // Set up method
-        Path folderPath = folderUtil.getUploadPath()
-                .resolve("folder")
-                .normalize();
-
-        // Stubbing methods
-
-        // Calling the method
-        boolean isInUploadPath = assertDoesNotThrow(() -> folderUtil.isInUploadPath(folderPath));
-
-        // Behavior Verifications
-
-        // Assertions
-        assertTrue(isInUploadPath, "Provided folderPath is not inside the uploadPath folder");
-    }
-
-    @Test
-    void isInUploadPath_ShouldReturnFalse_IfPathIsNotResolve_WithGetUploadPathMethod() {
-        // Pre defined values
-
-        // Expected Value
-
-        // Mock data
-
-        // Set up method
-        Path rawPath = Paths.get("../../../traversal/attack/and/raw/path");
-
-        // Stubbing methods
-
-        // Calling the method
-        boolean isInUploadPath = assertDoesNotThrow(() -> folderUtil.isInUploadPath(rawPath));
-
-        // Behavior Verifications
-
-        // Assertions
-        assertFalse(isInUploadPath);
     }
 }
