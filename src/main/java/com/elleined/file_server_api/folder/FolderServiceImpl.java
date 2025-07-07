@@ -61,12 +61,14 @@ public class FolderServiceImpl implements FolderService {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                 Files.delete(file);
+                log.debug("File deleted successfully {}", file.getFileName());
                 return FileVisitResult.CONTINUE;
             }
 
             @Override
             public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
                 Files.delete(dir);
+                log.debug("Directory deleted successfully {}", dir.getFileName());
                 return FileVisitResult.CONTINUE;
             }
         });

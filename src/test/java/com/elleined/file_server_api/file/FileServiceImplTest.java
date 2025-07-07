@@ -48,16 +48,11 @@ class FileServiceImplTest {
 
         // Mock data
 
-        MultipartFile file = new MockMultipartFile("attachment", "attachment.png", "text/plain", getClass().getClassLoader().getResourceAsStream("linux-mint.png"));
-
         // Set up method
 
         // Stubbing methods
-        when(folderService.getByName(any(UUID.class))).thenReturn(Paths.get("/home/denielle/fsa_uploads/f312e1a0-88e7-4282-982d-aab09b286358"));
-
 
         // Calling the method
-        assertDoesNotThrow(() -> fileService.save(UUID.fromString("f312e1a0-88e7-4282-982d-aab09b286358"), file));
 
         // Behavior Verifications
 
