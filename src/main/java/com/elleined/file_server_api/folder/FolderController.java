@@ -16,9 +16,4 @@ public class FolderController {
     public UUID save() throws IOException {
         return folderService.save();
     }
-
-    @DeleteMapping("/{folder}")
-    public void deleteByName(@PathVariable("folder") UUID folder) throws IOException {
-        folderService.deleteByName(folder);
-    }
 }

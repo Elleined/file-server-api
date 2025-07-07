@@ -10,9 +10,6 @@ import java.util.UUID;
 public interface FolderService {
     UUID save() throws IOException;
 
-    void deleteByName(@Size(max = 36)
-                      @NotBlank UUID folder) throws IOException;
-
     Path getByName(@Size(max = 36)
                    @NotBlank UUID folder) throws IOException;
 }

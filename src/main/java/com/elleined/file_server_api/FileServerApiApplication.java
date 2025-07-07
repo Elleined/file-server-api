@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @SpringBootApplication
 public class FileServerApiApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(FileServerApiApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(FileServerApiApplication.class, args);
+    }
 }

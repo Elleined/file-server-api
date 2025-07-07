@@ -100,7 +100,7 @@ public class FileServiceImpl implements FileService {
         // Set permission to 644 for rw-r--r--
         Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("r--------");
         Files.setPosixFilePermissions(filePath, permissions);
-        
+
         return new FileDTO(fileName, realExtension, checksum, realMimeType);
     }
 
@@ -123,7 +123,7 @@ public class FileServiceImpl implements FileService {
         Path filePath = folderPath.resolve(normalizePath).normalize();
 
         // Checking if file exists
-        if (!Files.exists(filePath,  LinkOption.NOFOLLOW_LINKS))
+        if (!Files.exists(filePath, LinkOption.NOFOLLOW_LINKS))
             throw new FileServerAPIException("File reading failed! file does not exists");
 
         return null;

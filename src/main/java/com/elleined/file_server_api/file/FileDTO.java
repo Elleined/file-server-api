@@ -2,7 +2,7 @@ package com.elleined.file_server_api.file;
 
 import java.time.LocalDateTime;
 
-public record FileDTO (
+public record FileDTO(
         LocalDateTime uploadedAt,
         String fileName,
         String fileExtension,
