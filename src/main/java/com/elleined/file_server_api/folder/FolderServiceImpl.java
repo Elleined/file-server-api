@@ -31,12 +31,6 @@ public class FolderServiceImpl implements FolderService {
         if (!folderUtil.isInUploadPath(folderPath))
             throw new FileServerAPIException("Folder creation failed! attempted traversal attack!");
 
-        if (folderUtil.isSymbolicLink(folderPath))
-            throw new FileServerAPIException("Folder creation failed! symbolic links are not allowed");
-
-        if (folderUtil.exists(folderPath))
-            throw new FileServerAPIException("Folder creation failed! folder name already exists");
-
         Files.createDirectory(folderPath, PosixFilePermissions.asFileAttribute(
                 PosixFilePermissions.fromString("rwx------")));
 

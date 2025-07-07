@@ -37,8 +37,6 @@ class FolderServiceImplTest {
         // Set up method
         when(folderUtil.getUploadPath()).thenReturn(tempDir);
         when(folderUtil.isInUploadPath(any(Path.class))).thenReturn(true);
-        when(folderUtil.isSymbolicLink(any(Path.class))).thenReturn(false);
-        when(folderUtil.exists(any(Path.class))).thenReturn(false);
 
         // Stubbing methods
 
@@ -48,8 +46,6 @@ class FolderServiceImplTest {
         // Behavior Verifications
         verify(folderUtil).getUploadPath();
         verify(folderUtil).isInUploadPath(any(Path.class));
-        verify(folderUtil).isSymbolicLink(any(Path.class));
-        verify(folderUtil).exists(any(Path.class));
 
         // Assertions
         assertNotNull(folder);
@@ -75,60 +71,6 @@ class FolderServiceImplTest {
         // Behavior Verifications
         verify(folderUtil).getUploadPath();
         verify(folderUtil).isInUploadPath(any(Path.class));
-
-        // Assertions
-    }
-
-    @Test
-    void save_ShouldThrowFileServerException_IfFolderIsSymbolicLink(@TempDir Path tempDir) throws IOException {
-        // Pre defined values
-
-        // Expected Value
-
-        // Mock data
-
-        // Set up method
-        when(folderUtil.getUploadPath()).thenReturn(tempDir);
-        when(folderUtil.isInUploadPath(any(Path.class))).thenReturn(true);
-        when(folderUtil.isSymbolicLink(any(Path.class))).thenReturn(true);
-
-        // Stubbing methods
-
-        // Calling the method
-        assertThrowsExactly(FileServerAPIException.class, () -> folderService.save());
-
-        // Behavior Verifications
-        verify(folderUtil).getUploadPath();
-        verify(folderUtil).isInUploadPath(any(Path.class));
-        verify(folderUtil).isSymbolicLink(any(Path.class));
-
-        // Assertions
-    }
-
-    @Test
-    void save_ShouldThrowFileServerException_IfFolderAlreadyExists(@TempDir Path tempDir) throws IOException {
-        // Pre defined values
-
-        // Expected Value
-
-        // Mock data
-
-        // Set up method
-        when(folderUtil.getUploadPath()).thenReturn(tempDir);
-        when(folderUtil.isInUploadPath(any(Path.class))).thenReturn(true);
-        when(folderUtil.isSymbolicLink(any(Path.class))).thenReturn(false);
-        when(folderUtil.exists(any(Path.class))).thenReturn(true);
-
-        // Stubbing methods
-
-        // Calling the method
-        assertThrowsExactly(FileServerAPIException.class, () -> folderService.save());
-
-        // Behavior Verifications
-        verify(folderUtil).getUploadPath();
-        verify(folderUtil).isInUploadPath(any(Path.class));
-        verify(folderUtil).isSymbolicLink(any(Path.class));
-        verify(folderUtil).exists(any(Path.class));
 
         // Assertions
     }
