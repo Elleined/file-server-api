@@ -4,7 +4,6 @@ import com.elleined.file_server_api.exception.FileServerAPIException;
 import com.elleined.file_server_api.folder.FolderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -35,72 +34,76 @@ public class FileServiceImpl implements FileService {
     @Value("${MAX_FILE_SIZE_IN_MB}")
     private DataSize maxFileSize;
 
+    private static final List<String> allowedMimeTypes = List.of("image/png", "image/jpeg", "application/pdf");
+    private static final List<String> allowedExtensions = List.of("png", "jpg", "jpeg", "pdf");
+    private static final Map<String, String> mimeTypes = Map.of(
+            "image/jpeg", "jpeg",
+            "image/png", "png",
+            "application/pdf", "pdf"
+    );
+
     @Override
     public FileDTO save(UUID folder,
                         MultipartFile file) throws NoSuchAlgorithmException, IOException {
+
+        // Check file size limit
+        if (file.getSize() > maxFileSize.toBytes())
+            throw new FileServerAPIException("File upload failed! file size limit exceeded");
 
         // Check for multiple file extensions
         String[] parts = Objects.requireNonNull(file.getOriginalFilename()).split("\\.");
         if (parts.length > 2)
             throw new FileServerAPIException("File upload failed! multiple extensions are not allowed");
 
-        // Check if file extension is allowed
-        String extension = FilenameUtils.getExtension(file.getOriginalFilename()).toLowerCase();
-        List<String> allowedFileExtensions = List.of("png", "jpg", "jpeg", "gif", "pdf");
-        if (!allowedFileExtensions.contains(extension))
-            throw new FileServerAPIException("File upload failed! only the following file extensions are allowed: " + String.join(", ", allowedFileExtensions));
+        // Check if the declared file extension is allowed
+        String extension = parts[1].toLowerCase();
+        if (!allowedExtensions.contains(extension))
+            throw new FileServerAPIException("File upload failed! only the following file extensions are allowed: " + String.join(", ", allowedExtensions));
 
-        // Check file size limit
-        if (file.getSize() > maxFileSize.toBytes())
-            throw new FileServerAPIException("File upload failed! file size limit exceeded");
+        // Check if the declared mime type is allowed
+        String mimeType = Objects.requireNonNull(file.getContentType()).toLowerCase();
+        if (!allowedMimeTypes.contains(mimeType))
+            throw new FileServerAPIException("File upload failed! only the following mime types are allowed: " + String.join(", ", allowedMimeTypes));
 
-        // Check mime type extension
-        String realMimeType = tika.detect(file.getInputStream());
-        List<String> allowedMimeTypes = List.of("image/png", "image/jpeg", "image/gif", "application/pdf");
+        // Check real mime type extension
+        String realMimeType = tika.detect(file.getInputStream()).toLowerCase();
         if (!allowedMimeTypes.contains(realMimeType))
             throw new FileServerAPIException("File upload failed! only the following mime types are allowed: " + String.join(", ", allowedMimeTypes));
 
+        // Check if the declared mime type matches the real mime type
+        if (!Objects.requireNonNull(mimeType).equals(realMimeType))
+            throw new FileServerAPIException("File upload failed! declared mime type does not match the real mime type");
+
         // Check if file extension and mime type match
-        Map<String, String> mimeTypeMap = Map.of(
-                "image/jpeg", "jpg",
-                "image/png", "png",
-                "image/gif", "gif",
-                "application/pdf", "pdf"
-        );
-        String realExtension = mimeTypeMap.get(realMimeType);
+        String realExtension = mimeTypes.get(realMimeType).toLowerCase();
         if (!extension.equals(realExtension))
-            throw new FileServerAPIException("File upload failed! file extension and mime type do not match");
+            throw new FileServerAPIException("File upload failed! declared file extension does not match the real file extension");
 
         // Check if a real file extension is allowed
-        if (!allowedFileExtensions.contains(realExtension))
-            throw new FileServerAPIException("File upload failed! only the following mime types are allowed: " + String.join(", ", allowedMimeTypes));
+        if (!allowedExtensions.contains(realExtension))
+            throw new FileServerAPIException("File upload failed! only the following file extensions are allowed: " + String.join(", ", allowedExtensions));
 
         // Building the real file name
         String fileName = UUID.randomUUID() + "." + realExtension;
 
         // Resolving the file path for saving
         Path folderPath = folderService.getByName(folder);
-        Path normalizePath = Paths.get(fileName.strip())
-                .getFileName()
-                .normalize();
-        Path filePath = folderPath.resolve(normalizePath).normalize();
-
-        // Checksum checking (for deduplication and prevent tampering)
-        String checksum = FileUtil.computeChecksum(file);
-        System.out.println(checksum);
+        Path filePath = folderPath.resolve(fileName).normalize();
 
         // Re-encoding the file to remove embedded code
         if (realMimeType.startsWith("image/")) { // (Image Flattening)
             BufferedImage image = ImageIO.read(file.getInputStream());
             ImageIO.write(image, realExtension, filePath.toFile());
         } else { // (PDF Flattening)
+            FileUtil.flattenPDF(filePath, file);
         }
 
         // Set permission to 644 for rw-r--r--
         Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("r--------");
         Files.setPosixFilePermissions(filePath, permissions);
 
-        return new FileDTO(fileName, realExtension, checksum, realMimeType);
+        log.info("File saved successfully: {}", fileName);
+        return new FileDTO(fileName, realExtension, FileUtil.checksum(file), realMimeType);
     }
 
     @Override
@@ -127,7 +130,7 @@ public class FileServiceImpl implements FileService {
                                      String checksum) throws IOException, NoSuchAlgorithmException {
 
         MultipartFile fetchedFile = this.getByName(folder, file);
-        String fetchedFileChecksum = FileUtil.computeChecksum(fetchedFile);
+        String fetchedFileChecksum = FileUtil.checksum(fetchedFile);
         return fetchedFileChecksum.equals(checksum);
     }
 }
