@@ -1,23 +1,25 @@
 package com.elleined.file_server_api.file;
 
+import org.springframework.http.MediaType;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record FileDTO(
         LocalDateTime uploadedAt,
         UUID folder,
-        String name,
+        UUID fileId,
         String extension,
-        String mimeType,
+        MediaType mediaType,
         String checksum
 ) {
 
     public FileDTO(UUID folder,
-                   String name,
+                   UUID fileId,
                    String extension,
-                   String mimeType,
+                   MediaType mediaType,
                    String checksum) {
 
-        this(LocalDateTime.now(), folder, name, extension, mimeType, checksum);
+        this(LocalDateTime.now(), folder, fileId, extension, mediaType, checksum);
     }
 }

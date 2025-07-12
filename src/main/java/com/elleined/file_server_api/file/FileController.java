@@ -2,6 +2,7 @@ package com.elleined.file_server_api.file;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;
+import org.apache.tika.mime.MimeTypeException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,14 +23,14 @@ public class FileController {
 
     @PostMapping
     public FileDTO save(@PathVariable("folder") UUID folder,
-                        @RequestPart("file") MultipartFile file) throws IOException, NoSuchAlgorithmException {
+                        @RequestPart("file") MultipartFile file) throws IOException, NoSuchAlgorithmException, MimeTypeException {
 
         return fileService.save(folder, file);
     }
 
     @GetMapping("/{file.+}")
     public ResponseEntity<StreamingResponseBody> getByName(@PathVariable("folder") UUID folder,
-                                                           @PathVariable("file") String file) throws IOException {
+                                                           @PathVariable("file") UUID file) throws IOException {
 
         MultipartFile fetchedFile = fileService.getByName(folder, file);
 
@@ -46,7 +47,7 @@ public class FileController {
 
     @GetMapping("/{file.+}/verify-checksum")
     public boolean isChecksumMatched(@PathVariable("folder") UUID folder,
-                                     @PathVariable("file") String file,
+                                     @PathVariable("file") UUID file,
                                      @RequestParam("checksum") String checksum) throws IOException, NoSuchAlgorithmException {
 
         return fileService.isChecksumMatched(folder, file, checksum);

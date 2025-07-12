@@ -3,6 +3,8 @@ package com.elleined.file_server_api.file;
 import com.elleined.file_server_api.exception.FileServerAPIException;
 import com.elleined.file_server_api.folder.FolderService;
 import org.apache.tika.Tika;
+import org.apache.tika.mime.MimeTypeException;
+import org.apache.tika.mime.MimeTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.unit.DataSize;
@@ -49,17 +52,19 @@ class FileServiceImplTest {
     }
 
     @Test
-    void save_HappyPath_ForPDF(@TempDir Path tempDir) throws IOException {
+    void save_HappyPath_ForPDF(@TempDir Path tempDir) throws IOException, MimeTypeException {
         // Pre defined values
 
         // Expected Value
-        MultipartFile file = new MockMultipartFile(
-                "file",
-                "pdf.pdf",
-                "application/pdf",
-                pdfFile);
+        MediaType expectedMediaType = MediaType.APPLICATION_PDF;
+        String expectedExtension = MimeTypes.getDefaultMimeTypes()
+                .forName(expectedMediaType.toString())
+                .getExtension()
+                .substring(1); // Remove the leading dot
 
         // Mock data
+        MultipartFile file = new MockMultipartFile("file", pdfFile);
+
         UUID folder = UUID.randomUUID();
         Path folderPath = tempDir.resolve(folder.toString());
         Files.createDirectory(folderPath);
@@ -80,8 +85,8 @@ class FileServiceImplTest {
         assertNotNull(fileDTO.uploadedAt());
         assertEquals(folder, fileDTO.folder());
         assertNotNull(fileDTO.name());
-        assertEquals("pdf", fileDTO.extension());
-        assertEquals("application/pdf", fileDTO.mimeType());
+        assertEquals(expectedExtension, fileDTO.extension());
+        assertEquals(expectedMediaType, fileDTO.mediaType());
     }
 
     @Test
@@ -89,11 +94,7 @@ class FileServiceImplTest {
         // Pre defined values
 
         // Expected Value
-        MultipartFile file = new MockMultipartFile(
-                "file",
-                "png.png",
-                "image/png",
-                pngFile);
+        MultipartFile file = new MockMultipartFile("file", pngFile);
 
         // Mock data
         UUID folder = UUID.randomUUID();
@@ -125,11 +126,7 @@ class FileServiceImplTest {
         // Pre defined values
 
         // Expected Value
-        MultipartFile file = new MockMultipartFile(
-                "file",
-                "jpeg.jpeg",
-                "image/jpeg",
-                jpegFile);
+        MultipartFile file = new MockMultipartFile("file", jpegFile);
 
         // Mock data
         UUID folder = UUID.randomUUID();
@@ -152,7 +149,7 @@ class FileServiceImplTest {
         assertNotNull(fileDTO.uploadedAt());
         assertEquals(folder, fileDTO.folder());
         assertNotNull(fileDTO.name());
-        assertEquals("jpeg", fileDTO.extension());
+        assertEquals("jpg", fileDTO.extension());
         assertEquals("image/jpeg", fileDTO.mimeType());
     }
 
@@ -161,11 +158,7 @@ class FileServiceImplTest {
         // Pre defined values
 
         // Expected Value
-        MultipartFile file = new MockMultipartFile(
-                "file",
-                "jpg.jpg",
-                "image/jpeg",
-                jpgFile);
+        MultipartFile file = new MockMultipartFile("file", jpgFile);
 
         // Mock data
         UUID folder = UUID.randomUUID();
@@ -188,85 +181,19 @@ class FileServiceImplTest {
         assertNotNull(fileDTO.uploadedAt());
         assertEquals(folder, fileDTO.folder());
         assertNotNull(fileDTO.name());
-        assertEquals("jpeg", fileDTO.extension());
+        assertEquals("jpg", fileDTO.extension());
         assertEquals("image/jpeg", fileDTO.mimeType());
     }
 
-
     @Test
-    void save_ShouldThrowFileServerException_ForInvalidFileExtension(@TempDir Path tempDir) throws IOException {
+    void save_ShouldThrowFileServerException_ForFileSizeLimitExceeded() {
         // Pre defined values
 
         // Expected Value
-        MultipartFile file = new MockMultipartFile(
-                "file",
-                "test-image.txt",
-                "text/plain",
-                "This is a text file".getBytes());
+        MultipartFile file = new MockMultipartFile("file", new byte[(int) DataSize.ofMegabytes(21).toBytes()]);
 
         // Mock data
         UUID folder = UUID.randomUUID();
-        Path folderPath = tempDir.resolve(folder.toString());
-        Files.createDirectory(folderPath);
-
-        // Set up method
-
-        // Stubbing methods
-
-        // Calling the method
-        assertThrowsExactly(FileServerAPIException.class, () -> fileService.save(folder, file));
-
-        // Behavior Verifications
-        verifyNoInteractions(folderService, tika);
-
-        // Assertions
-    }
-
-    @Test
-    void save_ShouldThrowFileServerException_ForFileSizeLimitExceeded(@TempDir Path tempDir) throws IOException {
-        // Pre defined values
-
-        // Expected Value
-        MultipartFile file = new MockMultipartFile(
-                "file",
-                "png.png",
-                "application/png",
-                new byte[(int) DataSize.ofMegabytes(21).toBytes()]);
-
-        // Mock data
-        UUID folder = UUID.randomUUID();
-        Path folderPath = tempDir.resolve(folder.toString());
-        Files.createDirectory(folderPath);
-
-        // Set up method
-
-        // Stubbing methods
-
-        // Calling the method
-        assertThrowsExactly(FileServerAPIException.class, () -> fileService.save(folder, file));
-
-        // Behavior Verifications
-        verifyNoInteractions(folderService, tika);
-
-        // Assertions
-    }
-
-
-    @Test
-    void save_ShouldThrowFileServerException_ForInvalidMimeType(@TempDir Path tempDir) throws IOException {
-        // Pre defined values
-
-        // Expected Value
-        MultipartFile file = new MockMultipartFile(
-                "file",
-                "test-image.txt",
-                "text/plain",
-                "This is a text file".getBytes());
-
-        // Mock data
-        UUID folder = UUID.randomUUID();
-        Path folderPath = tempDir.resolve(folder.toString());
-        Files.createDirectory(folderPath);
 
         // Set up method
 

@@ -2,7 +2,7 @@ package com.elleined.file_server_api.file;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import org.apache.tika.mime.MimeTypeException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -10,13 +10,13 @@ import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 public interface FileService {
-    FileDTO save(UUID folder,
-                 @NotNull MultipartFile file) throws NoSuchAlgorithmException, IOException;
+    FileDTO save(@NotNull UUID folder,
+                 @NotNull MultipartFile file) throws NoSuchAlgorithmException, IOException, MimeTypeException;
 
-    MultipartFile getByName(UUID folder,
-                            @Size(max = 41) @NotBlank String file) throws IOException;
+    MultipartFile getByName(@NotNull UUID folder,
+                            @NotNull UUID file) throws IOException;
 
-    boolean isChecksumMatched(UUID folder,
-                              @Size(max = 41) @NotBlank String file,
-                              @Size(max = 41) @NotBlank String checksum) throws IOException, NoSuchAlgorithmException;
+    boolean isChecksumMatched(@NotNull UUID folder,
+                              @NotNull UUID file,
+                              @NotBlank String checksum) throws IOException, NoSuchAlgorithmException;
 }
