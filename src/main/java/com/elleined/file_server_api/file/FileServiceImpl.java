@@ -103,7 +103,7 @@ public class FileServiceImpl implements FileService {
         Files.setPosixFilePermissions(filePath, permissions);
 
         log.info("File saved successfully: {}", fileName);
-        return new FileDTO(fileName, realExtension, FileUtil.checksum(file), realMimeType);
+        return new FileDTO(folder, fileName, realExtension, realMimeType, FileUtil.checksum(file));
     }
 
     @Override

@@ -1,20 +1,23 @@
 package com.elleined.file_server_api.file;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public record FileDTO(
         LocalDateTime uploadedAt,
-        String fileName,
-        String fileExtension,
-        String checksum,
-        String mimeType
+        UUID folder,
+        String name,
+        String extension,
+        String mimeType,
+        String checksum
 ) {
 
-    public FileDTO(String fileName,
-                   String fileExtension,
-                   String checksum,
-                   String mimeType) {
+    public FileDTO(UUID folder,
+                   String name,
+                   String extension,
+                   String mimeType,
+                   String checksum) {
 
-        this(LocalDateTime.now(), fileName, fileExtension, checksum, mimeType);
+        this(LocalDateTime.now(), folder, name, extension, mimeType, checksum);
     }
 }

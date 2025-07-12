@@ -21,7 +21,7 @@ import java.util.Set;
 public interface FileUtil {
 
 
-    static String checksum(MultipartFile file) throws NoSuchAlgorithmException, IOException {
+    static String checksum(MultipartFile file) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
 
         try (InputStream is = file.getInputStream()) {
@@ -154,9 +154,9 @@ public interface FileUtil {
 
             // 6. Create completely new, minimal document information
             PDDocumentInformation info = new PDDocumentInformation();
-            info.setTitle("Sanitized Document");
-            info.setCreator("PDF Sanitizer");
-            info.setProducer("PDF Sanitizer");
+            info.setTitle("Flattened PDF Document - File Server API");
+            info.setCreator("File Server API");
+            info.setProducer("File Server API");
             document.setDocumentInformation(info);
 
             // 7. Remove any trailer dictionary entries except essentials
@@ -177,8 +177,6 @@ public interface FileUtil {
             }
 
             document.save(filePath.toFile());
-        } catch (IOException e) {
-            throw new IOException("Failed to sanitize PDF: " + e.getMessage(), e);
         }
     }
 }

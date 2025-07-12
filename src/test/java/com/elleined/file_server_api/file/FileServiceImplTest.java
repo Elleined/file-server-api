@@ -77,6 +77,11 @@ class FileServiceImplTest {
 
         // Assertions
         assertNotNull(fileDTO);
+        assertNotNull(fileDTO.uploadedAt());
+        assertEquals(folder, fileDTO.folder());
+        assertNotNull(fileDTO.name());
+        assertEquals("pdf", fileDTO.extension());
+        assertEquals("application/pdf", fileDTO.mimeType());
     }
 
     @Test
@@ -108,6 +113,11 @@ class FileServiceImplTest {
 
         // Assertions
         assertNotNull(fileDTO);
+        assertNotNull(fileDTO.uploadedAt());
+        assertEquals(folder, fileDTO.folder());
+        assertNotNull(fileDTO.name());
+        assertEquals("png", fileDTO.extension());
+        assertEquals("image/png", fileDTO.mimeType());
     }
 
     @Test
@@ -139,6 +149,11 @@ class FileServiceImplTest {
 
         // Assertions
         assertNotNull(fileDTO);
+        assertNotNull(fileDTO.uploadedAt());
+        assertEquals(folder, fileDTO.folder());
+        assertNotNull(fileDTO.name());
+        assertEquals("jpeg", fileDTO.extension());
+        assertEquals("image/jpeg", fileDTO.mimeType());
     }
 
     @Test
@@ -170,6 +185,11 @@ class FileServiceImplTest {
 
         // Assertions
         assertNotNull(fileDTO);
+        assertNotNull(fileDTO.uploadedAt());
+        assertEquals(folder, fileDTO.folder());
+        assertNotNull(fileDTO.name());
+        assertEquals("jpeg", fileDTO.extension());
+        assertEquals("image/jpeg", fileDTO.mimeType());
     }
 
 
