@@ -40,5 +40,4 @@ public class FolderServiceImpl implements FolderService {
                 .resolve(folder.toString())
                 .toRealPath(LinkOption.NOFOLLOW_LINKS);
     }
-
 }
