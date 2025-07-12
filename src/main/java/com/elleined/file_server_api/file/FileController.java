@@ -3,7 +3,6 @@ package com.elleined.file_server_api.file;
 import lombok.RequiredArgsConstructor;
 import org.apache.tika.Tika;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +21,6 @@ public class FileController {
     private final Tika tika;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.ACCEPTED)
     public FileDTO save(@PathVariable("folder") UUID folder,
                         @RequestPart("file") MultipartFile file) throws IOException, NoSuchAlgorithmException {
 
@@ -34,18 +32,16 @@ public class FileController {
                                                            @PathVariable("file") String file) throws IOException {
 
         MultipartFile fetchedFile = fileService.getByName(folder, file);
-        StreamingResponseBody responseBody = FileUtil.stream(fetchedFile);
 
-        String contentType = tika.detect(file);
+        String contentType = tika.detect(fetchedFile.getInputStream());
         String contentDisposition = contentType.startsWith("image/")
                 ? "inline"
                 : "attachment";
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition + "; filename=\"" + fetchedFile.getOriginalFilename() + "\"")
-                .contentLength(file.length())
                 .contentType(MediaType.parseMediaType(contentType))
-                .body(responseBody);
+                .body(FileUtil.stream(fetchedFile));
     }
 
     @GetMapping("/{file.+}/verify-checksum")
