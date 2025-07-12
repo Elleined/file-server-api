@@ -1,10 +1,5 @@
 package com.elleined.file_server_api.folder;
 
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
-import jakarta.validation.executable.ExecutableValidator;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -31,15 +26,6 @@ class FolderServiceImplTest {
 
     @InjectMocks
     private FolderServiceImpl folderService;
-
-    private static ExecutableValidator executableValidator;
-
-    @BeforeAll
-    static void setupAll() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        Validator validator = factory.getValidator();
-        executableValidator = validator.forExecutables();
-    }
 
     @Test
     void save_AndGet_HappyPath(@TempDir Path tempDir) throws IOException {
