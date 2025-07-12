@@ -1,5 +1,6 @@
 package com.elleined.file_server_api.folder;
 
+import com.elleined.file_server_api.exception.FileServerAPIException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -29,8 +30,10 @@ public class FolderUtilImpl implements FolderUtil {
                 PosixFilePermission.OWNER_EXECUTE
         );
 
-        if (!Files.getPosixFilePermissions(path, LinkOption.NOFOLLOW_LINKS).equals(permissions))
-            Files.setPosixFilePermissions(path, permissions);
+        Set<PosixFilePermission> currentPermissions = Files.getPosixFilePermissions(path, LinkOption.NOFOLLOW_LINKS);
+
+        if (!currentPermissions.equals(permissions))
+            throw new FileServerAPIException("Upload path must have 700 permissions");
 
         return path;
     }

@@ -1,6 +1,6 @@
 package com.elleined.file_server_api.folder;
 
-import org.junit.jupiter.api.BeforeEach;
+import com.elleined.file_server_api.exception.FileServerAPIException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -24,16 +24,9 @@ class FolderUtilImplTest {
     @InjectMocks
     private FolderUtilImpl folderUtil;
 
-    @TempDir
-    private Path tempDir;
-
-    @BeforeEach
-    void setUp() {
-        ReflectionTestUtils.setField(folderUtil, "uploadPath", tempDir.toString());
-    }
-
     @Test
-    void getUploadPath_HappyPath() {
+    void getUploadPath_HappyPath(@TempDir Path tempDir) {
+        ReflectionTestUtils.setField(folderUtil, "uploadPath", tempDir.toString());
         // Pre defined values
 
         // Expected Value
@@ -54,31 +47,29 @@ class FolderUtilImplTest {
     }
 
     @Test
-    void getUploadPath_ShouldHave700FolderPermission() throws IOException {
+    void getUploadPath_ShouldThrowFileServerAPIException_IfDoesntHave700Permission(@TempDir Path tempDir) throws IOException {
+        ReflectionTestUtils.setField(folderUtil, "uploadPath", tempDir.toString());
         // Pre defined values
 
         // Expected Value
-
-        // Mock data
-        Set<PosixFilePermission> expectedPathPermissions = Set.of(
-                PosixFilePermission.OWNER_READ,
-                PosixFilePermission.OWNER_WRITE,
-                PosixFilePermission.OWNER_EXECUTE
+        final Set<PosixFilePermission> permissions = Set.of(
+                PosixFilePermission.OWNER_READ
+                // should only have rwx------
         );
 
+        // Mock data
+
         // Set up method
+        Files.setPosixFilePermissions(tempDir, permissions);
 
         // Stubbing methods
 
         // Calling the method
-        Path actual = assertDoesNotThrow(() -> folderUtil.getUploadPath());
+        assertThrowsExactly(FileServerAPIException.class, () -> folderUtil.getUploadPath());
 
         // Behavior Verifications
 
         // Assertions
-        assertEquals(expectedPathPermissions,
-                Files.getPosixFilePermissions(actual, LinkOption.NOFOLLOW_LINKS),
-                "Change the uploadPath folder permission to 700 or rwx------ to pass this test");
     }
 
     @Test
