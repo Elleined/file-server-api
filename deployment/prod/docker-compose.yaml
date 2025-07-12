@@ -9,6 +9,7 @@ services:
       - PORT=${PORT}
       - MAX_FILE_SIZE_IN_MB=${MAX_FILE_SIZE_IN_MB}
       - LOG_LEVEL=${LOG_LEVEL}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
     ports:
       - "${PORT}:${PORT}"
     networks:
