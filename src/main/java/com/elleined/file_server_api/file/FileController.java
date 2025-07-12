@@ -29,14 +29,6 @@ public class FileController {
         return fileService.save(folder, file);
     }
 
-    @DeleteMapping("/{file:.+}")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public void deleteByName(@PathVariable("folder") UUID folder,
-                             @PathVariable("file") String file) {
-
-        fileService.deleteByName(folder, file);
-    }
-
     @GetMapping("/{file.+}")
     public ResponseEntity<StreamingResponseBody> getByName(@PathVariable("folder") UUID folder,
                                                            @PathVariable("file") String file) throws IOException {

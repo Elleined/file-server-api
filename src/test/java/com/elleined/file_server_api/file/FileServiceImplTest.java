@@ -52,25 +52,6 @@ class FileServiceImplTest {
     }
 
     @Test
-    void deleteByName_HappyPath() {
-        // Pre defined values
-
-        // Expected Value
-
-        // Mock data
-
-        // Set up method
-
-        // Stubbing methods
-
-        // Calling the method
-
-        // Behavior Verifications
-
-        // Assertions
-    }
-
-    @Test
     void getByName_HappyPath() {
         // Pre defined values
 

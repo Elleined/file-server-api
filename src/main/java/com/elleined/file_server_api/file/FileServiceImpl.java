@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.unit.DataSize;
 import org.springframework.validation.annotation.Validated;
@@ -102,13 +101,6 @@ public class FileServiceImpl implements FileService {
         Files.setPosixFilePermissions(filePath, permissions);
 
         return new FileDTO(fileName, realExtension, checksum, realMimeType);
-    }
-
-    @Async
-    @Override
-    public void deleteByName(UUID folder,
-                             String file) {
-
     }
 
     @Override

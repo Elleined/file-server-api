@@ -10,16 +10,13 @@ import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 public interface FileService {
-    FileDTO save(@NotBlank UUID folder,
+    FileDTO save(UUID folder,
                  @NotNull MultipartFile file) throws NoSuchAlgorithmException, IOException;
 
-    void deleteByName(@NotBlank UUID folder,
-                      @Size(max = 41) @NotBlank String file);
-
-    MultipartFile getByName(@NotBlank UUID folder,
+    MultipartFile getByName(UUID folder,
                             @Size(max = 41) @NotBlank String file) throws IOException;
 
-    boolean isChecksumMatched(@NotBlank UUID folder,
+    boolean isChecksumMatched(UUID folder,
                               @Size(max = 41) @NotBlank String file,
                               @Size(max = 41) @NotBlank String checksum) throws IOException, NoSuchAlgorithmException;
 }
