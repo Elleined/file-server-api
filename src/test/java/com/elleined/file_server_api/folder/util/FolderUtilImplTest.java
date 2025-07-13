@@ -1,7 +1,6 @@
-package com.elleined.file_server_api.folder;
+package com.elleined.file_server_api.folder.util;
 
 import com.elleined.file_server_api.exception.FileServerAPIException;
-import com.elleined.file_server_api.folder.util.FolderUtilImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -11,7 +10,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Set;
@@ -73,7 +71,7 @@ class FolderUtilImplTest {
     }
 
     @Test
-    void getUploadPath_ShouldThrowNoSuchFileException_IfUploadPathDoesNotExist() {
+    void getUploadPath_ShouldThrowIOException_IfUploadPathDoesNotExist() {
         ReflectionTestUtils.setField(folderUtil, "uploadPath", "/not/existing/path");
 
         // Pre defined values
@@ -87,7 +85,7 @@ class FolderUtilImplTest {
         // Stubbing methods
 
         // Calling the method
-        assertThrowsExactly(NoSuchFileException.class, () -> folderUtil.getUploadPath());
+        assertThrows(IOException.class, () -> folderUtil.getUploadPath());
 
         // Behavior Verifications
 

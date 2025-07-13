@@ -1,5 +1,6 @@
 package com.elleined.file_server_api.folder;
 
+import com.elleined.file_server_api.exception.FileServerAPIException;
 import com.elleined.file_server_api.folder.util.FolderUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,7 @@ public class FolderServiceImpl implements FolderService {
     private final FolderUtil folderUtil;
 
     @Override
-    public UUID save() throws IOException {
+    public UUID save() throws IOException, FileServerAPIException {
         Path folderPath = folderUtil.getUploadPath()
                 .resolve(UUID.randomUUID().toString())
                 .normalize();
@@ -36,7 +37,7 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
-    public Path getByName(UUID folder) throws IOException {
+    public Path getByName(UUID folder) throws IOException, FileServerAPIException {
         return folderUtil.getUploadPath()
                 .resolve(folder.toString())
                 .toRealPath(LinkOption.NOFOLLOW_LINKS);

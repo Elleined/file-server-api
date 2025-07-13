@@ -1,5 +1,6 @@
 package com.elleined.file_server_api.folder;
 
+import com.elleined.file_server_api.exception.FileServerAPIException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -27,7 +28,7 @@ class FolderControllerTest {
     private FolderService folderService;
 
     @Test
-    void save_HappyPath() throws IOException {
+    void save_HappyPath() throws IOException, FileServerAPIException {
         // Pre defined values
 
         // Expected Value

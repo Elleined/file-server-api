@@ -1,5 +1,6 @@
 package com.elleined.file_server_api.folder;
 
+import com.elleined.file_server_api.exception.FileServerAPIException;
 import com.elleined.file_server_api.folder.util.FolderUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +30,7 @@ class FolderServiceImplTest {
     private FolderServiceImpl folderService;
 
     @Test
-    void save_AndGet_HappyPath(@TempDir Path tempDir) throws IOException {
+    void save_AndGet_HappyPath(@TempDir Path tempDir) throws IOException, FileServerAPIException {
         // Pre defined values
 
         // Expected Value
@@ -54,7 +55,7 @@ class FolderServiceImplTest {
     }
 
     @Test
-    void save_ShouldHave700FolderPermission(@TempDir Path tempDir) throws IOException {
+    void save_ShouldHave700FolderPermission(@TempDir Path tempDir) throws IOException, FileServerAPIException {
         // Pre defined values
         Set<PosixFilePermission> expectedPermissions = Set.of(
                 PosixFilePermission.OWNER_READ,
@@ -87,7 +88,7 @@ class FolderServiceImplTest {
     }
 
     @Test
-    void getByName_HappyPath(@TempDir Path tempDir) throws IOException {
+    void getByName_HappyPath(@TempDir Path tempDir) throws IOException, FileServerAPIException {
         // Pre defined values
         UUID folder = UUID.randomUUID();
 

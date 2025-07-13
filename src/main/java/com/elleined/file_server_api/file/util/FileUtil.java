@@ -1,17 +1,19 @@
 package com.elleined.file_server_api.file.util;
 
+import org.apache.tika.mime.MimeTypeException;
 import org.springframework.http.MediaType;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 
 public interface FileUtil {
 
     // '.' is omitted in the realExtension
-    String getFileExtension(MediaType mediaType);
+    String getFileExtension(MediaType mediaType) throws MimeTypeException;
 
-    String checksum(MultipartFile file) throws NoSuchAlgorithmException;
+    String checksum(Path file) throws NoSuchAlgorithmException, IOException;
 
-    StreamingResponseBody stream(MultipartFile file);
+    StreamingResponseBody stream(Path file);
 }

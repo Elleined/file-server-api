@@ -1,5 +1,6 @@
 package com.elleined.file_server_api.file;
 
+import com.elleined.file_server_api.exception.FileServerAPIException;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.apache.tika.mime.MimeTypeException;
@@ -11,12 +12,12 @@ import java.util.UUID;
 
 public interface FileService {
     FileDTO save(@NotNull UUID folder,
-                 @NotNull MultipartFile file) throws NoSuchAlgorithmException, IOException, MimeTypeException;
+                 @NotNull MultipartFile file) throws NoSuchAlgorithmException, IOException, MimeTypeException, FileServerAPIException;
 
-    MultipartFile getByName(@NotNull UUID folder,
-                            @NotNull UUID file) throws IOException;
+    FileMetaData getByName(@NotNull UUID folder,
+                           @NotNull UUID file) throws IOException, FileServerAPIException, MimeTypeException;
 
     boolean isChecksumMatched(@NotNull UUID folder,
                               @NotNull UUID file,
-                              @NotBlank String checksum) throws IOException, NoSuchAlgorithmException;
+                              @NotBlank String checksum) throws IOException, NoSuchAlgorithmException, FileServerAPIException, MimeTypeException;
 }

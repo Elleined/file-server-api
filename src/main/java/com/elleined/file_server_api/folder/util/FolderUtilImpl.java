@@ -20,7 +20,7 @@ public class FolderUtilImpl implements FolderUtil {
     @Value("${UPLOAD_PATH}")
     private String uploadPath;
 
-    public Path getUploadPath() throws IOException {
+    public Path getUploadPath() throws IOException, FileServerAPIException {
         final Path path = Paths.get(uploadPath.strip())
                 .toRealPath(LinkOption.NOFOLLOW_LINKS);
 

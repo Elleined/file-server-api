@@ -5,6 +5,7 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.*;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +20,8 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class FileFlattenerImpl implements FileFlattener {
+
+    @Async
     @Override
     public void flattenPDF(Path filePath, MultipartFile file) throws IOException {
         try (PDDocument document = Loader.loadPDF(file.getInputStream().readAllBytes())) {
@@ -146,6 +149,7 @@ public class FileFlattenerImpl implements FileFlattener {
         }
     }
 
+    @Async
     @Override
     public void flattenImage(Path filePath, MultipartFile file, String realExtension) throws IOException {
         BufferedImage image = ImageIO.read(file.getInputStream());

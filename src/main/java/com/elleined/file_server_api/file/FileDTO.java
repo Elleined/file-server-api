@@ -10,7 +10,7 @@ public record FileDTO(
         UUID folder,
         UUID fileId,
         String extension,
-        MediaType mediaType,
+        String mediaType,
         String checksum
 ) {
 
@@ -20,7 +20,7 @@ public record FileDTO(
                    MediaType mediaType,
                    String checksum) {
 
-        this(LocalDateTime.now(), folder, fileId, extension, mediaType, checksum);
+        this(LocalDateTime.now(), folder, fileId, extension, mediaType.toString(), checksum);
     }
 
     public String getFileName() {
