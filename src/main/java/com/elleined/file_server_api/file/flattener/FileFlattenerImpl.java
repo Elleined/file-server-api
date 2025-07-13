@@ -1,60 +1,26 @@
-package com.elleined.file_server_api.file;
+package com.elleined.file_server_api.file.flattener;
 
-import com.elleined.file_server_api.exception.FileServerAPIException;
+import lombok.RequiredArgsConstructor;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.*;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public interface FileUtil {
-
-
-    static String checksum(MultipartFile file) throws NoSuchAlgorithmException {
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-
-        try (InputStream is = file.getInputStream()) {
-            byte[] buffer = new byte[8192]; // 8kb
-            int bytesRead;
-
-            while ((bytesRead = is.read(buffer)) != -1) {
-                digest.update(buffer, 0, bytesRead);
-            }
-        } catch (IOException e) {
-            throw new FileServerAPIException("Error reading file for checksum " + e.getMessage());
-        }
-
-        byte[] hash = digest.digest();
-        return Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
-    }
-
-    static StreamingResponseBody stream(MultipartFile file) {
-        return outputStream -> {
-            try (InputStream inputStream = file.getInputStream()) {
-                byte[] buffer = new byte[8192];
-                int bytesRead;
-                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
-                }
-            } catch (IOException e) {
-                throw new FileServerAPIException("Error streaming file" + e.getMessage());
-            }
-        };
-    }
-
-    // Remove absolutely everything except visual content
-    static void flattenPDF(Path filePath, MultipartFile file) throws IOException {
+@Service
+@RequiredArgsConstructor
+public class FileFlattenerImpl implements FileFlattener {
+    @Override
+    public void flattenPDF(Path filePath, MultipartFile file) throws IOException {
         try (PDDocument document = Loader.loadPDF(file.getInputStream().readAllBytes())) {
 
             PDDocumentCatalog catalog = document.getDocumentCatalog();
@@ -178,5 +144,11 @@ public interface FileUtil {
 
             document.save(filePath.toFile());
         }
+    }
+
+    @Override
+    public void flattenImage(Path filePath, MultipartFile file, String realExtension) throws IOException {
+        BufferedImage image = ImageIO.read(file.getInputStream());
+        ImageIO.write(image, realExtension, filePath.toFile());
     }
 }

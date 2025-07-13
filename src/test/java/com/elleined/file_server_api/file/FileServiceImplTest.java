@@ -65,11 +65,10 @@ class FileServiceImplTest {
         // Mock data
         MultipartFile file = new MockMultipartFile("file", pdfFile);
 
+        // Set up method
         UUID folder = UUID.randomUUID();
         Path folderPath = tempDir.resolve(folder.toString());
         Files.createDirectory(folderPath);
-
-        // Set up method
 
         // Stubbing methods
         when(folderService.getByName(any(UUID.class))).thenReturn(folderPath);
@@ -84,24 +83,29 @@ class FileServiceImplTest {
         assertNotNull(fileDTO);
         assertNotNull(fileDTO.uploadedAt());
         assertEquals(folder, fileDTO.folder());
-        assertNotNull(fileDTO.name());
+        assertNotNull(fileDTO.fileId());
         assertEquals(expectedExtension, fileDTO.extension());
         assertEquals(expectedMediaType, fileDTO.mediaType());
     }
 
     @Test
-    void save_HappyPath_ForPNG(@TempDir Path tempDir) throws IOException {
+    void save_HappyPath_ForPNG(@TempDir Path tempDir) throws IOException, MimeTypeException {
         // Pre defined values
 
         // Expected Value
+        MediaType expectedMediaType = MediaType.IMAGE_PNG;
+        String expectedExtension = MimeTypes.getDefaultMimeTypes()
+                .forName(expectedMediaType.toString())
+                .getExtension()
+                .substring(1); // Remove the leading dot
+
+        // Mock data
         MultipartFile file = new MockMultipartFile("file", pngFile);
 
-        // Mock data
+        // Set up method
         UUID folder = UUID.randomUUID();
         Path folderPath = tempDir.resolve(folder.toString());
         Files.createDirectory(folderPath);
-
-        // Set up method
 
         // Stubbing methods
         when(folderService.getByName(any(UUID.class))).thenReturn(folderPath);
@@ -116,24 +120,29 @@ class FileServiceImplTest {
         assertNotNull(fileDTO);
         assertNotNull(fileDTO.uploadedAt());
         assertEquals(folder, fileDTO.folder());
-        assertNotNull(fileDTO.name());
-        assertEquals("png", fileDTO.extension());
-        assertEquals("image/png", fileDTO.mimeType());
+        assertNotNull(fileDTO.fileId());
+        assertEquals(expectedExtension, fileDTO.extension());
+        assertEquals(expectedMediaType, fileDTO.mediaType());
     }
 
     @Test
-    void save_HappyPath_ForJPEG(@TempDir Path tempDir) throws IOException {
+    void save_HappyPath_ForJPEG(@TempDir Path tempDir) throws IOException, MimeTypeException {
         // Pre defined values
 
         // Expected Value
+        MediaType expectedMediaType = MediaType.IMAGE_JPEG;
+        String expectedExtension = MimeTypes.getDefaultMimeTypes()
+                .forName(expectedMediaType.toString())
+                .getExtension()
+                .substring(1); // Remove the leading dot
+
+        // Mock data
         MultipartFile file = new MockMultipartFile("file", jpegFile);
 
-        // Mock data
+        // Set up method
         UUID folder = UUID.randomUUID();
         Path folderPath = tempDir.resolve(folder.toString());
         Files.createDirectory(folderPath);
-
-        // Set up method
 
         // Stubbing methods
         when(folderService.getByName(any(UUID.class))).thenReturn(folderPath);
@@ -148,24 +157,29 @@ class FileServiceImplTest {
         assertNotNull(fileDTO);
         assertNotNull(fileDTO.uploadedAt());
         assertEquals(folder, fileDTO.folder());
-        assertNotNull(fileDTO.name());
-        assertEquals("jpg", fileDTO.extension());
-        assertEquals("image/jpeg", fileDTO.mimeType());
+        assertNotNull(fileDTO.fileId());
+        assertEquals(expectedExtension, fileDTO.extension());
+        assertEquals(expectedMediaType, fileDTO.mediaType());
     }
 
     @Test
-    void save_HappyPath_ForJPG(@TempDir Path tempDir) throws IOException {
+    void save_HappyPath_ForJPG(@TempDir Path tempDir) throws IOException, MimeTypeException {
         // Pre defined values
 
         // Expected Value
-        MultipartFile file = new MockMultipartFile("file", jpgFile);
+        MediaType expectedMediaType = MediaType.IMAGE_JPEG;
+        String expectedExtension = MimeTypes.getDefaultMimeTypes()
+                .forName(expectedMediaType.toString())
+                .getExtension()
+                .substring(1); // Remove the leading dot
 
         // Mock data
+        MultipartFile file = new MockMultipartFile("file", jpgFile);
+
+        // Set up method
         UUID folder = UUID.randomUUID();
         Path folderPath = tempDir.resolve(folder.toString());
         Files.createDirectory(folderPath);
-
-        // Set up method
 
         // Stubbing methods
         when(folderService.getByName(any(UUID.class))).thenReturn(folderPath);
@@ -180,9 +194,9 @@ class FileServiceImplTest {
         assertNotNull(fileDTO);
         assertNotNull(fileDTO.uploadedAt());
         assertEquals(folder, fileDTO.folder());
-        assertNotNull(fileDTO.name());
-        assertEquals("jpg", fileDTO.extension());
-        assertEquals("image/jpeg", fileDTO.mimeType());
+        assertNotNull(fileDTO.fileId());
+        assertEquals(expectedExtension, fileDTO.extension());
+        assertEquals(expectedMediaType, fileDTO.mediaType());
     }
 
     @Test

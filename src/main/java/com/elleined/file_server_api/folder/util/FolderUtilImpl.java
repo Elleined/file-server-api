@@ -1,4 +1,4 @@
-package com.elleined.file_server_api.folder;
+package com.elleined.file_server_api.folder.util;
 
 import com.elleined.file_server_api.exception.FileServerAPIException;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,6 @@ public class FolderUtilImpl implements FolderUtil {
         );
 
         Set<PosixFilePermission> currentPermissions = Files.getPosixFilePermissions(path, LinkOption.NOFOLLOW_LINKS);
-
         if (!currentPermissions.equals(permissions))
             throw new FileServerAPIException("Upload path must have 700 permissions");
 

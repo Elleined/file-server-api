@@ -22,4 +22,8 @@ public record FileDTO(
 
         this(LocalDateTime.now(), folder, fileId, extension, mediaType, checksum);
     }
+
+    public String getFileName() {
+        return fileId + "." + extension;
+    }
 }

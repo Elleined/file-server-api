@@ -1,4 +1,4 @@
-package com.elleined.file_server_api.folder;
+package com.elleined.file_server_api.folder.util;
 
 import java.io.IOException;
 import java.nio.file.Path;

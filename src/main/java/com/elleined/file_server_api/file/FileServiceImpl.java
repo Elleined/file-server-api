@@ -1,12 +1,12 @@
 package com.elleined.file_server_api.file;
 
 import com.elleined.file_server_api.exception.FileServerAPIException;
+import com.elleined.file_server_api.file.flattener.FileFlattener;
+import com.elleined.file_server_api.file.util.FileUtil;
 import com.elleined.file_server_api.folder.FolderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.Tika;
-import org.apache.tika.mime.MimeTypeException;
-import org.apache.tika.mime.MimeTypes;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -14,10 +14,9 @@ import org.springframework.util.unit.DataSize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
@@ -32,102 +31,73 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService {
     private final FolderService folderService;
+    private final FileUtil fileUtil;
+    private final FileFlattener fileFlattener;
+
     private final Tika tika;
 
     @Value("${MAX_FILE_SIZE_IN_MB}")
     private DataSize maxFileSize;
-
-    // refactor this class for allowed mime types and file extensions and get file extension
-    // refactor the fileservicetestimpl for correct mime types and file extensions
-    // refactor the fileutil properly and test it
-
-
-    // when reading detect again the mimeype and fileextension
-
-    // add documentation for functions used toRealPath, normalize, resolve, getFileName, strip, etc.
-    // add documenation for Files, File, Path, Paths
-    // add documenttion springframework.MediaType, org.apache.tika.mime.MimeType
 
     private static final List<MediaType> allowedMimeTypes = List.of(
             MediaType.IMAGE_PNG,
             MediaType.IMAGE_JPEG,
             MediaType.APPLICATION_PDF
     );
-    private static final List<String> allowedExtensions = allowedMimeTypes.stream()
-            .map(FileServiceImpl::getFileExtension)
-            .toList();
-
-    public static String getFileExtension(MediaType mediaType) {
-        try {
-            return MimeTypes.getDefaultMimeTypes()
-                    .forName(mediaType.toString())
-                    .getExtension()
-                    .substring(1); // Remove the leading dot
-        } catch (MimeTypeException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     @Override
     public FileDTO save(UUID folder,
-                        MultipartFile file) throws NoSuchAlgorithmException, IOException, MimeTypeException {
+                        MultipartFile file) throws NoSuchAlgorithmException, IOException {
 
 
-        // Check file size limit
         if (file.getSize() > maxFileSize.toBytes())
             throw new FileServerAPIException("File upload failed! file size limit exceeded");
 
-        // Check real mime type extension
         MediaType realMediaType = MediaType.parseMediaType(tika.detect(file.getInputStream()));
         if (!allowedMimeTypes.contains(realMediaType))
             throw new FileServerAPIException("File upload failed! only the following mime types are allowed: ");
 
-        // Check if a real file extension is allowed
-        String realExtension = FileServiceImpl.getFileExtension(realMediaType);
-        if (!allowedExtensions.contains(realExtension))
-            throw new FileServerAPIException("File upload failed! only the following file extensions are allowed: ");
+        String realExtension = fileUtil.getFileExtension(realMediaType);
 
-        // Building the real file name
         UUID fileId = UUID.randomUUID();
         String fileName = fileId + "." + realExtension; // '.' is omitted in the realExtension
 
-        System.out.println("Mime type: " + realMediaType);
-        System.out.println("Real Extension: " + realExtension);
-        System.out.println("File ID: " + fileId);
-        System.out.println("File Name: " + fileName);
-
-        // Resolve the file path for saving
         Path folderPath = folderService.getByName(folder);
         Path filePath = folderPath.resolve(fileName).normalize();
 
-        // Re-encoding the file to remove embedded code
-        if (realMediaType.toString().startsWith("image/")) { // (Image Flattening)
-            BufferedImage image = ImageIO.read(file.getInputStream());
-            ImageIO.write(image, realExtension, filePath.toFile());
-        } else { // (PDF Flattening)
-            FileUtil.flattenPDF(filePath, file);
+        if (realMediaType.toString().startsWith("image/")) {
+            fileFlattener.flattenImage(filePath, file, realExtension);
+        } else {
+            fileFlattener.flattenPDF(filePath, file);
         }
 
-        // Set permission to 644 for rw-r--r--
         Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("r--------");
         Files.setPosixFilePermissions(filePath, permissions);
 
+        String checksum = fileUtil.checksum(file);
+
         log.info("File saved successfully: {}", fileName);
-        return new FileDTO(folder, fileId, realExtension, realMediaType, FileUtil.checksum(file));
+        return new FileDTO(folder, fileId, realExtension, realMediaType, checksum);
     }
 
     @Override
     public MultipartFile getByName(UUID folder,
-                                   UUID file) {
+                                   UUID file) throws IOException {
 
+        Path folderPath = folderService.getByName(folder);
+        Path filePath = folderPath.resolve(file.toString())
+                .toRealPath(LinkOption.NOFOLLOW_LINKS);
+
+// when reading detect again the mimeype and fileextension
         return null;
     }
 
     @Override
     public boolean isChecksumMatched(UUID folder,
                                      UUID file,
-                                     String checksum) {
+                                     String checksum) throws IOException, NoSuchAlgorithmException {
 
-        return false;
+        MultipartFile fetchedFile = this.getByName(folder, file);
+        return fileUtil.checksum(fetchedFile).equals(checksum);
     }
 }
