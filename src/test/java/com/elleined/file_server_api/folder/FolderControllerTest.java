@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -49,6 +49,6 @@ class FolderControllerTest {
         verify(folderService).save();
 
         // Assertions
-        assertTrue(mvcResult.getResponse().getContentAsString().contains(folder.toString()));
+        assertEquals(folder.toString(), mvcResult.getResponse().getContentAsString());
     }
 }

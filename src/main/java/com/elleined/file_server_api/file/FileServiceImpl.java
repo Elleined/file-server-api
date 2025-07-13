@@ -7,10 +7,8 @@ import com.elleined.file_server_api.folder.FolderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.Tika;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.util.unit.DataSize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,13 +29,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService {
     private final FolderService folderService;
+
     private final FileUtil fileUtil;
     private final FileFlattener fileFlattener;
 
     private final Tika tika;
-
-    @Value("${MAX_FILE_SIZE_IN_MB}")
-    private DataSize maxFileSize;
 
     private static final List<MediaType> allowedMimeTypes = List.of(
             MediaType.IMAGE_PNG,
@@ -49,18 +45,14 @@ public class FileServiceImpl implements FileService {
     public FileDTO save(UUID folder,
                         MultipartFile file) throws NoSuchAlgorithmException, IOException {
 
-
-        if (file.getSize() > maxFileSize.toBytes())
-            throw new FileServerAPIException("File upload failed! file size limit exceeded");
-
         MediaType realMediaType = MediaType.parseMediaType(tika.detect(file.getInputStream()));
         if (!allowedMimeTypes.contains(realMediaType))
-            throw new FileServerAPIException("File upload failed! only the following mime types are allowed: ");
+            throw new FileServerAPIException("File upload failed! only the following mime types are allowed: " + allowedMimeTypes);
 
         String realExtension = fileUtil.getFileExtension(realMediaType);
 
         UUID fileId = UUID.randomUUID();
-        String fileName = fileId + "." + realExtension; // '.' is omitted in the realExtension
+        String fileName = fileId + "." + realExtension;
 
         Path folderPath = folderService.getByName(folder);
         Path filePath = folderPath.resolve(fileName).normalize();

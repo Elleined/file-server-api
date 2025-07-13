@@ -40,7 +40,7 @@ public class FileController {
 //                .body(response);
 //    }
 
-    @GetMapping("/{file.+}/verify-checksum")
+    @GetMapping("/{file}/verify-checksum")
     public boolean isChecksumMatched(@PathVariable("folder") UUID folder,
                                      @PathVariable("file") UUID file,
                                      @RequestParam("checksum") String checksum) throws IOException, NoSuchAlgorithmException {

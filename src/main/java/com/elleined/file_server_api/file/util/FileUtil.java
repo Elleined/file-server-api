@@ -7,6 +7,8 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import java.security.NoSuchAlgorithmException;
 
 public interface FileUtil {
+
+    // '.' is omitted in the realExtension
     String getFileExtension(MediaType mediaType);
 
     String checksum(MultipartFile file) throws NoSuchAlgorithmException;

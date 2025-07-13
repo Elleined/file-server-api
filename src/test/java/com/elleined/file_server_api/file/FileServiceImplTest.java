@@ -1,6 +1,7 @@
 package com.elleined.file_server_api.file;
 
-import com.elleined.file_server_api.exception.FileServerAPIException;
+import com.elleined.file_server_api.file.flattener.FileFlattener;
+import com.elleined.file_server_api.file.util.FileUtil;
 import com.elleined.file_server_api.folder.FolderService;
 import org.apache.tika.Tika;
 import org.apache.tika.mime.MimeTypeException;
@@ -27,13 +28,18 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class FileServiceImplTest {
 
     @Mock
     private FolderService folderService;
+
+    private final DataSize maxFileSize = DataSize.ofMegabytes(20);
+    @Mock
+    private FileUtil fileUtil;
 
     @Spy
     private Tika tika;
@@ -45,10 +51,12 @@ class FileServiceImplTest {
     private final InputStream pngFile = getClass().getClassLoader().getResourceAsStream("png.png");
     private final InputStream jpegFile = getClass().getClassLoader().getResourceAsStream("jpeg.jpeg");
     private final InputStream jpgFile = getClass().getClassLoader().getResourceAsStream("jpg.jpg");
+    @Mock
+    private FileFlattener fileFlattener;
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(fileService, "maxFileSize", DataSize.ofMegabytes(20));
+        ReflectionTestUtils.setField(fileService, "maxFileSize", maxFileSize);
     }
 
     @Test
@@ -197,29 +205,6 @@ class FileServiceImplTest {
         assertNotNull(fileDTO.fileId());
         assertEquals(expectedExtension, fileDTO.extension());
         assertEquals(expectedMediaType, fileDTO.mediaType());
-    }
-
-    @Test
-    void save_ShouldThrowFileServerException_ForFileSizeLimitExceeded() {
-        // Pre defined values
-
-        // Expected Value
-        MultipartFile file = new MockMultipartFile("file", new byte[(int) DataSize.ofMegabytes(21).toBytes()]);
-
-        // Mock data
-        UUID folder = UUID.randomUUID();
-
-        // Set up method
-
-        // Stubbing methods
-
-        // Calling the method
-        assertThrowsExactly(FileServerAPIException.class, () -> fileService.save(folder, file));
-
-        // Behavior Verifications
-        verifyNoInteractions(folderService, tika);
-
-        // Assertions
     }
 
     @Test

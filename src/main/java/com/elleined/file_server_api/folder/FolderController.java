@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -15,7 +14,7 @@ public class FolderController {
     private final FolderService folderService;
 
     @PostMapping
-    public UUID save() throws IOException {
-        return folderService.save();
+    public String save() throws IOException {
+        return folderService.save().toString();
     }
 }
