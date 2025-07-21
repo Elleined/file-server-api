@@ -33,15 +33,15 @@ public class FileController {
     public ResponseEntity<StreamingResponseBody> getByName(@PathVariable("folder") UUID folder,
                                                            @PathVariable("file") UUID file) throws IOException, FileServerAPIException, MimeTypeException {
 
-        FileMetaData fileMetaData = fileService.getByName(folder, file);
-        StreamingResponseBody response = fileUtil.stream(fileMetaData.filePath());
+        FileEntity fileEntity = fileService.getByName(folder, file);
+        StreamingResponseBody response = fileUtil.stream(fileEntity.filePath());
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, fileMetaData.getContentDisposition() + "; filename=\"" + fileMetaData.getFileName() + "\"")
-                .contentType(MediaType.parseMediaType(fileMetaData.mediaType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, fileEntity.getContentDisposition() + "; filename=\"" + fileEntity.getFileName() + "\"")
+                .contentType(MediaType.parseMediaType(fileEntity.mediaType()))
                 .body(response);
     }
 
-    @GetMapping("/{file}/verify")
+    @GetMapping("/{file}/checksum")
     public boolean isChecksumMatched(@PathVariable("folder") UUID folder,
                                      @PathVariable("file") UUID file,
                                      @RequestParam("checksum") String checksum) throws IOException, NoSuchAlgorithmException, FileServerAPIException, MimeTypeException {

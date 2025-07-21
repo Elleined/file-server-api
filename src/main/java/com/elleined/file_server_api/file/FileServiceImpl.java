@@ -58,7 +58,7 @@ public class FileServiceImpl implements FileService {
         Path folderPath = folderService.getByName(folder);
         Path filePath = folderPath.resolve(fileName).normalize();
 
-        if (realMediaType.toString().startsWith("image/")) {
+        if (realMediaType.toString().startsWith("image")) {
             fileFlattener.flattenImage(filePath, file, realExtension);
         } else {
             fileFlattener.flattenPDF(filePath, file);
@@ -74,8 +74,8 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public FileMetaData getByName(UUID folder,
-                                  UUID file) throws IOException, FileServerAPIException, MimeTypeException {
+    public FileEntity getByName(UUID folder,
+                                UUID file) throws IOException, FileServerAPIException, MimeTypeException {
 
         Path folderPath = folderService.getByName(folder);
         Path filePath = folderPath.resolve(file.toString())
@@ -85,7 +85,7 @@ public class FileServiceImpl implements FileService {
         String extension = fileUtil.getFileExtension(mediaType);
 
         log.info("Fetching file metadata for: {} success", file);
-        return new FileMetaData(filePath, file, extension, mediaType);
+        return new FileEntity(filePath, file, extension, mediaType);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class FileServiceImpl implements FileService {
                                      UUID file,
                                      String checksum) throws IOException, NoSuchAlgorithmException, FileServerAPIException, MimeTypeException {
 
-        FileMetaData fetchedFile = this.getByName(folder, file);
+        FileEntity fetchedFile = this.getByName(folder, file);
 
         Path filePath = fetchedFile.filePath();
         String filePathChecksum = fileUtil.checksum(filePath);

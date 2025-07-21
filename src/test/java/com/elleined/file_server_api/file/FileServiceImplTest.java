@@ -4,15 +4,12 @@ import com.elleined.file_server_api.file.flattener.FileFlattener;
 import com.elleined.file_server_api.file.util.FileUtil;
 import com.elleined.file_server_api.folder.FolderService;
 import org.apache.tika.Tika;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.unit.DataSize;
 
 import java.io.InputStream;
 
@@ -22,7 +19,6 @@ class FileServiceImplTest {
     @Mock
     private FolderService folderService;
 
-    private final DataSize maxFileSize = DataSize.ofMegabytes(20);
     @Mock
     private FileUtil fileUtil;
 
@@ -39,11 +35,6 @@ class FileServiceImplTest {
     private final InputStream pngFile = getClass().getClassLoader().getResourceAsStream("png.png");
     private final InputStream jpegFile = getClass().getClassLoader().getResourceAsStream("jpeg.jpeg");
     private final InputStream jpgFile = getClass().getClassLoader().getResourceAsStream("jpg.jpg");
-
-    @BeforeEach
-    void setUp() {
-        ReflectionTestUtils.setField(fileService, "maxFileSize", maxFileSize);
-    }
 
     @Test
     void getByName_HappyPath() {

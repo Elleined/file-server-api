@@ -14,8 +14,8 @@ public interface FileService {
     FileDTO save(@NotNull UUID folder,
                  @NotNull MultipartFile file) throws NoSuchAlgorithmException, IOException, MimeTypeException, FileServerAPIException;
 
-    FileMetaData getByName(@NotNull UUID folder,
-                           @NotNull UUID file) throws IOException, FileServerAPIException, MimeTypeException;
+    FileEntity getByName(@NotNull UUID folder,
+                         @NotNull UUID file) throws IOException, FileServerAPIException, MimeTypeException;
 
     boolean isChecksumMatched(@NotNull UUID folder,
                               @NotNull UUID file,
