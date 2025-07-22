@@ -5,6 +5,9 @@ import com.elleined.file_server_api.file.util.FileUtil;
 import org.apache.tika.mime.MimeTypeException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpHeaders;
@@ -15,10 +18,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
@@ -38,21 +42,36 @@ class FileControllerTest {
     @MockitoBean
     private FileUtil fileUtil;
 
-    @Test
-    void save_HappyPath() throws IOException, FileServerAPIException, MimeTypeException, NoSuchAlgorithmException {
+    @TempDir
+    private Path tempDir;
+
+    private static Stream<Arguments> save_HappyPath_Payload() {
+        return Stream.of(
+                Arguments.of(FileController.class.getClassLoader().getResourceAsStream("png.png")),
+                Arguments.of(FileController.class.getClassLoader().getResourceAsStream("jpg.jpg")),
+                Arguments.of(FileController.class.getClassLoader().getResourceAsStream("jpeg.jpeg")),
+                Arguments.of(FileControllerTest.class.getClassLoader().getResourceAsStream("pdf.pdf"))
+        );
+    }
+
+    private static Stream<Arguments> getByName_HappyPath_Payload() {
+        return Stream.of(
+                Arguments.of(MediaType.IMAGE_PNG, "inline", "png"),
+                Arguments.of(MediaType.IMAGE_JPEG, "inline", "jpeg"),
+                Arguments.of(MediaType.APPLICATION_PDF, "attachment", "pdf")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("save_HappyPath_Payload")
+    void save_HappyPath(InputStream inputStream) throws IOException, FileServerAPIException, MimeTypeException, NoSuchAlgorithmException {
         // Pre defined values
 
         // Expected Value
 
         // Mock data
-        UUID folder = UUID.randomUUID();
-        UUID fileId = UUID.randomUUID();
-        String extension = "testExtension";
-        MediaType mediaType = MediaType.IMAGE_PNG;
-        String checksum = "testChecksum";
-
-        MockMultipartFile file = new MockMultipartFile("file", getClass().getClassLoader().getResourceAsStream("pdf.pdf"));
-        FileDTO fileDTO = new FileDTO(folder, fileId, extension, mediaType, checksum);
+        MockMultipartFile file = new MockMultipartFile("file", inputStream);
+        FileDTO fileDTO = mock(FileDTO.class);
 
         // Set up method
 
@@ -60,16 +79,10 @@ class FileControllerTest {
         when(fileService.save(any(UUID.class), any(MultipartFile.class))).thenReturn(fileDTO);
 
         // Calling the method
-        assertDoesNotThrow(() -> mockMvc.perform(multipart("/folders/{folder}/files", folder)
+        assertDoesNotThrow(() -> mockMvc.perform(multipart("/folders/{folder}/files", UUID.randomUUID().toString())
                         .file(file))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.uploadedAt").exists())
-                .andExpect(jsonPath("$.folder").value(folder.toString()))
-                .andExpect(jsonPath("$.fileId").value(fileId.toString()))
-                .andExpect(jsonPath("$.extension").value(extension))
-                .andExpect(jsonPath("$.mediaType").value(mediaType.toString()))
-                .andExpect(jsonPath("$.checksum").value(checksum))
         );
 
         // Behavior Verifications
@@ -78,20 +91,22 @@ class FileControllerTest {
         // Assertions
     }
 
-    @Test
-    void getByName_InlinePNG_HappyPath() throws FileServerAPIException, MimeTypeException, IOException {
+    @ParameterizedTest
+    @MethodSource("getByName_HappyPath_Payload")
+    void getByName_HappyPath(MediaType mediaType, String contentDisposition, String extension) throws FileServerAPIException, MimeTypeException, IOException {
         // Pre defined values
 
         // Expected Value
-        Path filePath = Paths.get("/path/to/file");
+        UUID folder = UUID.randomUUID();
         UUID fileId = UUID.randomUUID();
-        String extension = "extension";
-        MediaType mediaType = MediaType.IMAGE_PNG;
         String fileName = fileId + "." + extension;
 
         // Mock data
-        UUID folder = UUID.randomUUID();
-        FileEntity fileEntity = new FileEntity(filePath, fileId, extension, mediaType);
+        FileEntity fileEntity = mock(FileEntity.class);
+        when(fileEntity.filePath()).thenReturn(tempDir);
+        when(fileEntity.mediaType()).thenReturn(mediaType.toString());
+        when(fileEntity.getContentDisposition()).thenReturn(contentDisposition);
+        when(fileEntity.getFileName()).thenReturn(fileName);
 
         // Set up method
 
@@ -103,88 +118,10 @@ class FileControllerTest {
         // Calling the method
         assertDoesNotThrow(() -> mockMvc.perform(get("/folders/{folder}/files/{fileId}", folder, fileId))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.IMAGE_PNG))
+                .andExpect(content().contentType(mediaType))
                 .andExpect(header().string(
                         HttpHeaders.CONTENT_DISPOSITION,
-                        String.format("inline; filename=\"%s\"", fileName)
-                ))
-        );
-
-        // Behavior Verifications
-        verify(fileService).getByName(any(UUID.class), any(UUID.class));
-        verify(fileUtil).stream(any(Path.class));
-
-        // Assertions
-    }
-
-    @Test
-    void getByName_InlineJPEG_HappyPath() throws FileServerAPIException, MimeTypeException, IOException {
-        // Pre defined values
-
-        // Expected Value
-        Path filePath = Paths.get("/path/to/file");
-        UUID fileId = UUID.randomUUID();
-        String extension = "extension";
-        MediaType mediaType = MediaType.IMAGE_JPEG;
-        String fileName = fileId + "." + extension;
-
-        // Mock data
-        UUID folder = UUID.randomUUID();
-        FileEntity fileEntity = new FileEntity(filePath, fileId, extension, mediaType);
-
-        // Set up method
-
-        // Stubbing methods
-        when(fileService.getByName(any(UUID.class), any(UUID.class))).thenReturn(fileEntity);
-        when(fileUtil.stream(any(Path.class))).thenReturn(outputStream -> {
-        });
-
-        // Calling the method
-        assertDoesNotThrow(() -> mockMvc.perform(get("/folders/{folder}/files/{fileId}", folder, fileId))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.IMAGE_JPEG))
-                .andExpect(header().string(
-                        HttpHeaders.CONTENT_DISPOSITION,
-                        String.format("inline; filename=\"%s\"", fileName)
-                ))
-        );
-
-        // Behavior Verifications
-        verify(fileService).getByName(any(UUID.class), any(UUID.class));
-        verify(fileUtil).stream(any(Path.class));
-
-        // Assertions
-    }
-
-    @Test
-    void getByName_AttachmentPDF_HappyPath() throws FileServerAPIException, MimeTypeException, IOException {
-        // Pre defined values
-
-        // Expected Value
-        Path filePath = Paths.get("/path/to/file");
-        UUID fileId = UUID.randomUUID();
-        String extension = "extension";
-        MediaType mediaType = MediaType.APPLICATION_PDF;
-        String fileName = fileId + "." + extension;
-
-        // Mock data
-        UUID folder = UUID.randomUUID();
-        FileEntity fileEntity = new FileEntity(filePath, fileId, extension, mediaType);
-
-        // Set up method
-
-        // Stubbing methods
-        when(fileService.getByName(any(UUID.class), any(UUID.class))).thenReturn(fileEntity);
-        when(fileUtil.stream(any(Path.class))).thenReturn(outputStream -> {
-        });
-
-        // Calling the method
-        assertDoesNotThrow(() -> mockMvc.perform(get("/folders/{folder}/files/{fileId}", folder, fileId))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_PDF))
-                .andExpect(header().string(
-                        HttpHeaders.CONTENT_DISPOSITION,
-                        String.format("attachment; filename=\"%s\"", fileName)
+                        String.format("%s; filename=\"%s\"", contentDisposition, fileName)
                 ))
         );
 

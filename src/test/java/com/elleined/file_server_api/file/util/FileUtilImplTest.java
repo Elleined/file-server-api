@@ -3,6 +3,9 @@ package com.elleined.file_server_api.file.util;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
@@ -11,6 +14,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,38 +24,22 @@ class FileUtilImplTest {
     @InjectMocks
     private FileUtilImpl fileUtil;
 
-    @Test
-    void getFileExtension_PDF_HappyPath() {
-        // Pre defined values
-
-        // Expected Value
-        String expectedExtension = "pdf";
-
-        // Mock data
-        MediaType mediaType = MediaType.APPLICATION_PDF;
-
-        // Set up method
-
-        // Stubbing methods
-        String actual = assertDoesNotThrow(() -> fileUtil.getFileExtension(mediaType));
-
-        // Calling the method
-
-        // Behavior Verifications
-
-        // Assertions
-        assertEquals(expectedExtension, actual);
+    private static Stream<Arguments> getFileExtension_HappyPath_Payload() {
+        return Stream.of(
+                Arguments.of(MediaType.IMAGE_PNG, "png"),
+                Arguments.of(MediaType.IMAGE_JPEG, "jpg"),
+                Arguments.of(MediaType.APPLICATION_PDF, "pdf")
+        );
     }
 
-    @Test
-    void getFileExtension_PNG_HappyPath() {
+    @ParameterizedTest
+    @MethodSource("getFileExtension_HappyPath_Payload")
+    void getFileExtension_HappyPath(MediaType mediaType, String extension) {
         // Pre defined values
 
         // Expected Value
-        String expectedExtension = "png";
 
         // Mock data
-        MediaType mediaType = MediaType.IMAGE_PNG;
 
         // Set up method
 
@@ -63,30 +51,7 @@ class FileUtilImplTest {
         // Behavior Verifications
 
         // Assertions
-        assertEquals(expectedExtension, actual);
-    }
-
-    @Test
-    void getFileExtension_JPEG_HappyPath() {
-        // Pre defined values
-
-        // Expected Value
-        String expectedExtension = "jpg";
-
-        // Mock data
-        MediaType mediaType = MediaType.IMAGE_JPEG;
-
-        // Set up method
-
-        // Stubbing methods
-        String actual = assertDoesNotThrow(() -> fileUtil.getFileExtension(mediaType));
-
-        // Calling the method
-
-        // Behavior Verifications
-
-        // Assertions
-        assertEquals(expectedExtension, actual);
+        assertEquals(extension, actual);
     }
 
     @Test

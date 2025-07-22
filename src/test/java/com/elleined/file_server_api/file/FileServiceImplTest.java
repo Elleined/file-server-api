@@ -57,13 +57,22 @@ class FileServiceImplTest {
     private final InputStream jpegFile = getClass().getClassLoader().getResourceAsStream("jpeg.jpeg");
     private final InputStream jpgFile = getClass().getClassLoader().getResourceAsStream("jpg.jpg");
 
-    private static Stream<Arguments> getByName_MediaType_AndCorrespondingExtension() {
+    private static Stream<Arguments> getByName_HappyPath_Payload() {
         return Stream.of(
                 Arguments.of("image/png", "png"),
                 Arguments.of("image/jpeg", "jpg"),
                 Arguments.of("application/pdf", "pdf")
         );
     }
+
+    private static Stream<Arguments> save_HappyPath_Payload() {
+        return Stream.of(
+                Arguments.of("image/png", "png"),
+                Arguments.of("image/jpeg", "jpg"),
+                Arguments.of("application/pdf", "pdf")
+        );
+    }
+
 
     @Test
     void save_PNG_HappyPath(@TempDir Path tempDir) throws IOException, FileServerAPIException, MimeTypeException, NoSuchAlgorithmException {
@@ -101,7 +110,7 @@ class FileServiceImplTest {
     }
 
     @ParameterizedTest
-    @MethodSource("getByName_MediaType_AndCorrespondingExtension")
+    @MethodSource("getByName_HappyPath_Payload")
     void getByName_HappyPath(String mediaType, String extension) throws FileServerAPIException, IOException, MimeTypeException {
         // Pre defined values
 
