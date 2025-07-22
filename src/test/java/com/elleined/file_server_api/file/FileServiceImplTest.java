@@ -6,12 +6,14 @@ import com.elleined.file_server_api.folder.FolderService;
 import org.apache.tika.Tika;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.InputStream;
+import java.nio.file.Path;
 
 @ExtendWith(MockitoExtension.class)
 class FileServiceImplTest {
@@ -37,7 +39,7 @@ class FileServiceImplTest {
     private final InputStream jpgFile = getClass().getClassLoader().getResourceAsStream("jpg.jpg");
 
     @Test
-    void getByName_HappyPath() {
+    void save_HappyPath(@TempDir Path tempDir) {
         // Pre defined values
 
         // Expected Value
@@ -56,7 +58,26 @@ class FileServiceImplTest {
     }
 
     @Test
-    void isChecksumMatched_HappyPath() {
+    void getByName_HappyPath(@TempDir Path tempDir) {
+        // Pre defined values
+
+        // Expected Value
+
+        // Mock data
+
+        // Set up method
+
+        // Stubbing methods
+
+        // Calling the method
+
+        // Behavior Verifications
+
+        // Assertions
+    }
+
+    @Test
+    void isChecksumMatched_HappyPath(@TempDir Path tempDir) {
         // Pre defined values
 
         // Expected Value
