@@ -51,7 +51,6 @@ public class FileServiceImpl implements FileService {
             throw new FileServerAPIException("File upload failed! only the following mime types are allowed: " + allowedMimeTypes);
 
         String realExtension = fileUtil.getFileExtension(realMediaType);
-
         UUID fileId = UUID.randomUUID();
         String fileName = fileId + "." + realExtension;
 
@@ -84,20 +83,7 @@ public class FileServiceImpl implements FileService {
         MediaType mediaType = MediaType.parseMediaType(tika.detect(filePath));
         String extension = fileUtil.getFileExtension(mediaType);
 
-        log.info("Fetching file metadata for: {} success", file);
+        log.info("Fetching file metadata for {} success", file);
         return new FileEntity(filePath, file, extension, mediaType);
-    }
-
-    @Override
-    public boolean isChecksumMatched(UUID folder,
-                                     UUID file,
-                                     String checksum) throws IOException, NoSuchAlgorithmException, FileServerAPIException, MimeTypeException {
-
-        FileEntity fetchedFile = this.getByName(folder, file);
-
-        Path filePath = fetchedFile.filePath();
-        String filePathChecksum = fileUtil.checksum(filePath);
-
-        return filePathChecksum.equals(checksum);
     }
 }

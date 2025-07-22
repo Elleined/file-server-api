@@ -4,6 +4,7 @@ import com.elleined.file_server_api.exception.FileServerAPIException;
 import com.elleined.file_server_api.file.util.FileUtil;
 import org.apache.tika.mime.MimeTypeException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpHeaders;
@@ -195,20 +196,24 @@ class FileControllerTest {
     }
 
     @Test
-    void isChecksumMatched_HappyPath() throws FileServerAPIException, MimeTypeException, IOException, NoSuchAlgorithmException {
+    void isChecksumMatched_HappyPath(@TempDir Path tempDir) throws FileServerAPIException, MimeTypeException, IOException, NoSuchAlgorithmException {
         // Pre defined values
 
         // Expected Value
         boolean shouldBe = true;
 
         // Mock data
+        FileEntity fileEntity = mock(FileEntity.class);
+        String checksum = "checksum";
         UUID folder = UUID.randomUUID();
         UUID fileId = UUID.randomUUID();
 
         // Set up method
 
         // Stubbing methods
-        when(fileService.isChecksumMatched(any(UUID.class), any(UUID.class), any(String.class))).thenReturn(shouldBe);
+        when(fileService.getByName(any(UUID.class), any(UUID.class))).thenReturn(fileEntity);
+        when(fileEntity.filePath()).thenReturn(tempDir);
+        when(fileUtil.checksum(any(Path.class))).thenReturn(checksum);
 
         // Calling the method
         assertDoesNotThrow(() -> mockMvc.perform(get("/folders/{folder}/files/{fileId}/checksum", folder, fileId)
@@ -219,7 +224,8 @@ class FileControllerTest {
         );
 
         // Behavior Verifications
-        verify(fileService).isChecksumMatched(any(UUID.class), any(UUID.class), any(String.class));
+        verify(fileService).getByName(any(UUID.class), any(UUID.class));
+        verify(fileUtil).checksum(any(Path.class));
 
         // Assertions
     }

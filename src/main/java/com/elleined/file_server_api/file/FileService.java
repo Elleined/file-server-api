@@ -1,7 +1,6 @@
 package com.elleined.file_server_api.file;
 
 import com.elleined.file_server_api.exception.FileServerAPIException;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.apache.tika.mime.MimeTypeException;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,8 +15,4 @@ public interface FileService {
 
     FileEntity getByName(@NotNull UUID folder,
                          @NotNull UUID file) throws IOException, FileServerAPIException, MimeTypeException;
-
-    boolean isChecksumMatched(@NotNull UUID folder,
-                              @NotNull UUID file,
-                              @NotBlank String checksum) throws IOException, NoSuchAlgorithmException, FileServerAPIException, MimeTypeException;
 }

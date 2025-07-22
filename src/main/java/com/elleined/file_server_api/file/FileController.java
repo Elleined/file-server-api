@@ -46,6 +46,9 @@ public class FileController {
                                      @PathVariable("file") UUID file,
                                      @RequestParam("checksum") String checksum) throws IOException, NoSuchAlgorithmException, FileServerAPIException, MimeTypeException {
 
-        return fileService.isChecksumMatched(folder, file, checksum);
+        FileEntity fetchedFile = fileService.getByName(folder, file);
+        String filePathChecksum = fileUtil.checksum(fetchedFile.filePath());
+
+        return filePathChecksum.equals(checksum);
     }
 }
