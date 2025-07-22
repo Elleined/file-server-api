@@ -9,7 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -17,9 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
 class FileUtilImplTest {
-
-    private final InputStream pdfFile = getClass().getClassLoader().getResourceAsStream("pdf.pdf");
-    private final InputStream pngFile = getClass().getClassLoader().getResourceAsStream("png.png");
 
     @InjectMocks
     private FileUtilImpl fileUtil;
