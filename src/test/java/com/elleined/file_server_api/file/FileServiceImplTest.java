@@ -6,6 +6,7 @@ import com.elleined.file_server_api.file.util.FileUtil;
 import com.elleined.file_server_api.folder.FolderService;
 import org.apache.tika.Tika;
 import org.apache.tika.mime.MimeTypeException;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -79,7 +80,6 @@ class FileServiceImplTest {
         String checksum = "checksum";
         Set<PosixFilePermission> expectedPermissions = Set.of(PosixFilePermission.OWNER_READ);
 
-
         // Mock data
         UUID folder = UUID.randomUUID();
         String fileName = UUID.randomUUID() + "." + extension;
@@ -139,6 +139,104 @@ class FileServiceImplTest {
         assertNotNull(fileDTO.getFileName());
 
         assertEquals(expectedPermissions, Files.getPosixFilePermissions(filePath, LinkOption.NOFOLLOW_LINKS));
+    }
+
+    @Test
+    void save_HappyPath_PDF() throws IOException, MimeTypeException, FileServerAPIException, NoSuchAlgorithmException {
+
+        // Pre defined values
+
+        // Expected Value
+        String checksum = "checksum";
+        Set<PosixFilePermission> expectedPermissions = Set.of(PosixFilePermission.OWNER_READ);
+
+        // Mock data
+        String extension = "pdf";
+        String mediaType = "application/pdf";
+        UUID folder = UUID.randomUUID();
+        String fileName = UUID.randomUUID() + "." + extension;
+
+        Path folderPath = tempDir.resolve(folder.toString()).normalize();
+        Path filePath = folderPath.resolve(fileName).normalize();
+        MultipartFile file = mock(MultipartFile.class);
+
+        // Set up method
+        when(file.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
+
+        // Stubbing methods
+        when(tika.detect(any(InputStream.class))).thenReturn(mediaType);
+        when(fileUtil.getFileExtension(any(MediaType.class))).thenReturn(extension);
+        when(fileUtil.getFileName(any(UUID.class), anyString())).thenReturn(fileName);
+        when(folderService.getByName(any(UUID.class))).thenReturn(folderPath);
+        when(fileUtil.resolve(any(Path.class), anyString())).thenReturn(filePath);
+        doAnswer(answer -> {
+            Files.createDirectory(folderPath);
+            Files.createFile(filePath);
+            return answer;
+        }).when(fileFlattener).flattenPDF(any(Path.class), any(MultipartFile.class));
+        when(fileUtil.checksum(any(Path.class))).thenReturn(checksum);
+
+        // Calling the method
+        FileDTO fileDTO = assertDoesNotThrow(() -> fileService.save(folder, file));
+
+        // Behavior Verifications
+        verify(tika).detect(any(InputStream.class));
+        verify(fileUtil).getFileExtension(any(MediaType.class));
+        verify(fileUtil).getFileName(any(UUID.class), anyString());
+        verify(folderService).getByName(any(UUID.class));
+        verify(fileUtil).resolve(any(Path.class), anyString());
+        verify(fileFlattener).flattenPDF(any(Path.class), any(MultipartFile.class));
+        verify(fileUtil).checksum(any(Path.class));
+        verifyNoMoreInteractions(fileFlattener);
+
+        // Assertions
+        assertNotNull(fileDTO);
+
+        assertNotNull(fileDTO.uploadedAt());
+
+        assertNotNull(fileDTO.folder());
+        assertEquals(folder, fileDTO.folder());
+
+        assertNotNull(fileDTO.fileId());
+
+        assertNotNull(fileDTO.extension());
+        assertEquals(extension, fileDTO.extension());
+
+        assertNotNull(fileDTO.mediaType());
+        assertEquals(mediaType, fileDTO.mediaType());
+
+        assertNotNull(fileDTO.checksum());
+        assertEquals(checksum, fileDTO.checksum());
+
+        assertNotNull(fileDTO.getFileName());
+
+        assertEquals(expectedPermissions, Files.getPosixFilePermissions(filePath, LinkOption.NOFOLLOW_LINKS));
+    }
+
+    @Test
+    void save_ShouldThrowFileServerAPIException_IfMediaTypeIsNotPNG_JPEG_OrPDF() throws IOException {
+        // Pre defined values
+
+        // Expected Value
+
+        // Mock data
+        UUID folder = UUID.randomUUID();
+        MultipartFile file = mock(MultipartFile.class);
+
+        // Set up method
+        when(file.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
+
+        // Stubbing methods
+        when(tika.detect(any(InputStream.class))).thenReturn(MediaType.APPLICATION_XML.toString());
+
+        // Calling the method
+        assertThrowsExactly(FileServerAPIException.class, () -> fileService.save(folder, file));
+
+        // Behavior Verifications
+        verify(tika).detect(any(InputStream.class));
+        verifyNoInteractions(fileUtil, fileFlattener, folderService);
+
+        // Assertions
     }
 
     @ParameterizedTest
