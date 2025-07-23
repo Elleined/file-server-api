@@ -17,12 +17,12 @@ import java.util.List;
 public class ExceptionController {
 
     @ExceptionHandler(IOException.class)
-    public ResponseEntity<String> handleIOException(IOException ex) {
+    public ResponseEntity<String> handleIOException() {
         return new ResponseEntity<>("Something went wrong!", HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(GeneralSecurityException.class)
-    public ResponseEntity<String> handleGeneralSecurityException(GeneralSecurityException ex) {
+    public ResponseEntity<String> handleGeneralSecurityException() {
         return new ResponseEntity<>("Something went wrong!", HttpStatus.BAD_REQUEST);
     }
 
