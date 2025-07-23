@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -122,5 +123,53 @@ class FileUtilImplTest {
 
         // Assertions
         assertNotNull(response);
+    }
+
+    @Test
+    void getFileName_HappyPath() {
+        // Pre defined values
+
+        // Expected Value
+
+        // Mock data
+        UUID fileId = UUID.randomUUID();
+        String extension = "extension";
+
+        String expected = fileId + "." + extension;
+        // Set up method
+
+        // Stubbing methods
+
+        // Calling the method
+        String actual = assertDoesNotThrow(() -> fileUtil.getFileName(fileId, extension));
+
+        // Behavior Verifications
+
+        // Assertions
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void resolve_HappyPath(@TempDir Path tempDir) {
+        // Pre defined values
+
+        // Expected Value
+
+        // Mock data
+        String fileName = "fileName";
+
+        Path expected = tempDir.resolve(fileName).normalize();
+        // Set up method
+
+        // Stubbing methods
+
+        // Calling the method
+        Path actual = assertDoesNotThrow(() -> fileUtil.resolve(tempDir, fileName));
+
+        // Behavior Verifications
+
+        // Assertions
+        assertNotNull(actual);
+        assertEquals(expected, actual);
     }
 }

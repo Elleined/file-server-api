@@ -6,7 +6,6 @@ import com.elleined.file_server_api.file.util.FileUtil;
 import com.elleined.file_server_api.folder.FolderService;
 import org.apache.tika.Tika;
 import org.apache.tika.mime.MimeTypeException;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,9 +15,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -52,10 +51,13 @@ class FileServiceImplTest {
     @TempDir
     private Path tempDir;
 
-    private final InputStream pdfFile = getClass().getClassLoader().getResourceAsStream("pdf.pdf");
-    private final InputStream pngFile = getClass().getClassLoader().getResourceAsStream("png.png");
-    private final InputStream jpegFile = getClass().getClassLoader().getResourceAsStream("jpeg.jpeg");
-    private final InputStream jpgFile = getClass().getClassLoader().getResourceAsStream("jpg.jpg");
+    private static Stream<Arguments> save_HappyPath_Payload() {
+        return Stream.of(
+                Arguments.of("image/png", "png"),
+                Arguments.of("image/jpeg", "jpg"),
+                Arguments.of("image/jpeg", "jpeg")
+        );
+    }
 
     private static Stream<Arguments> getByName_HappyPath_Payload() {
         return Stream.of(
@@ -65,33 +67,36 @@ class FileServiceImplTest {
         );
     }
 
-    private static Stream<Arguments> save_HappyPath_Payload() {
-        return Stream.of(
-                Arguments.of("image/png", "png"),
-                Arguments.of("image/jpeg", "jpg"),
-                Arguments.of("application/pdf", "pdf")
-        );
-    }
-
-
-    @Test
-    void save_PNG_HappyPath(@TempDir Path tempDir) throws IOException, FileServerAPIException, MimeTypeException, NoSuchAlgorithmException {
+    @ParameterizedTest
+    @MethodSource("save_HappyPath_Payload")
+    void save_HappyPath_ImagePNG_AndJPG_AndJPEG(String mediaType, String extension) throws IOException, FileServerAPIException, MimeTypeException, NoSuchAlgorithmException {
         // Pre defined values
 
         // Expected Value
+        String checksum = "checksum";
 
         // Mock data
-        String checksum = "checksum";
         UUID folder = UUID.randomUUID();
-        MockMultipartFile file = new MockMultipartFile("file", pngFile);
+        String fileName = UUID.randomUUID() + "." + extension;
+
+        Path folderPath = tempDir.resolve(folder.toString()).normalize();
+        Path filePath = folderPath.resolve(fileName).normalize();
+        MultipartFile file = mock(MultipartFile.class);
 
         // Set up method
+        when(file.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
 
         // Stubbing methods
-        when(tika.detect(any(InputStream.class))).thenReturn("image/png");
-        when(fileUtil.getFileExtension(any(MediaType.class))).thenReturn("png");
-        when(folderService.getByName(any(UUID.class))).thenReturn(tempDir);
-        doNothing().when(fileFlattener).flattenImage(any(Path.class), any(MultipartFile.class), anyString());
+        when(tika.detect(any(InputStream.class))).thenReturn(mediaType);
+        when(fileUtil.getFileExtension(any(MediaType.class))).thenReturn(extension);
+        when(fileUtil.getFileName(any(UUID.class), anyString())).thenReturn(fileName);
+        when(folderService.getByName(any(UUID.class))).thenReturn(folderPath);
+        when(fileUtil.resolve(any(Path.class), anyString())).thenReturn(filePath);
+        doAnswer(answer -> {
+            Files.createDirectory(folderPath);
+            Files.createFile(filePath);
+            return answer;
+        }).when(fileFlattener).flattenImage(any(Path.class), any(MultipartFile.class), anyString());
         when(fileUtil.checksum(any(Path.class))).thenReturn(checksum);
 
         // Calling the method
@@ -100,13 +105,33 @@ class FileServiceImplTest {
         // Behavior Verifications
         verify(tika).detect(any(InputStream.class));
         verify(fileUtil).getFileExtension(any(MediaType.class));
+        verify(fileUtil).getFileName(any(UUID.class), anyString());
         verify(folderService).getByName(any(UUID.class));
+        verify(fileUtil).resolve(any(Path.class), anyString());
         verify(fileFlattener).flattenImage(any(Path.class), any(MultipartFile.class), anyString());
         verify(fileUtil).checksum(any(Path.class));
         verifyNoMoreInteractions(fileFlattener);
 
         // Assertions
         assertNotNull(fileDTO);
+
+        assertNotNull(fileDTO.uploadedAt());
+
+        assertNotNull(fileDTO.folder());
+        assertEquals(folder, fileDTO.folder());
+
+        assertNotNull(fileDTO.fileId());
+
+        assertNotNull(fileDTO.extension());
+        assertEquals(extension, fileDTO.extension());
+
+        assertNotNull(fileDTO.mediaType());
+        assertEquals(mediaType, fileDTO.mediaType());
+
+        assertNotNull(fileDTO.checksum());
+        assertEquals(checksum, fileDTO.checksum());
+
+        assertNotNull(fileDTO.getFileName());
     }
 
     @ParameterizedTest

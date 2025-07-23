@@ -50,12 +50,13 @@ public class FileServiceImpl implements FileService {
         if (!allowedMimeTypes.contains(realMediaType))
             throw new FileServerAPIException("File upload failed! only the following mime types are allowed: " + allowedMimeTypes);
 
-        String realExtension = fileUtil.getFileExtension(realMediaType);
         UUID fileId = UUID.randomUUID();
-        String fileName = fileId + "." + realExtension;
+
+        String realExtension = fileUtil.getFileExtension(realMediaType);
+        String fileName = fileUtil.getFileName(fileId, realExtension);
 
         Path folderPath = folderService.getByName(folder);
-        Path filePath = folderPath.resolve(fileName).normalize();
+        Path filePath = fileUtil.resolve(folderPath, fileName);
 
         if (realMediaType.toString().startsWith("image")) {
             fileFlattener.flattenImage(filePath, file, realExtension);

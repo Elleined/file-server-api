@@ -47,9 +47,9 @@ class FileControllerTest {
 
     private static Stream<Arguments> save_HappyPath_Payload() {
         return Stream.of(
-                Arguments.of(FileController.class.getClassLoader().getResourceAsStream("png.png")),
-                Arguments.of(FileController.class.getClassLoader().getResourceAsStream("jpg.jpg")),
-                Arguments.of(FileController.class.getClassLoader().getResourceAsStream("jpeg.jpeg")),
+                Arguments.of(FileControllerTest.class.getClassLoader().getResourceAsStream("png.png")),
+                Arguments.of(FileControllerTest.class.getClassLoader().getResourceAsStream("jpg.jpg")),
+                Arguments.of(FileControllerTest.class.getClassLoader().getResourceAsStream("jpeg.jpeg")),
                 Arguments.of(FileControllerTest.class.getClassLoader().getResourceAsStream("pdf.pdf"))
         );
     }
