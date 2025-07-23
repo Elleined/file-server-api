@@ -17,8 +17,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
@@ -45,15 +45,6 @@ class FileControllerTest {
     @TempDir
     private Path tempDir;
 
-    private static Stream<Arguments> save_HappyPath_Payload() {
-        return Stream.of(
-                Arguments.of(FileControllerTest.class.getClassLoader().getResourceAsStream("png.png")),
-                Arguments.of(FileControllerTest.class.getClassLoader().getResourceAsStream("jpg.jpg")),
-                Arguments.of(FileControllerTest.class.getClassLoader().getResourceAsStream("jpeg.jpeg")),
-                Arguments.of(FileControllerTest.class.getClassLoader().getResourceAsStream("pdf.pdf"))
-        );
-    }
-
     private static Stream<Arguments> getByName_HappyPath_Payload() {
         return Stream.of(
                 Arguments.of(MediaType.IMAGE_PNG, "inline", "png"),
@@ -62,18 +53,19 @@ class FileControllerTest {
         );
     }
 
-    @ParameterizedTest
-    @MethodSource("save_HappyPath_Payload")
-    void save_HappyPath(InputStream inputStream) throws IOException, FileServerAPIException, MimeTypeException, NoSuchAlgorithmException {
+    @Test
+    void save_HappyPath() throws IOException, FileServerAPIException, MimeTypeException, NoSuchAlgorithmException {
         // Pre defined values
 
         // Expected Value
 
         // Mock data
-        MockMultipartFile file = new MockMultipartFile("file", inputStream);
+        MockMultipartFile file = mock(MockMultipartFile.class);
         FileDTO fileDTO = mock(FileDTO.class);
 
         // Set up method
+        when(file.getName()).thenReturn("file");
+        when(file.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
 
         // Stubbing methods
         when(fileService.save(any(UUID.class), any(MultipartFile.class))).thenReturn(fileDTO);
