@@ -145,8 +145,8 @@ class FileControllerTest {
         when(fileUtil.checksum(any(Path.class))).thenReturn(checksum);
 
         // Calling the method
-        assertDoesNotThrow(() -> mockMvc.perform(get("/folders/{folder}/files/{fileId}/checksum", folder, fileId)
-                        .param("checksum", "checksum"))
+        assertDoesNotThrow(() -> mockMvc.perform(get("/folders/{folder}/files/{fileId}/verify", folder, fileId)
+                        .param("checksum", checksum))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isBoolean())
                 .andExpect(jsonPath("$").value(shouldBe))

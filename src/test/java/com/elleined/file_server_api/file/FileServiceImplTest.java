@@ -21,8 +21,11 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermission;
 import java.security.NoSuchAlgorithmException;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -74,6 +77,8 @@ class FileServiceImplTest {
 
         // Expected Value
         String checksum = "checksum";
+        Set<PosixFilePermission> expectedPermissions = Set.of(PosixFilePermission.OWNER_READ);
+
 
         // Mock data
         UUID folder = UUID.randomUUID();
@@ -132,6 +137,8 @@ class FileServiceImplTest {
         assertEquals(checksum, fileDTO.checksum());
 
         assertNotNull(fileDTO.getFileName());
+
+        assertEquals(expectedPermissions, Files.getPosixFilePermissions(filePath, LinkOption.NOFOLLOW_LINKS));
     }
 
     @ParameterizedTest

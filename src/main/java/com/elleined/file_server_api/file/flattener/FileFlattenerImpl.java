@@ -5,13 +5,13 @@ import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.*;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashSet;
@@ -21,7 +21,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class FileFlattenerImpl implements FileFlattener {
 
-    @Async
     @Override
     public void flattenPDF(Path filePath, MultipartFile file) throws IOException {
         try (PDDocument document = Loader.loadPDF(file.getInputStream().readAllBytes())) {
@@ -149,10 +148,11 @@ public class FileFlattenerImpl implements FileFlattener {
         }
     }
 
-    @Async
     @Override
     public void flattenImage(Path filePath, MultipartFile file, String realExtension) throws IOException {
-        BufferedImage image = ImageIO.read(file.getInputStream());
-        ImageIO.write(image, realExtension, filePath.toFile());
+        try (InputStream inputStream = file.getInputStream()) {
+            BufferedImage image = ImageIO.read(inputStream);
+            ImageIO.write(image, realExtension, filePath.toFile());
+        }
     }
 }
