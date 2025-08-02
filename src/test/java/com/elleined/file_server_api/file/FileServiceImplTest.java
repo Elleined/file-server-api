@@ -233,7 +233,7 @@ class FileServiceImplTest {
 
     @ParameterizedTest
     @MethodSource("getByName_HappyPath_Payload")
-    void getByName_HappyPath(String mediaType, String extension) throws FileServerAPIException, IOException, MimeTypeException {
+    void getByName_HappyPath(String mediaType, String extension) throws IOException, MimeTypeException {
         // Pre defined values
 
         // Expected Value

@@ -17,6 +17,6 @@ public class FolderUtilImpl implements FolderUtil {
     private String uploadPath;
 
     public Path getUploadPath() throws IOException {
-        return Paths.get(uploadPath.strip()).toRealPath(LinkOption.NOFOLLOW_LINKS);
+        return Paths.get(this.uploadPath.strip()).toRealPath(LinkOption.NOFOLLOW_LINKS);
     }
 }
