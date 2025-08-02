@@ -1,6 +1,5 @@
 package com.elleined.file_server_api.folder;
 
-import com.elleined.file_server_api.exception.FileServerAPIException;
 import com.elleined.file_server_api.folder.util.FolderUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +28,7 @@ class FolderServiceImplTest {
     private FolderServiceImpl folderService;
 
     @Test
-    void save_AndGet_HappyPath(@TempDir Path tempDir) throws IOException, FileServerAPIException {
+    void save_AndGet_HappyPath(@TempDir Path tempDir) throws IOException {
         // Pre defined values
 
         // Expected Value
