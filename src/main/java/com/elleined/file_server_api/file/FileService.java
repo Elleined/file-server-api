@@ -7,12 +7,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface FileService {
     FileDTO save(@NotNull UUID folder,
                  @NotNull MultipartFile file) throws NoSuchAlgorithmException, IOException, MimeTypeException, FileServerAPIException;
 
-    FileEntity getByName(@NotNull UUID folder,
-                         @NotNull UUID file) throws IOException, FileServerAPIException, MimeTypeException;
+    Optional<FileEntity> getByUUID(@NotNull UUID folder,
+                                   @NotNull UUID file) throws IOException, FileServerAPIException, MimeTypeException;
 }

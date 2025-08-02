@@ -21,6 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -103,7 +104,7 @@ class FileControllerTest {
         // Set up method
 
         // Stubbing methods
-        when(fileService.getByName(any(UUID.class), any(UUID.class))).thenReturn(fileEntity);
+        when(fileService.getByUUID(any(UUID.class), any(UUID.class))).thenReturn(Optional.of(fileEntity));
         when(fileUtil.stream(any(Path.class))).thenReturn(outputStream -> {
         });
 
@@ -118,7 +119,7 @@ class FileControllerTest {
         );
 
         // Behavior Verifications
-        verify(fileService).getByName(any(UUID.class), any(UUID.class));
+        verify(fileService).getByUUID(any(UUID.class), any(UUID.class));
         verify(fileUtil).stream(any(Path.class));
 
         // Assertions
@@ -140,7 +141,7 @@ class FileControllerTest {
         // Set up method
 
         // Stubbing methods
-        when(fileService.getByName(any(UUID.class), any(UUID.class))).thenReturn(fileEntity);
+        when(fileService.getByUUID(any(UUID.class), any(UUID.class))).thenReturn(Optional.of(fileEntity));
         when(fileEntity.filePath()).thenReturn(tempDir);
         when(fileUtil.checksum(any(Path.class))).thenReturn(checksum);
 
@@ -153,7 +154,7 @@ class FileControllerTest {
         );
 
         // Behavior Verifications
-        verify(fileService).getByName(any(UUID.class), any(UUID.class));
+        verify(fileService).getByUUID(any(UUID.class), any(UUID.class));
         verify(fileUtil).checksum(any(Path.class));
 
         // Assertions

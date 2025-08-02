@@ -1,7 +1,6 @@
 package com.elleined.file_server_api.file;
 
 import com.elleined.file_server_api.exception.FileServerAPIException;
-import com.elleined.file_server_api.file.flattener.FileFlattener;
 import com.elleined.file_server_api.file.util.FileUtil;
 import com.elleined.file_server_api.folder.FolderService;
 import org.apache.tika.Tika;
@@ -43,8 +42,6 @@ class FileServiceImplTest {
     @Mock
     private Tika tika;
 
-    @Mock
-    private FileFlattener fileFlattener;
 
     @InjectMocks
     private FileServiceImpl fileService;
@@ -78,14 +75,16 @@ class FileServiceImplTest {
         String checksum = "checksum";
 
         // Mock data
+        MultipartFile file = mock(MultipartFile.class);
+
         UUID folder = UUID.randomUUID();
         String fileName = UUID.randomUUID() + "." + extension;
 
-        Path folderPath = tempDir.resolve(folder.toString()).normalize();
-        Path filePath = folderPath.resolve(fileName).normalize();
-        MultipartFile file = mock(MultipartFile.class);
+        Path folderPath = tempDir.resolve(folder.toString());
+        Path filePath = folderPath.resolve(fileName);
 
         // Set up method
+        Files.createDirectory(folderPath);
         when(file.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
 
         // Stubbing methods
@@ -94,11 +93,6 @@ class FileServiceImplTest {
         when(fileUtil.getFileName(any(UUID.class), anyString())).thenReturn(fileName);
         when(folderService.getByName(any(UUID.class))).thenReturn(folderPath);
         when(fileUtil.resolve(any(Path.class), anyString())).thenReturn(filePath);
-        doAnswer(answer -> {
-            Files.createDirectory(folderPath);
-            Files.createFile(filePath);
-            return answer;
-        }).when(fileFlattener).flattenImage(any(Path.class), any(MultipartFile.class), anyString());
         when(fileUtil.checksum(any(Path.class))).thenReturn(checksum);
 
         // Calling the method
@@ -110,9 +104,7 @@ class FileServiceImplTest {
         verify(fileUtil).getFileName(any(UUID.class), anyString());
         verify(folderService).getByName(any(UUID.class));
         verify(fileUtil).resolve(any(Path.class), anyString());
-        verify(fileFlattener).flattenImage(any(Path.class), any(MultipartFile.class), anyString());
         verify(fileUtil).checksum(any(Path.class));
-        verifyNoMoreInteractions(fileFlattener);
 
         // Assertions
         assertNotNull(fileDTO);
@@ -155,6 +147,7 @@ class FileServiceImplTest {
         MultipartFile file = mock(MultipartFile.class);
 
         // Set up method
+        Files.createDirectory(folderPath);
         when(file.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
 
         // Stubbing methods
@@ -163,11 +156,6 @@ class FileServiceImplTest {
         when(fileUtil.getFileName(any(UUID.class), anyString())).thenReturn(fileName);
         when(folderService.getByName(any(UUID.class))).thenReturn(folderPath);
         when(fileUtil.resolve(any(Path.class), anyString())).thenReturn(filePath);
-        doAnswer(answer -> {
-            Files.createDirectory(folderPath);
-            Files.createFile(filePath);
-            return answer;
-        }).when(fileFlattener).flattenPDF(any(Path.class), any(MultipartFile.class));
         when(fileUtil.checksum(any(Path.class))).thenReturn(checksum);
 
         // Calling the method
@@ -179,9 +167,7 @@ class FileServiceImplTest {
         verify(fileUtil).getFileName(any(UUID.class), anyString());
         verify(folderService).getByName(any(UUID.class));
         verify(fileUtil).resolve(any(Path.class), anyString());
-        verify(fileFlattener).flattenPDF(any(Path.class), any(MultipartFile.class));
         verify(fileUtil).checksum(any(Path.class));
-        verifyNoMoreInteractions(fileFlattener);
 
         // Assertions
         assertNotNull(fileDTO);
@@ -226,34 +212,38 @@ class FileServiceImplTest {
 
         // Behavior Verifications
         verify(tika).detect(any(InputStream.class));
-        verifyNoInteractions(fileUtil, fileFlattener, folderService);
+        verifyNoInteractions(fileUtil, folderService);
 
         // Assertions
     }
 
     @ParameterizedTest
     @MethodSource("getByName_HappyPath_Payload")
-    void getByName_HappyPath(String mediaType, String extension) throws IOException, MimeTypeException {
+    void getByUUID_HappyPath(String mediaType, String extension) throws IOException, MimeTypeException {
         // Pre defined values
 
         // Expected Value
 
         // Mock data
+        UUID folder = UUID.randomUUID();
         UUID file = UUID.randomUUID();
 
-        Path expectedFilePath = tempDir.resolve(file.toString());
+        Path folderPath = tempDir.resolve(folder.toString());
+
         String expectedFileName = file + "." + extension;
+        Path expectedFilePath = folderPath.resolve(expectedFileName);
 
         // Set up method
+        Files.createDirectory(folderPath);
         Files.createDirectory(expectedFilePath);
 
         // Stubbing methods
-        when(folderService.getByName(any(UUID.class))).thenReturn(tempDir);
+        when(folderService.getByName(any(UUID.class))).thenReturn(folderPath);
         when(tika.detect(any(Path.class))).thenReturn(mediaType);
         when(fileUtil.getFileExtension(any(MediaType.class))).thenReturn(extension);
 
         // Calling the method
-        FileEntity fileEntity = assertDoesNotThrow(() -> fileService.getByName(UUID.randomUUID(), file));
+        FileEntity fileEntity = assertDoesNotThrow(() -> fileService.getByUUID(folder, file).orElseThrow());
 
         // Behavior Verifications
         verify(folderService).getByName(any(UUID.class));

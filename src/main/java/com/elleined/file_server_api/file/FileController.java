@@ -33,7 +33,7 @@ public class FileController {
     public ResponseEntity<StreamingResponseBody> getByName(@PathVariable("folder") UUID folder,
                                                            @PathVariable("file") UUID file) throws IOException, FileServerAPIException, MimeTypeException {
 
-        FileEntity fileEntity = fileService.getByName(folder, file);
+        FileEntity fileEntity = fileService.getByUUID(folder, file).orElseThrow();
         StreamingResponseBody response = fileUtil.stream(fileEntity.filePath());
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, fileEntity.getContentDisposition() + "; filename=\"" + fileEntity.getFileName() + "\"")
@@ -46,7 +46,7 @@ public class FileController {
                                      @PathVariable("file") UUID file,
                                      @RequestParam("checksum") String checksum) throws IOException, NoSuchAlgorithmException, FileServerAPIException, MimeTypeException {
 
-        FileEntity fetchedFile = fileService.getByName(folder, file);
+        FileEntity fetchedFile = fileService.getByUUID(folder, file).orElseThrow();
         String filePathChecksum = fileUtil.checksum(fetchedFile.filePath());
 
         return filePathChecksum.equals(checksum);

@@ -1,7 +1,6 @@
 package com.elleined.file_server_api.file;
 
 import com.elleined.file_server_api.exception.FileServerAPIException;
-import com.elleined.file_server_api.file.flattener.FileFlattener;
 import com.elleined.file_server_api.file.util.FileUtil;
 import com.elleined.file_server_api.folder.FolderService;
 import lombok.RequiredArgsConstructor;
@@ -14,10 +13,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.LinkOption;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -28,7 +29,6 @@ public class FileServiceImpl implements FileService {
     private final FolderService folderService;
 
     private final FileUtil fileUtil;
-    private final FileFlattener fileFlattener;
 
     private final Tika tika;
 
@@ -53,31 +53,30 @@ public class FileServiceImpl implements FileService {
 
         Path folderPath = folderService.getByName(folder);
         Path filePath = fileUtil.resolve(folderPath, fileName);
-
-        if (realMediaType.toString().startsWith("image")) {
-            fileFlattener.flattenImage(filePath, file, realExtension);
-        } else {
-            fileFlattener.flattenPDF(filePath, file);
-        }
+        System.out.println(filePath);
+        Files.createFile(filePath);
 
         String checksum = fileUtil.checksum(filePath);
-
         log.info("File saved successfully: {}", fileName);
         return new FileDTO(folder, fileId, realExtension, realMediaType, checksum);
     }
 
     @Override
-    public FileEntity getByName(UUID folder,
-                                UUID file) throws IOException, MimeTypeException {
+    public Optional<FileEntity> getByUUID(UUID folder,
+                                          UUID file) throws IOException, MimeTypeException {
 
         Path folderPath = folderService.getByName(folder);
-        Path filePath = folderPath.resolve(file.toString())
-                .toRealPath(LinkOption.NOFOLLOW_LINKS);
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(folderPath)) {
+            for (Path filePath : stream) {
+                if (filePath.getFileName().toString().startsWith(file.toString())) {
+                    MediaType mediaType = MediaType.parseMediaType(tika.detect(filePath));
+                    String extension = fileUtil.getFileExtension(mediaType);
 
-        MediaType mediaType = MediaType.parseMediaType(tika.detect(filePath));
-        String extension = fileUtil.getFileExtension(mediaType);
-
-        log.info("Fetching file metadata for {} success", file);
-        return new FileEntity(filePath, file, extension, mediaType);
+                    log.info("Fetching file metadata for {} success", file);
+                    return Optional.of(new FileEntity(filePath, file, extension, mediaType));
+                }
+            }
+        }
+        return Optional.empty();
     }
 }

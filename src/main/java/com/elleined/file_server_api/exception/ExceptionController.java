@@ -1,6 +1,7 @@
 package com.elleined.file_server_api.exception;
 
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.exception.TikaException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,19 +11,15 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.List;
 
+@Slf4j
 @ControllerAdvice
 public class ExceptionController {
 
     @ExceptionHandler(IOException.class)
-    public ResponseEntity<String> handleIOException() {
-        return new ResponseEntity<>("Something went wrong!", HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(GeneralSecurityException.class)
-    public ResponseEntity<String> handleGeneralSecurityException() {
+    public ResponseEntity<String> handleIOException(IOException e) {
+        log.debug("Something went wrong! {}", e.getMessage());
         return new ResponseEntity<>("Something went wrong!", HttpStatus.BAD_REQUEST);
     }
 
