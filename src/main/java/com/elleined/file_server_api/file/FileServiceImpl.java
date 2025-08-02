@@ -1,6 +1,7 @@
 package com.elleined.file_server_api.file;
 
 import com.elleined.file_server_api.exception.FileServerAPIException;
+import com.elleined.file_server_api.file.flattener.FileFlattener;
 import com.elleined.file_server_api.file.util.FileUtil;
 import com.elleined.file_server_api.folder.FolderService;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class FileServiceImpl implements FileService {
     private final FolderService folderService;
 
     private final FileUtil fileUtil;
-
+    private final FileFlattener fileFlattener;
     private final Tika tika;
 
     private static final List<MediaType> allowedMimeTypes = List.of(
@@ -53,12 +54,15 @@ public class FileServiceImpl implements FileService {
 
         Path folderPath = folderService.getByName(folder);
         Path filePath = fileUtil.resolve(folderPath, fileName);
-        System.out.println(filePath);
-        Files.createFile(filePath);
 
-        String checksum = fileUtil.checksum(filePath);
+        if (realMediaType.toString().startsWith("image")) {
+            fileFlattener.flattenImage(filePath, file, realExtension);
+        } else {
+            fileFlattener.flattenPDF(filePath, file);
+        }
+
         log.info("File saved successfully: {}", fileName);
-        return new FileDTO(folder, fileId, realExtension, realMediaType, checksum);
+        return new FileDTO(folder, fileId, realExtension, realMediaType, fileUtil.checksum(filePath));
     }
 
     @Override

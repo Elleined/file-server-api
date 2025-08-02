@@ -1,6 +1,7 @@
 package com.elleined.file_server_api.file;
 
 import com.elleined.file_server_api.exception.FileServerAPIException;
+import com.elleined.file_server_api.file.flattener.FileFlattener;
 import com.elleined.file_server_api.file.util.FileUtil;
 import com.elleined.file_server_api.folder.FolderService;
 import org.apache.tika.Tika;
@@ -42,6 +43,8 @@ class FileServiceImplTest {
     @Mock
     private Tika tika;
 
+    @Mock
+    private FileFlattener fileFlattener;
 
     @InjectMocks
     private FileServiceImpl fileService;
@@ -84,7 +87,6 @@ class FileServiceImplTest {
         Path filePath = folderPath.resolve(fileName);
 
         // Set up method
-        Files.createDirectory(folderPath);
         when(file.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
 
         // Stubbing methods
@@ -93,6 +95,11 @@ class FileServiceImplTest {
         when(fileUtil.getFileName(any(UUID.class), anyString())).thenReturn(fileName);
         when(folderService.getByName(any(UUID.class))).thenReturn(folderPath);
         when(fileUtil.resolve(any(Path.class), anyString())).thenReturn(filePath);
+        doAnswer(answer -> {
+            Files.createDirectory(folderPath);
+            Files.createFile(filePath);
+            return answer;
+        }).when(fileFlattener).flattenImage(any(Path.class), any(MultipartFile.class), anyString());
         when(fileUtil.checksum(any(Path.class))).thenReturn(checksum);
 
         // Calling the method
@@ -104,7 +111,9 @@ class FileServiceImplTest {
         verify(fileUtil).getFileName(any(UUID.class), anyString());
         verify(folderService).getByName(any(UUID.class));
         verify(fileUtil).resolve(any(Path.class), anyString());
+        verify(fileFlattener).flattenImage(any(Path.class), any(MultipartFile.class), anyString());
         verify(fileUtil).checksum(any(Path.class));
+        verifyNoMoreInteractions(fileFlattener);
 
         // Assertions
         assertNotNull(fileDTO);
@@ -147,7 +156,6 @@ class FileServiceImplTest {
         MultipartFile file = mock(MultipartFile.class);
 
         // Set up method
-        Files.createDirectory(folderPath);
         when(file.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
 
         // Stubbing methods
@@ -156,6 +164,11 @@ class FileServiceImplTest {
         when(fileUtil.getFileName(any(UUID.class), anyString())).thenReturn(fileName);
         when(folderService.getByName(any(UUID.class))).thenReturn(folderPath);
         when(fileUtil.resolve(any(Path.class), anyString())).thenReturn(filePath);
+        doAnswer(answer -> {
+            Files.createDirectory(folderPath);
+            Files.createFile(filePath);
+            return answer;
+        }).when(fileFlattener).flattenPDF(any(Path.class), any(MultipartFile.class));
         when(fileUtil.checksum(any(Path.class))).thenReturn(checksum);
 
         // Calling the method
@@ -167,6 +180,7 @@ class FileServiceImplTest {
         verify(fileUtil).getFileName(any(UUID.class), anyString());
         verify(folderService).getByName(any(UUID.class));
         verify(fileUtil).resolve(any(Path.class), anyString());
+        verify(fileFlattener).flattenPDF(any(Path.class), any(MultipartFile.class));
         verify(fileUtil).checksum(any(Path.class));
 
         // Assertions
