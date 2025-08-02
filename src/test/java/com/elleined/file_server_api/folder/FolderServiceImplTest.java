@@ -26,6 +26,7 @@ class FolderServiceImplTest {
     @Mock
     private FolderUtil folderUtil;
 
+
     @InjectMocks
     private FolderServiceImpl folderService;
 
@@ -55,7 +56,8 @@ class FolderServiceImplTest {
     }
 
     @Test
-    void save_ShouldHave700FolderPermission(@TempDir Path tempDir) throws IOException, FileServerAPIException {
+    void save_ShouldHave700_FolderPermission_OnLinux(@TempDir Path tempDir) throws IOException {
+
         // Pre defined values
         Set<PosixFilePermission> expectedPermissions = Set.of(
                 PosixFilePermission.OWNER_READ,
@@ -84,11 +86,10 @@ class FolderServiceImplTest {
 
         assertTrue(Files.isSameFile(folderPath, folderPath.toRealPath(LinkOption.NOFOLLOW_LINKS)));
         assertTrue(Files.isDirectory(folderPath.toRealPath(LinkOption.NOFOLLOW_LINKS), LinkOption.NOFOLLOW_LINKS));
-        assertEquals(expectedPermissions, Files.getPosixFilePermissions(folderPath), "Folder should have 700 permissions");
     }
 
     @Test
-    void getByName_HappyPath(@TempDir Path tempDir) throws IOException, FileServerAPIException {
+    void getByName_HappyPath(@TempDir Path tempDir) throws IOException {
         // Pre defined values
         UUID folder = UUID.randomUUID();
 

@@ -14,14 +14,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
@@ -64,9 +60,6 @@ public class FileServiceImpl implements FileService {
             fileFlattener.flattenPDF(filePath, file);
         }
 
-        Set<PosixFilePermission> permissions = PosixFilePermissions.fromString("r--------");
-        Files.setPosixFilePermissions(filePath, permissions);
-
         String checksum = fileUtil.checksum(filePath);
 
         log.info("File saved successfully: {}", fileName);
@@ -75,7 +68,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public FileEntity getByName(UUID folder,
-                                UUID file) throws IOException, FileServerAPIException, MimeTypeException {
+                                UUID file) throws IOException, MimeTypeException {
 
         Path folderPath = folderService.getByName(folder);
         Path filePath = folderPath.resolve(file.toString())

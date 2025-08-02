@@ -22,11 +22,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.nio.file.attribute.PosixFilePermission;
 import java.security.NoSuchAlgorithmException;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -67,18 +64,18 @@ class FileServiceImplTest {
         return Stream.of(
                 Arguments.of("image/png", "png"),
                 Arguments.of("image/jpeg", "jpg"),
+                Arguments.of("image/jpeg", "jpeg"),
                 Arguments.of("application/pdf", "pdf")
         );
     }
 
     @ParameterizedTest
     @MethodSource("save_HappyPath_Payload")
-    void save_HappyPath_ImagePNG_AndJPG_AndJPEG(String mediaType, String extension) throws IOException, FileServerAPIException, MimeTypeException, NoSuchAlgorithmException {
+    void save_HappyPath_ImagePNG_AndJPG_AndJPEG(String mediaType, String extension) throws IOException, MimeTypeException, NoSuchAlgorithmException {
         // Pre defined values
 
         // Expected Value
         String checksum = "checksum";
-        Set<PosixFilePermission> expectedPermissions = Set.of(PosixFilePermission.OWNER_READ);
 
         // Mock data
         UUID folder = UUID.randomUUID();
@@ -137,18 +134,15 @@ class FileServiceImplTest {
         assertEquals(checksum, fileDTO.checksum());
 
         assertNotNull(fileDTO.getFileName());
-
-        assertEquals(expectedPermissions, Files.getPosixFilePermissions(filePath, LinkOption.NOFOLLOW_LINKS));
     }
 
     @Test
-    void save_HappyPath_PDF() throws IOException, MimeTypeException, FileServerAPIException, NoSuchAlgorithmException {
+    void save_HappyPath_PDF() throws IOException, MimeTypeException, NoSuchAlgorithmException {
 
         // Pre defined values
 
         // Expected Value
         String checksum = "checksum";
-        Set<PosixFilePermission> expectedPermissions = Set.of(PosixFilePermission.OWNER_READ);
 
         // Mock data
         String extension = "pdf";
@@ -209,8 +203,6 @@ class FileServiceImplTest {
         assertEquals(checksum, fileDTO.checksum());
 
         assertNotNull(fileDTO.getFileName());
-
-        assertEquals(expectedPermissions, Files.getPosixFilePermissions(filePath, LinkOption.NOFOLLOW_LINKS));
     }
 
     @Test
