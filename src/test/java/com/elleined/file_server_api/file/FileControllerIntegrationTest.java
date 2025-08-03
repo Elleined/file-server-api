@@ -2,7 +2,9 @@
 
     import com.elleined.file_server_api.folder.FolderService;
     import com.fasterxml.jackson.databind.ObjectMapper;
-    import org.junit.jupiter.api.Test;
+    import org.junit.jupiter.params.ParameterizedTest;
+    import org.junit.jupiter.params.provider.Arguments;
+    import org.junit.jupiter.params.provider.MethodSource;
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.beans.factory.annotation.Value;
     import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -19,6 +21,7 @@
     import java.nio.file.Path;
     import java.nio.file.Paths;
     import java.util.UUID;
+    import java.util.stream.Stream;
 
     import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
     import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -42,10 +45,18 @@
         @Value("${UPLOAD_PATH}")
         private String uploadPath;
 
-        private static final InputStream pngFile = FileControllerIntegrationTest.class.getClassLoader().getResourceAsStream("png.png");
+        private static Stream<Arguments> filePayloads() {
+            return Stream.of(
+                    Arguments.of(FileControllerIntegrationTest.class.getClassLoader().getResourceAsStream("png.png")),
+                    Arguments.of(FileControllerIntegrationTest.class.getClassLoader().getResourceAsStream("jpg.jpg")),
+                    Arguments.of(FileControllerIntegrationTest.class.getClassLoader().getResourceAsStream("jpeg.jpeg")),
+                    Arguments.of(FileControllerIntegrationTest.class.getClassLoader().getResourceAsStream("pdf.pdf"))
+            );
+        }
 
-        @Test
-        void saveFolder_TheSaveFile_ThenGetByName_ThenVerifyFileChecksum() throws IOException {
+        @ParameterizedTest
+        @MethodSource("filePayloads")
+        void saveFolder_TheSaveFile_ThenGetByName_ThenVerifyFileChecksum(InputStream inputStream) throws IOException {
             // Creating the folder
             UUID folder = folderService.save();
 
@@ -54,7 +65,7 @@
             assertTrue(Files.exists(folderPath, LinkOption.NOFOLLOW_LINKS), "Folder not created");
 
             // Creating the file to be uploaded
-            MockMultipartFile file = new MockMultipartFile("file", pngFile);
+            MockMultipartFile file = new MockMultipartFile("file", inputStream);
 
             // Save the file
             MvcResult saveMvcResult = assertDoesNotThrow(() -> mockMvc.perform(multipart("/folders/{folder}/files", folder)
