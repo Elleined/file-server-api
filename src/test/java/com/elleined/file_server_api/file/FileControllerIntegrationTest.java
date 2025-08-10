@@ -2,6 +2,7 @@
 
     import com.elleined.file_server_api.folder.FolderService;
     import com.fasterxml.jackson.databind.ObjectMapper;
+    import org.hamcrest.Matchers;
     import org.junit.jupiter.params.ParameterizedTest;
     import org.junit.jupiter.params.provider.Arguments;
     import org.junit.jupiter.params.provider.MethodSource;
@@ -16,15 +17,13 @@
 
     import java.io.IOException;
     import java.io.InputStream;
-    import java.nio.file.Files;
-    import java.nio.file.LinkOption;
     import java.nio.file.Path;
     import java.nio.file.Paths;
     import java.util.UUID;
     import java.util.stream.Stream;
 
+    import static org.assertj.core.api.Assertions.assertThat;
     import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-    import static org.junit.jupiter.api.Assertions.assertTrue;
     import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
     import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
     import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -56,13 +55,13 @@
 
         @ParameterizedTest
         @MethodSource("filePayloads")
-        void saveFolder_TheSaveFile_ThenGetByName_ThenVerifyFileChecksum(InputStream inputStream) throws IOException {
+        void saveFolder_ThenSaveFile_ThenGetByName_ThenVerifyFileChecksum(InputStream inputStream) throws IOException {
             // Creating the folder
             UUID folder = folderService.save();
 
             // Checks if the folder really created
             Path folderPath = Paths.get(uploadPath).resolve(folder.toString());
-            assertTrue(Files.exists(folderPath, LinkOption.NOFOLLOW_LINKS), "Folder not created");
+            assertThat(folderPath).exists().isDirectory();
 
             // Creating the file to be uploaded
             MockMultipartFile file = new MockMultipartFile("file", inputStream);
@@ -72,20 +71,19 @@
                             .file(file))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(jsonPath("$.uploadedAt").exists())
-                    .andExpect(jsonPath("$.folder").exists())
-                    .andExpect(jsonPath("$.folder").isString())
-                    .andExpect(jsonPath("$.folder").value(folder.toString()))
-                    .andExpect(jsonPath("$.fileId").exists())
-                    .andExpect(jsonPath("$.fileId").isString())
-                    .andExpect(jsonPath("$.extension").exists())
-                    .andExpect(jsonPath("$.extension").isString())
-                    .andExpect(jsonPath("$.mediaType").exists())
-                    .andExpect(jsonPath("$.mediaType").isString())
-                    .andExpect(jsonPath("$.checksum").exists())
-                    .andExpect(jsonPath("$.checksum").isString())
-                    .andExpect(jsonPath("$.fileName").exists())
-                    .andExpect(jsonPath("$.fileName").isString())
+                    .andExpect(jsonPath("$.uploadedAt", Matchers.notNullValue()))
+                    .andExpect(jsonPath("$.folder", Matchers.is(folder.toString())))
+                    .andExpect(jsonPath("$.folder", Matchers.instanceOf(String.class)))
+                    .andExpect(jsonPath("$.fileId", Matchers.notNullValue()))
+                    .andExpect(jsonPath("$.fileId", Matchers.instanceOf(String.class)))
+                    .andExpect(jsonPath("$.extension", Matchers.notNullValue()))
+                    .andExpect(jsonPath("$.extension", Matchers.instanceOf(String.class)))
+                    .andExpect(jsonPath("$.mediaType", Matchers.notNullValue()))
+                    .andExpect(jsonPath("$.mediaType", Matchers.instanceOf(String.class)))
+                    .andExpect(jsonPath("$.checksum", Matchers.notNullValue()))
+                    .andExpect(jsonPath("$.checksum", Matchers.instanceOf(String.class)))
+                    .andExpect(jsonPath("$.fileName", Matchers.notNullValue()))
+                    .andExpect(jsonPath("$.fileName", Matchers.instanceOf(String.class)))
                     .andReturn()
             );
             // API Response of saving the file
@@ -93,7 +91,7 @@
 
             // Checks if uploaded file really exists
             Path filePath = folderPath.resolve(fileDTO.getFileName());
-            assertTrue(Files.exists(filePath, LinkOption.NOFOLLOW_LINKS), "File not created");
+            assertThat(filePath).exists();
 
             // Get the file
             assertDoesNotThrow(() -> mockMvc.perform(get("/folders/{folder}/files/{fileId}", fileDTO.folder(), fileDTO.fileId()))
@@ -105,9 +103,7 @@
             assertDoesNotThrow(() -> mockMvc.perform(get("/folders/{folder}/files/{fileId}/verify", folder, fileDTO.fileId())
                             .param("checksum", fileDTO.checksum()))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$").exists())
-                    .andExpect(jsonPath("$").isBoolean())
-                    .andExpect(jsonPath("$").value(true))
+                    .andExpect(jsonPath("$", Matchers.is(true)))
             );
         }
     }

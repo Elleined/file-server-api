@@ -27,7 +27,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -116,25 +118,21 @@ class FileServiceImplTest {
         verifyNoMoreInteractions(fileFlattener);
 
         // Assertions
-        assertNotNull(fileDTO);
+        assertThat(fileDTO).isNotNull();
 
-        assertNotNull(fileDTO.uploadedAt());
+        assertThat(fileDTO.uploadedAt()).isNotNull();
 
-        assertNotNull(fileDTO.folder());
-        assertEquals(folder, fileDTO.folder());
+        assertThat(fileDTO.folder()).isNotNull().isEqualTo(folder);
 
-        assertNotNull(fileDTO.fileId());
+        assertThat(fileDTO.fileId()).isNotNull();
 
-        assertNotNull(fileDTO.extension());
-        assertEquals(extension, fileDTO.extension());
+        assertThat(fileDTO.extension()).isNotNull().isEqualTo(extension);
 
-        assertNotNull(fileDTO.mediaType());
-        assertEquals(mediaType, fileDTO.mediaType());
+        assertThat(fileDTO.mediaType()).isNotNull().isEqualTo(mediaType);
 
-        assertNotNull(fileDTO.checksum());
-        assertEquals(checksum, fileDTO.checksum());
+        assertThat(fileDTO.checksum()).isNotNull().isEqualTo(checksum);
 
-        assertNotNull(fileDTO.getFileName());
+        assertThat(fileDTO.getFileName()).isNotNull();
     }
 
     @Test
@@ -184,25 +182,21 @@ class FileServiceImplTest {
         verify(fileUtil).checksum(any(Path.class));
 
         // Assertions
-        assertNotNull(fileDTO);
+        assertThat(fileDTO).isNotNull();
 
-        assertNotNull(fileDTO.uploadedAt());
+        assertThat(fileDTO.uploadedAt()).isNotNull();
 
-        assertNotNull(fileDTO.folder());
-        assertEquals(folder, fileDTO.folder());
+        assertThat(fileDTO.folder()).isNotNull().isEqualTo(folder);
 
-        assertNotNull(fileDTO.fileId());
+        assertThat(fileDTO.fileId()).isNotNull();
 
-        assertNotNull(fileDTO.extension());
-        assertEquals(extension, fileDTO.extension());
+        assertThat(fileDTO.extension()).isNotNull().isEqualTo(extension);
 
-        assertNotNull(fileDTO.mediaType());
-        assertEquals(mediaType, fileDTO.mediaType());
+        assertThat(fileDTO.mediaType()).isNotNull().isEqualTo(mediaType);
 
-        assertNotNull(fileDTO.checksum());
-        assertEquals(checksum, fileDTO.checksum());
+        assertThat(fileDTO.checksum()).isNotNull().isEqualTo(checksum);
 
-        assertNotNull(fileDTO.getFileName());
+        assertThat(fileDTO.getFileName()).isNotNull();
     }
 
     @Test
@@ -265,21 +259,16 @@ class FileServiceImplTest {
         verify(fileUtil).getFileExtension(any(MediaType.class));
 
         // Assertions
-        assertNotNull(fileEntity);
+        assertThat(fileEntity).isNotNull();
 
-        assertNotNull(fileEntity.filePath());
-        assertEquals(expectedFilePath, fileEntity.filePath());
+        assertThat(fileEntity.filePath()).isNotNull().isEqualTo(expectedFilePath);
 
-        assertNotNull(fileEntity.fileId());
-        assertEquals(file, fileEntity.fileId());
+        assertThat(fileEntity.fileId()).isNotNull().isEqualTo(file);
 
-        assertNotNull(fileEntity.mediaType());
-        assertEquals(mediaType, fileEntity.mediaType());
+        assertThat(fileEntity.mediaType()).isNotNull().isEqualTo(mediaType);
 
-        assertNotNull(fileEntity.extension());
-        assertEquals(extension, fileEntity.extension());
+        assertThat(fileEntity.extension()).isNotNull().isEqualTo(extension);
 
-        assertNotNull(fileEntity.getFileName());
-        assertEquals(expectedFileName, fileEntity.getFileName());
+        assertThat(fileEntity.getFileName()).isNotNull().isEqualTo(expectedFileName);
     }
 }

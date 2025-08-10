@@ -9,8 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class FileEntityTest {
@@ -37,19 +36,15 @@ class FileEntityTest {
         // Behavior Verifications
 
         // Assertions
-        assertNotNull(fileEntity);
+        assertThat(fileEntity).isNotNull();
 
-        assertNotNull(fileEntity.filePath());
-        assertEquals(filePath, fileEntity.filePath());
+        assertThat(fileEntity.filePath()).isNotNull().isEqualTo(filePath);
 
-        assertNotNull(fileEntity.fileId());
-        assertEquals(fileId, fileEntity.fileId());
+        assertThat(fileEntity.fileId()).isNotNull().isEqualTo(fileId);
 
-        assertNotNull(fileEntity.extension());
-        assertEquals(extension, fileEntity.extension());
+        assertThat(fileEntity.extension()).isNotNull().isEqualTo(extension);
 
-        assertNotNull(fileEntity.mediaType());
-        assertEquals(mediaType, fileEntity.mediaType());
+        assertThat(fileEntity.mediaType()).isNotNull().isEqualTo(mediaType);
     }
 
     @Test
@@ -74,8 +69,7 @@ class FileEntityTest {
         // Behavior Verifications
 
         // Assertions
-        assertNotNull(fileEntity.getContentDisposition());
-        assertEquals("inline", fileEntity.getContentDisposition(), "Content disposition must be inline when media type starts with image/");
+        assertThat(fileEntity.getContentDisposition()).isNotNull().isEqualTo("inline");
     }
 
     @Test
@@ -100,8 +94,7 @@ class FileEntityTest {
         // Behavior Verifications
 
         // Assertions
-        assertNotNull(fileEntity.getContentDisposition());
-        assertEquals("inline", fileEntity.getContentDisposition(), "Content disposition must be inline when media type starts with image/");
+        assertThat(fileEntity.getContentDisposition()).isNotNull().isEqualTo("inline");
     }
 
     @Test
@@ -126,8 +119,7 @@ class FileEntityTest {
         // Behavior Verifications
 
         // Assertions
-        assertNotNull(fileEntity.getContentDisposition());
-        assertEquals("attachment", fileEntity.getContentDisposition(), "Content disposition must be attachment when media type is PDF");
+        assertThat(fileEntity.getContentDisposition()).isNotNull().isEqualTo("attachment");
     }
 
     @Test
@@ -154,7 +146,6 @@ class FileEntityTest {
         // Behavior Verifications
 
         // Assertions
-        assertNotNull(fileEntity.getFileName());
-        assertEquals(expectedFileName, fileEntity.getFileName());
+        assertThat(fileEntity.getFileName()).isNotNull().isEqualTo(expectedFileName);
     }
 }

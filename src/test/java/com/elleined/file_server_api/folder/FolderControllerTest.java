@@ -1,5 +1,6 @@
 package com.elleined.file_server_api.folder;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -42,8 +43,8 @@ class FolderControllerTest {
         // Calling the method
         assertDoesNotThrow(() -> mockMvc.perform(post("/folders"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isString())
-                .andExpect(jsonPath("$").value(folder.toString())));
+                .andExpect(jsonPath("$", Matchers.notNullValue()))
+                .andExpect(jsonPath("$", Matchers.is(folder.toString()))));
 
         // Behavior Verifications
         verify(folderService).save();

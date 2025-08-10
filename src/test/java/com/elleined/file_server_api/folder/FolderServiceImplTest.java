@@ -14,7 +14,8 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,8 +49,8 @@ class FolderServiceImplTest {
         verify(folderUtil, times(2)).getUploadPath();
 
         // Assertions
-        assertNotNull(folder);
-        assertTrue(Files.exists(folderPath, LinkOption.NOFOLLOW_LINKS));
+        assertThat(folder).isNotNull();
+        assertThat(folderPath).exists().isDirectory();
     }
 
     @Test
@@ -70,12 +71,7 @@ class FolderServiceImplTest {
         verify(folderUtil).getUploadPath();
 
         // Assertions
-        assertEquals(expectedPath.toRealPath(LinkOption.NOFOLLOW_LINKS), actualPath);
-
-        assertTrue(Files.exists(expectedPath, LinkOption.NOFOLLOW_LINKS));
-        assertTrue(Files.isDirectory(expectedPath, LinkOption.NOFOLLOW_LINKS));
-
-        assertTrue(Files.exists(actualPath, LinkOption.NOFOLLOW_LINKS));
-        assertTrue(Files.isDirectory(actualPath, LinkOption.NOFOLLOW_LINKS));
+        assertThat(expectedPath).exists().isDirectory();
+        assertThat(actualPath).exists().isDirectory().isEqualTo(expectedPath.toRealPath(LinkOption.NOFOLLOW_LINKS));
     }
 }

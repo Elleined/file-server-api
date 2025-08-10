@@ -11,7 +11,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @ExtendWith(MockitoExtension.class)
 class FileUtilImplTest {
@@ -40,8 +41,8 @@ class FileUtilImplTest {
         // Behavior Verifications
 
         // Assertions
-        assertNotNull(actual);
-        assertEquals(expectedFileName, actual);
+        assertThat(actual).isNotNull();
+        assertThat(actual).isEqualTo(expectedFileName);
     }
 
     @Test
@@ -63,8 +64,8 @@ class FileUtilImplTest {
         // Behavior Verifications
 
         // Assertions
-        assertNotNull(actual);
-        assertEquals("47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU", actual);
+        assertThat(actual).isNotNull();
+        assertThat(actual).isEqualTo("47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU");
     }
 
     @Test

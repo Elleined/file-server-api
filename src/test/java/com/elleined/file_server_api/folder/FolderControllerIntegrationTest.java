@@ -1,5 +1,6 @@
 package com.elleined.file_server_api.folder;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,13 +10,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Paths;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,12 +36,12 @@ class FolderControllerIntegrationTest {
         // API Call to create the folder
         MvcResult mvcResult = assertDoesNotThrow(() -> mockMvc.perform(post("/folders"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isString())
-                .andExpect(jsonPath("$").exists())
+                .andExpect(jsonPath("$", Matchers.notNullValue()))
+                .andExpect(jsonPath("$", not(empty())))
                 .andReturn());
 
         // Check if folder really exists
         UUID folder = UUID.fromString(mvcResult.getResponse().getContentAsString());
-        assertTrue(Files.exists(Paths.get(uploadPath).resolve(folder.toString()), LinkOption.NOFOLLOW_LINKS));
+        assertThat(Paths.get(uploadPath).resolve(folder.toString())).exists().isDirectory();
     }
 }

@@ -10,7 +10,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 class FolderUtilImplTest {
@@ -37,7 +39,7 @@ class FolderUtilImplTest {
         // Behavior Verifications
 
         // Assertions
-        assertEquals(tempDir, actual, "Upload path should be the same as the tempDir");
+        assertThat(actual).isEqualTo(tempDir);
     }
 
     @Test

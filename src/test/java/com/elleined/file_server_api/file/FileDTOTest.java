@@ -7,8 +7,7 @@ import org.springframework.http.MediaType;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class FileDTOTest {
@@ -37,15 +36,20 @@ class FileDTOTest {
         // Behavior Verifications
 
         // Assertions
-        assertNotNull(fileDTO);
-        assertNotNull(fileDTO.uploadedAt());
-        assertEquals(folder, fileDTO.folder());
-        assertEquals(file, fileDTO.fileId());
-        assertEquals(extension, fileDTO.extension());
-        assertEquals(mediaType.toString(), fileDTO.mediaType());
-        assertEquals(checksum, fileDTO.checksum());
+        assertThat(fileDTO).isNotNull();
 
-        assertNotNull(fileDTO.getFileName());
-        assertEquals(fileName, fileDTO.getFileName());
+        assertThat(fileDTO.uploadedAt()).isNotNull();
+
+        assertThat(folder).isEqualTo(fileDTO.folder());
+
+        assertThat(file).isEqualTo(fileDTO.fileId());
+
+        assertThat(extension).isEqualTo(fileDTO.extension());
+
+        assertThat(mediaType.toString()).isEqualTo(fileDTO.mediaType());
+
+        assertThat(checksum).isEqualTo(fileDTO.checksum());
+
+        assertThat(fileDTO.getFileName()).isNotNull().isEqualTo(fileName);
     }
 }
