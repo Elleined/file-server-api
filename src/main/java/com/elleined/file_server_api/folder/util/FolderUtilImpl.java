@@ -1,5 +1,6 @@
 package com.elleined.file_server_api.folder.util;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
