@@ -1,6 +1,5 @@
 package com.elleined.file_server_api.folder;
 
-import com.elleined.file_server_api.exception.FileServerAPIException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +14,7 @@ public class FolderController {
     private final FolderService folderService;
 
     @PostMapping
-    public String save() throws IOException, FileServerAPIException {
+    public String save() throws IOException {
         return folderService.save().toString();
     }
 }

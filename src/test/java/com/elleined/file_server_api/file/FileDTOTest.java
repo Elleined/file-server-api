@@ -46,7 +46,7 @@ class FileDTOTest {
 
         assertThat(extension).isEqualTo(fileDTO.extension());
 
-        assertThat(mediaType.toString()).isEqualTo(fileDTO.mediaType());
+        assertThat(mediaType.toString()).hasToString(fileDTO.mediaType());
 
         assertThat(checksum).isEqualTo(fileDTO.checksum());
 

@@ -64,26 +64,6 @@ class FileUtilImplTest {
         // Behavior Verifications
 
         // Assertions
-        assertThat(actual).isNotNull();
-        assertThat(actual).isEqualTo("47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU");
-    }
-
-    @Test
-    void stream_HappyPath() {
-        // Pre defined values
-
-        // Expected Value
-
-        // Mock data
-
-        // Set up method
-
-        // Stubbing methods
-
-        // Calling the method
-
-        // Behavior Verifications
-
-        // Assertions
+        assertThat(actual).isNotNull().isEqualTo("47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU");
     }
 }
