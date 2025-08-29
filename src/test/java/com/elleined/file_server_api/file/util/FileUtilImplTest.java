@@ -41,8 +41,7 @@ class FileUtilImplTest {
         // Behavior Verifications
 
         // Assertions
-        assertThat(actual).isNotNull();
-        assertThat(actual).isEqualTo(expectedFileName);
+        assertThat(actual).isNotNull().isEqualTo(expectedFileName);
     }
 
     @Test
