@@ -47,4 +47,4 @@ Thumbs.db
 # Others
 HELP.md
 
-/src/test/resources/folder/
+/src/test/resources/folder/**
