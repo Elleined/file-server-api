@@ -1,15 +1,11 @@
 # Gradle-specific
-.gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-**/out/
+.gradle
+**/build/
+!**/src/**/build/
 
 # Gradle Wrapper
-gradle/wrapper/gradle-wrapper.jar
-gradle/wrapper/gradle-wrapper.properties
-!gradlew
-!gradlew.bat
+!gradle-wrapper.jar
+!gradle-wrapper.properties
 
 # IDEs
 ### STS ###
@@ -46,7 +42,6 @@ Thumbs.db
 
 # Others
 HELP.md
-
 
 /src/test/resources/folder/**
 !/src/test/resources/folder/.gitkeep
