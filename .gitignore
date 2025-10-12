@@ -45,3 +45,6 @@ HELP.md
 
 /src/test/resources/folder/**
 !/src/test/resources/folder/.gitkeep
+
+/src/main/resources/folder/**
+!/src/main/resources/folder/.gitkeep

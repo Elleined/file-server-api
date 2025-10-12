@@ -4,10 +4,10 @@ import com.elleined.file_server_api.exception.FileServerAPIException;
 import com.elleined.file_server_api.file.flattener.FileFlattener;
 import com.elleined.file_server_api.file.util.FileUtil;
 import com.elleined.file_server_api.folder.FolderService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.Tika;
 import org.apache.tika.mime.MimeTypeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -17,15 +17,14 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Slf4j
 @Service
 @Validated
-@RequiredArgsConstructor
 public class FileServiceImpl implements FileService {
     private final FolderService folderService;
 
@@ -33,11 +32,20 @@ public class FileServiceImpl implements FileService {
     private final FileFlattener fileFlattener;
     private final Tika tika;
 
+    private static final Logger log = LoggerFactory.getLogger(FileServiceImpl.class);
+
     private static final List<MediaType> allowedMimeTypes = List.of(
             MediaType.IMAGE_PNG,
             MediaType.IMAGE_JPEG,
             MediaType.APPLICATION_PDF
     );
+
+    public FileServiceImpl(FolderService folderService, FileUtil fileUtil, FileFlattener fileFlattener, Tika tika) {
+        this.folderService = folderService;
+        this.fileUtil = fileUtil;
+        this.fileFlattener = fileFlattener;
+        this.tika = tika;
+    }
 
     @Override
     public FileDTO save(UUID folder,
@@ -55,10 +63,10 @@ public class FileServiceImpl implements FileService {
         Path folderPath = folderService.getByName(folder);
         Path filePath = fileUtil.resolve(folderPath, fileName);
 
-        if (realMediaType.toString().startsWith("image")) {
+        if (realMediaType.toString().startsWith("image"))
             fileFlattener.flattenImage(filePath, file, realExtension);
-        } else {
-            fileFlattener.flattenPDF(filePath, file);
+        else if (realMediaType.equals(MediaType.APPLICATION_PDF)) {
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
         }
 
         log.info("File saved successfully: {}", fileName);

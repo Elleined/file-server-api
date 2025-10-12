@@ -56,7 +56,7 @@ class FileControllerTest {
     }
 
     @Test
-    void save_HappyPath() throws IOException, FileServerAPIException, MimeTypeException, NoSuchAlgorithmException {
+    void save_HappyPath() throws IOException, FileServerAPIException, NoSuchAlgorithmException, MimeTypeException {
         // Pre defined values
 
         // Expected Value
@@ -87,7 +87,7 @@ class FileControllerTest {
 
     @ParameterizedTest
     @MethodSource("getByName_HappyPath_Payload")
-    void getByName_HappyPath(MediaType mediaType, String contentDisposition, String extension) throws FileServerAPIException, MimeTypeException, IOException {
+    void getByName_HappyPath(MediaType mediaType, String contentDisposition, String extension) throws FileServerAPIException, IOException, MimeTypeException {
         // Pre defined values
 
         // Expected Value
@@ -127,7 +127,7 @@ class FileControllerTest {
     }
 
     @Test
-    void isChecksumMatched_HappyPath(@TempDir Path tempDir) throws FileServerAPIException, MimeTypeException, IOException, NoSuchAlgorithmException {
+    void isChecksumMatched_HappyPath(@TempDir Path tempDir) throws FileServerAPIException, IOException, NoSuchAlgorithmException, MimeTypeException {
         // Pre defined values
 
         // Expected Value

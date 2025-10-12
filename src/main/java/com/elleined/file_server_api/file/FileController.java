@@ -2,7 +2,6 @@ package com.elleined.file_server_api.file;
 
 import com.elleined.file_server_api.exception.FileServerAPIException;
 import com.elleined.file_server_api.file.util.FileUtil;
-import lombok.RequiredArgsConstructor;
 import org.apache.tika.mime.MimeTypeException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -16,15 +15,19 @@ import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/folders/{folder}/files")
 public class FileController {
     private final FileService fileService;
     private final FileUtil fileUtil;
 
+    public FileController(FileService fileService, FileUtil fileUtil) {
+        this.fileService = fileService;
+        this.fileUtil = fileUtil;
+    }
+
     @PostMapping
     public FileDTO save(@PathVariable("folder") UUID folder,
-                        @RequestPart("file") MultipartFile file) throws IOException, NoSuchAlgorithmException, MimeTypeException, FileServerAPIException {
+                        @RequestPart("file") MultipartFile file) throws IOException, NoSuchAlgorithmException, FileServerAPIException, MimeTypeException {
 
         return fileService.save(folder, file);
     }

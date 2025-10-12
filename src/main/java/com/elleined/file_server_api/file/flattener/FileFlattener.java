@@ -6,7 +6,5 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 public interface FileFlattener {
-    void flattenPDF(Path filePath, MultipartFile file) throws IOException;
-
     void flattenImage(Path filePath, MultipartFile file, String realExtension) throws IOException;
 }
