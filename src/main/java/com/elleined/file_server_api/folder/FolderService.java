@@ -8,4 +8,5 @@ public interface FolderService {
     UUID save() throws IOException;
 
     Path getByName(UUID folder) throws IOException;
+    void delete(UUID folder) throws IOException;
 }

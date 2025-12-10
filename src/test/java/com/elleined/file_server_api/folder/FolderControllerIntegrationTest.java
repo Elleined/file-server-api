@@ -17,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -43,5 +44,22 @@ class FolderControllerIntegrationTest {
         // Check if folder really exists
         UUID folder = UUID.fromString(mvcResult.getResponse().getContentAsString());
         assertThat(Paths.get(uploadPath).resolve(folder.toString())).exists().isDirectory();
+    }
+
+    @Test
+    void delete_HappyPath() throws UnsupportedEncodingException {
+        // API Call to create the folder
+        MvcResult saveResult = assertDoesNotThrow(() -> mockMvc.perform(post("/folders"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", Matchers.notNullValue()))
+                .andExpect(jsonPath("$", not(empty())))
+                .andReturn());
+
+        // Check if folder really exists
+        UUID folder = UUID.fromString(saveResult.getResponse().getContentAsString());
+        assertThat(Paths.get(uploadPath).resolve(folder.toString())).exists().isDirectory();
+
+        assertDoesNotThrow(() -> mockMvc.perform(delete("/folders/{folder}", folder)).andExpect(status().isOk()));
+        assertThat(Paths.get(uploadPath).resolve(folder.toString())).doesNotExist();
     }
 }

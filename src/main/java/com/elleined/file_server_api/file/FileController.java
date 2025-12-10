@@ -54,4 +54,11 @@ public class FileController {
 
         return filePathChecksum.equals(checksum);
     }
+
+    @DeleteMapping("/{file}")
+    public void delete(@PathVariable("folder") UUID folder,
+                       @PathVariable("file") UUID file) throws IOException {
+
+        fileService.delete(folder, file);
+    }
 }

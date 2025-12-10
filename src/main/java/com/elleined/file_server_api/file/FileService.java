@@ -16,4 +16,7 @@ public interface FileService {
 
     Optional<FileEntity> getByUUID(@NotNull UUID folder,
                                    @NotNull UUID file) throws IOException, FileServerAPIException, MimeTypeException;
+
+    void delete(@NotNull UUID folder,
+                @NotNull UUID file) throws IOException;
 }

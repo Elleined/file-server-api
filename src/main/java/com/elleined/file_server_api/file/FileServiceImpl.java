@@ -14,10 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
@@ -90,5 +87,14 @@ public class FileServiceImpl implements FileService {
             }
         }
         return Optional.empty();
+    }
+
+    @Override
+    public void delete(UUID folder, UUID file) throws IOException {
+        Path folderPath = folderService.getByName(folder);
+        Path filePath = folderPath.resolve(file.toString())
+                        .toRealPath(LinkOption.NOFOLLOW_LINKS);
+
+        Files.delete(filePath);
     }
 }

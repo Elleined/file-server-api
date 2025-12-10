@@ -40,4 +40,14 @@ public class FolderServiceImpl implements FolderService {
                 .resolve(folder.toString())
                 .toRealPath(LinkOption.NOFOLLOW_LINKS);
     }
+
+    @Override
+    public void delete(UUID folder) throws IOException {
+        Path folderPath = folderUtil.getUploadPath()
+                .resolve(folder.toString())
+                .toRealPath(LinkOption.NOFOLLOW_LINKS);
+
+        Files.delete(folderPath);
+        log.info("Folder deleted successfully {}", folder);
+    }
 }

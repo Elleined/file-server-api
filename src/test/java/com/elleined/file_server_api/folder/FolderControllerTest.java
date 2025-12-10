@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -48,6 +48,29 @@ class FolderControllerTest {
 
         // Behavior Verifications
         verify(folderService).save();
+
+        // Assertions
+    }
+
+    @Test
+    void delete_HappyPath() throws IOException {
+        // Pre defined values
+
+        // Expected Value
+        UUID folder = UUID.randomUUID();
+
+        // Mock data
+
+        // Set up method
+
+        // Stubbing methods
+        doNothing().when(folderService).delete(any(UUID.class));
+
+        // Calling the method
+        assertDoesNotThrow(() -> mockMvc.perform(delete("/folders/{folder}", folder)).andExpect(status().isOk()));
+
+        // Behavior Verifications
+        verify(folderService).delete(any(UUID.class));
 
         // Assertions
     }

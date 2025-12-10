@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
@@ -266,5 +267,53 @@ class FileServiceImplTest {
         assertThat(fileEntity.extension()).isNotNull().isEqualTo(extension);
 
         assertThat(fileEntity.getFileName()).isNotNull().isEqualTo(expectedFileName);
+    }
+
+    @Test
+    void delete_HappyPath(@TempDir Path tempDir) throws IOException {
+        // Pre defined values
+        UUID folder = UUID.randomUUID();
+        UUID file = UUID.randomUUID();
+
+        // Mock data
+        Path folderPath = Files.createDirectory(tempDir.resolve(folder.toString()));
+        Path filePath = Files.createFile(folderPath.resolve(file.toString()));
+
+        // Set up method
+
+        // Stubbing methods
+        when(folderService.getByName(any(UUID.class))).thenReturn(folderPath);
+
+        // Calling the method
+        assertDoesNotThrow(() -> fileService.delete(folder, file));
+
+        // Behavior Verifications
+        verify(folderService).getByName(any(UUID.class));
+
+        // Assertions
+        assertThat(filePath).doesNotExist();
+    }
+
+    @Test
+    void delete_ShouldThrowNoSuchFileException_IfFileDoesntExists(@TempDir Path tempDir) throws IOException {
+        // Pre defined values
+        UUID folder = UUID.randomUUID();
+        UUID file = UUID.randomUUID();
+
+        // Mock data
+        Path folderPath = Files.createDirectory(tempDir.resolve(folder.toString()));
+
+        // Set up method
+
+        // Stubbing methods
+        when(folderService.getByName(any(UUID.class))).thenReturn(folderPath);
+
+        // Calling the method
+        assertThrowsExactly(NoSuchFileException.class, () -> fileService.delete(folder, file));
+
+        // Behavior Verifications
+        verify(folderService).getByName(any(UUID.class));
+
+        // Assertions
     }
 }

@@ -28,8 +28,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(FileController.class)
@@ -92,8 +91,8 @@ class FileControllerTest {
 
         // Expected Value
         UUID folder = UUID.randomUUID();
-        UUID fileId = UUID.randomUUID();
-        String fileName = fileId + "." + extension;
+        UUID file = UUID.randomUUID();
+        String fileName = file + "." + extension;
 
         // Mock data
         FileEntity fileEntity = mock(FileEntity.class);
@@ -110,7 +109,7 @@ class FileControllerTest {
         });
 
         // Calling the method
-        assertDoesNotThrow(() -> mockMvc.perform(get("/folders/{folder}/files/{fileId}", folder, fileId))
+        assertDoesNotThrow(() -> mockMvc.perform(get("/folders/{folder}/files/{file}", folder, file))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(mediaType))
                 .andExpect(header().string(
@@ -137,7 +136,7 @@ class FileControllerTest {
         FileEntity fileEntity = mock(FileEntity.class);
         String checksum = "checksum";
         UUID folder = UUID.randomUUID();
-        UUID fileId = UUID.randomUUID();
+        UUID file = UUID.randomUUID();
 
         // Set up method
 
@@ -147,7 +146,7 @@ class FileControllerTest {
         when(fileUtil.checksum(any(Path.class))).thenReturn(checksum);
 
         // Calling the method
-        assertDoesNotThrow(() -> mockMvc.perform(get("/folders/{folder}/files/{fileId}/verify", folder, fileId)
+        assertDoesNotThrow(() -> mockMvc.perform(get("/folders/{folder}/files/{file}/verify", folder, file)
                         .param("checksum", checksum))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", is(shouldBe)))
@@ -156,6 +155,29 @@ class FileControllerTest {
         // Behavior Verifications
         verify(fileService).getByUUID(any(UUID.class), any(UUID.class));
         verify(fileUtil).checksum(any(Path.class));
+
+        // Assertions
+    }
+
+    @Test
+    void delete_HappyPath() throws IOException {
+        // Pre defined values
+        UUID folder = UUID.randomUUID();
+        UUID file = UUID.randomUUID();
+
+        // Expected Value
+
+        // Mock data
+        // Stubbing methods
+        doNothing().when(fileService).delete(any(UUID.class), any(UUID.class));
+
+        // Set up method
+        assertDoesNotThrow(() -> mockMvc.perform(delete("/folders/{folder}/files/{file}", folder, file))
+                .andExpect(status().isOk())
+        );
+
+        // Behavior Verifications
+        verify(fileService).delete(any(UUID.class), any(UUID.class));
 
         // Assertions
     }
