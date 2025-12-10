@@ -1,6 +1,5 @@
 package com.elleined.file_server_api.file.util;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.tika.mime.MimeTypeException;
 import org.apache.tika.mime.MimeTypes;
 import org.springframework.http.MediaType;
@@ -16,7 +15,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
 @Service
-@RequiredArgsConstructor
 public class FileUtilImpl implements FileUtil {
 
     @Override

@@ -2,7 +2,6 @@ package com.elleined.file_server_api.file;
 
 import com.elleined.file_server_api.exception.FileServerAPIException;
 import com.elleined.file_server_api.file.util.FileUtil;
-import lombok.RequiredArgsConstructor;
 import org.apache.tika.mime.MimeTypeException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -16,21 +15,25 @@ import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/folders/{folder}/files")
 public class FileController {
     private final FileService fileService;
     private final FileUtil fileUtil;
 
+    public FileController(FileService fileService, FileUtil fileUtil) {
+        this.fileService = fileService;
+        this.fileUtil = fileUtil;
+    }
+
     @PostMapping
     public FileDTO save(@PathVariable("folder") UUID folder,
-                        @RequestPart("file") MultipartFile file) throws IOException, NoSuchAlgorithmException, MimeTypeException, FileServerAPIException {
+                        @RequestPart("file") MultipartFile file) throws IOException, NoSuchAlgorithmException, FileServerAPIException, MimeTypeException {
 
         return fileService.save(folder, file);
     }
 
     @GetMapping("/{file}")
-    public ResponseEntity<StreamingResponseBody> getByName(@PathVariable("folder") UUID folder,
+    public ResponseEntity<StreamingResponseBody> getByUUID(@PathVariable("folder") UUID folder,
                                                            @PathVariable("file") UUID file) throws IOException, FileServerAPIException, MimeTypeException {
 
         FileEntity fileEntity = fileService.getByUUID(folder, file).orElseThrow();
@@ -50,5 +53,13 @@ public class FileController {
         String filePathChecksum = fileUtil.checksum(fetchedFile.filePath());
 
         return filePathChecksum.equals(checksum);
+    }
+
+    @DeleteMapping("/{file}")
+    public void delete(@PathVariable("folder") UUID folder,
+                       @PathVariable("file") UUID file) throws IOException, MimeTypeException, FileServerAPIException {
+
+        FileEntity fetchedFile = fileService.getByUUID(folder, file).orElseThrow();
+        fileService.delete(fetchedFile.filePath());
     }
 }

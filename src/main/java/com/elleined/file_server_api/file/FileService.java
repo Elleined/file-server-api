@@ -6,6 +6,7 @@ import org.apache.tika.mime.MimeTypeException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 import java.util.UUID;
@@ -16,4 +17,6 @@ public interface FileService {
 
     Optional<FileEntity> getByUUID(@NotNull UUID folder,
                                    @NotNull UUID file) throws IOException, FileServerAPIException, MimeTypeException;
+
+    void delete(@NotNull Path path) throws IOException;
 }

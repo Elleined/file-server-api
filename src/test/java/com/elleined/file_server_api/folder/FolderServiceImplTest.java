@@ -9,13 +9,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -73,5 +72,61 @@ class FolderServiceImplTest {
         // Assertions
         assertThat(expectedPath).exists().isDirectory();
         assertThat(actualPath).exists().isDirectory().isEqualTo(expectedPath.toRealPath(LinkOption.NOFOLLOW_LINKS));
+    }
+
+    @Test
+    void delete_HappyPath(@TempDir Path tempDir) throws IOException {
+        // Pre defined values
+        UUID folder = UUID.randomUUID();
+
+        // Mock data
+        Path expectedPath = tempDir.resolve(folder.toString());
+        Files.createDirectory(expectedPath);
+
+        when(folderUtil.getUploadPath()).thenReturn(tempDir);
+
+        // Calling the method
+        assertDoesNotThrow(() -> folderService.delete(folder));
+
+        // Behavior Verifications
+        verify(folderUtil).getUploadPath();
+
+        // Assertions
+        assertThat(expectedPath).doesNotExist();
+    }
+
+    @Test
+    void delete_shouldThrowNoSuchFileException_IfFolderDoesNotExist(@TempDir Path tempDir) throws IOException {
+        // Pre defined values
+        UUID folder = UUID.randomUUID();
+
+        // Mock data
+        when(folderUtil.getUploadPath()).thenReturn(tempDir);
+
+        // Calling the method
+        assertThrowsExactly(NoSuchFileException.class, () -> folderService.delete(folder));
+
+        // Behavior Verifications
+        verify(folderUtil).getUploadPath();
+    }
+
+    @Test
+    void delete_ShouldThrowDirectoryNotEmptyException_IfFolderHasOneFile(@TempDir Path tempDir) throws IOException {
+        // Pre defined values
+        UUID folder = UUID.randomUUID();
+        UUID file = UUID.randomUUID();
+
+        // Mock data
+        Path folderPath = Files.createDirectory(tempDir.resolve(folder.toString()));
+        Files.createFile(folderPath.resolve(file.toString()));
+
+        // Mocks
+        when(folderUtil.getUploadPath()).thenReturn(tempDir);
+
+        // Calling the method
+        assertThrowsExactly(DirectoryNotEmptyException.class, () -> folderService.delete(folder));
+
+        // Behavior Verifications
+        verify(folderUtil).getUploadPath();
     }
 }

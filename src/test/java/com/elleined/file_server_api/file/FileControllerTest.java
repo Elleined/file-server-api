@@ -28,8 +28,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(FileController.class)
@@ -47,7 +46,7 @@ class FileControllerTest {
     @TempDir
     private Path tempDir;
 
-    private static Stream<Arguments> getByName_HappyPath_Payload() {
+    private static Stream<Arguments> getByUUID_HappyPath_Payload() {
         return Stream.of(
                 Arguments.of(MediaType.IMAGE_PNG, "inline", "png"),
                 Arguments.of(MediaType.IMAGE_JPEG, "inline", "jpeg"),
@@ -56,7 +55,7 @@ class FileControllerTest {
     }
 
     @Test
-    void save_HappyPath() throws IOException, FileServerAPIException, MimeTypeException, NoSuchAlgorithmException {
+    void save_HappyPath() throws IOException, FileServerAPIException, NoSuchAlgorithmException, MimeTypeException {
         // Pre defined values
 
         // Expected Value
@@ -86,14 +85,14 @@ class FileControllerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("getByName_HappyPath_Payload")
-    void getByName_HappyPath(MediaType mediaType, String contentDisposition, String extension) throws FileServerAPIException, MimeTypeException, IOException {
+    @MethodSource("getByUUID_HappyPath_Payload")
+    void getByUUID_HappyPath(MediaType mediaType, String contentDisposition, String extension) throws FileServerAPIException, IOException, MimeTypeException {
         // Pre defined values
 
         // Expected Value
         UUID folder = UUID.randomUUID();
-        UUID fileId = UUID.randomUUID();
-        String fileName = fileId + "." + extension;
+        UUID file = UUID.randomUUID();
+        String fileName = file + "." + extension;
 
         // Mock data
         FileEntity fileEntity = mock(FileEntity.class);
@@ -110,7 +109,7 @@ class FileControllerTest {
         });
 
         // Calling the method
-        assertDoesNotThrow(() -> mockMvc.perform(get("/folders/{folder}/files/{fileId}", folder, fileId))
+        assertDoesNotThrow(() -> mockMvc.perform(get("/folders/{folder}/files/{file}", folder, file))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(mediaType))
                 .andExpect(header().string(
@@ -127,7 +126,7 @@ class FileControllerTest {
     }
 
     @Test
-    void isChecksumMatched_HappyPath(@TempDir Path tempDir) throws FileServerAPIException, MimeTypeException, IOException, NoSuchAlgorithmException {
+    void isChecksumMatched_HappyPath(@TempDir Path tempDir) throws FileServerAPIException, IOException, NoSuchAlgorithmException, MimeTypeException {
         // Pre defined values
 
         // Expected Value
@@ -137,7 +136,7 @@ class FileControllerTest {
         FileEntity fileEntity = mock(FileEntity.class);
         String checksum = "checksum";
         UUID folder = UUID.randomUUID();
-        UUID fileId = UUID.randomUUID();
+        UUID file = UUID.randomUUID();
 
         // Set up method
 
@@ -147,7 +146,7 @@ class FileControllerTest {
         when(fileUtil.checksum(any(Path.class))).thenReturn(checksum);
 
         // Calling the method
-        assertDoesNotThrow(() -> mockMvc.perform(get("/folders/{folder}/files/{fileId}/verify", folder, fileId)
+        assertDoesNotThrow(() -> mockMvc.perform(get("/folders/{folder}/files/{file}/verify", folder, file)
                         .param("checksum", checksum))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", is(shouldBe)))
@@ -156,6 +155,35 @@ class FileControllerTest {
         // Behavior Verifications
         verify(fileService).getByUUID(any(UUID.class), any(UUID.class));
         verify(fileUtil).checksum(any(Path.class));
+
+        // Assertions
+    }
+
+    @Test
+    void delete_HappyPath() throws IOException, MimeTypeException, FileServerAPIException {
+        // Pre defined values
+        UUID folder = UUID.randomUUID();
+        UUID file = UUID.randomUUID();
+        Path filePath = tempDir.resolve(folder.toString()).resolve(file.toString());
+
+        // Expected Value
+        FileEntity fileEntity = mock(FileEntity.class);
+
+        // Mock data
+        // Stubbing methods
+        when(fileService.getByUUID(any(UUID.class), any(UUID.class))).thenReturn(Optional.of(fileEntity));
+        when(fileEntity.filePath()).thenReturn(filePath);
+        doNothing().when(fileService).delete(any(Path.class));
+
+        // Set up method
+        assertDoesNotThrow(() -> mockMvc.perform(delete("/folders/{folder}/files/{file}", folder, file))
+                .andExpect(status().isOk())
+        );
+
+        // Behavior Verifications
+        verify(fileService).getByUUID(any(UUID.class), any(UUID.class));
+        verify(fileEntity).filePath();
+        verify(fileService).delete(any(Path.class));
 
         // Assertions
     }

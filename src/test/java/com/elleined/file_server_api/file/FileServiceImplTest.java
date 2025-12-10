@@ -62,7 +62,7 @@ class FileServiceImplTest {
         );
     }
 
-    private static Stream<Arguments> getByName_HappyPath_Payload() {
+    private static Stream<Arguments> getByUUID_HappyPath_Payload() {
         return Stream.of(
                 Arguments.of("image/png", "png"),
                 Arguments.of("image/jpeg", "jpg"),
@@ -70,6 +70,7 @@ class FileServiceImplTest {
                 Arguments.of("application/pdf", "pdf")
         );
     }
+
 
     @ParameterizedTest
     @MethodSource("save_HappyPath_Payload")
@@ -150,6 +151,8 @@ class FileServiceImplTest {
         String fileName = UUID.randomUUID() + "." + extension;
 
         Path folderPath = tempDir.resolve(folder.toString()).normalize();
+        Files.createDirectory(folderPath);
+
         Path filePath = folderPath.resolve(fileName).normalize();
         MultipartFile file = mock(MultipartFile.class);
 
@@ -162,11 +165,6 @@ class FileServiceImplTest {
         when(fileUtil.getFileName(any(UUID.class), anyString())).thenReturn(fileName);
         when(folderService.getByName(any(UUID.class))).thenReturn(folderPath);
         when(fileUtil.resolve(any(Path.class), anyString())).thenReturn(filePath);
-        doAnswer(answer -> {
-            Files.createDirectory(folderPath);
-            Files.createFile(filePath);
-            return answer;
-        }).when(fileFlattener).flattenPDF(any(Path.class), any(MultipartFile.class));
         when(fileUtil.checksum(any(Path.class))).thenReturn(checksum);
 
         // Calling the method
@@ -178,7 +176,6 @@ class FileServiceImplTest {
         verify(fileUtil).getFileName(any(UUID.class), anyString());
         verify(folderService).getByName(any(UUID.class));
         verify(fileUtil).resolve(any(Path.class), anyString());
-        verify(fileFlattener).flattenPDF(any(Path.class), any(MultipartFile.class));
         verify(fileUtil).checksum(any(Path.class));
 
         // Assertions
@@ -226,7 +223,7 @@ class FileServiceImplTest {
     }
 
     @ParameterizedTest
-    @MethodSource("getByName_HappyPath_Payload")
+    @MethodSource("getByUUID_HappyPath_Payload")
     void getByUUID_HappyPath(String mediaType, String extension) throws IOException, MimeTypeException {
         // Pre defined values
 
