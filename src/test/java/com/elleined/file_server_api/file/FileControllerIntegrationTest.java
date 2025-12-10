@@ -54,7 +54,7 @@ class FileControllerIntegrationTest {
 
     @ParameterizedTest
     @MethodSource("filePayloads")
-    void saveFolder_ThenSaveFile_ThenGetByName_ThenVerifyFileChecksum_ThenDelete(InputStream inputStream) throws IOException {
+    void saveFolder_ThenSaveFile_ThenGetByUUID_ThenVerifyFileChecksum_ThenDelete(InputStream inputStream) throws IOException {
         // Creating the folder
         UUID folder = folderService.save();
 

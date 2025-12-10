@@ -63,7 +63,7 @@ class FileServiceImplTest {
         );
     }
 
-    private static Stream<Arguments> getByName_HappyPath_Payload() {
+    private static Stream<Arguments> getByUUID_HappyPath_Payload() {
         return Stream.of(
                 Arguments.of("image/png", "png"),
                 Arguments.of("image/jpeg", "jpg"),
@@ -71,6 +71,7 @@ class FileServiceImplTest {
                 Arguments.of("application/pdf", "pdf")
         );
     }
+
 
     @ParameterizedTest
     @MethodSource("save_HappyPath_Payload")
@@ -223,7 +224,7 @@ class FileServiceImplTest {
     }
 
     @ParameterizedTest
-    @MethodSource("getByName_HappyPath_Payload")
+    @MethodSource("getByUUID_HappyPath_Payload")
     void getByUUID_HappyPath(String mediaType, String extension) throws IOException, MimeTypeException {
         // Pre defined values
 
@@ -267,53 +268,5 @@ class FileServiceImplTest {
         assertThat(fileEntity.extension()).isNotNull().isEqualTo(extension);
 
         assertThat(fileEntity.getFileName()).isNotNull().isEqualTo(expectedFileName);
-    }
-
-    @Test
-    void delete_HappyPath(@TempDir Path tempDir) throws IOException {
-        // Pre defined values
-        UUID folder = UUID.randomUUID();
-        UUID file = UUID.randomUUID();
-
-        // Mock data
-        Path folderPath = Files.createDirectory(tempDir.resolve(folder.toString()));
-        Path filePath = Files.createFile(folderPath.resolve(file.toString()));
-
-        // Set up method
-
-        // Stubbing methods
-        when(folderService.getByName(any(UUID.class))).thenReturn(folderPath);
-
-        // Calling the method
-        assertDoesNotThrow(() -> fileService.delete(folder, file));
-
-        // Behavior Verifications
-        verify(folderService).getByName(any(UUID.class));
-
-        // Assertions
-        assertThat(filePath).doesNotExist();
-    }
-
-    @Test
-    void delete_ShouldThrowNoSuchFileException_IfFileDoesntExists(@TempDir Path tempDir) throws IOException {
-        // Pre defined values
-        UUID folder = UUID.randomUUID();
-        UUID file = UUID.randomUUID();
-
-        // Mock data
-        Path folderPath = Files.createDirectory(tempDir.resolve(folder.toString()));
-
-        // Set up method
-
-        // Stubbing methods
-        when(folderService.getByName(any(UUID.class))).thenReturn(folderPath);
-
-        // Calling the method
-        assertThrowsExactly(NoSuchFileException.class, () -> fileService.delete(folder, file));
-
-        // Behavior Verifications
-        verify(folderService).getByName(any(UUID.class));
-
-        // Assertions
     }
 }

@@ -27,13 +27,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.13'
-    implementation 'org.apache.pdfbox:pdfbox:3.0.5'
-    implementation 'org.apache.tika:tika-core:3.2.2'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14'
+    implementation 'org.apache.pdfbox:pdfbox:3.0.6'
+    implementation 'org.apache.tika:tika-core:3.2.3'
 
-    errorprone "com.uber.nullaway:nullaway:0.12.9"
+    errorprone "com.uber.nullaway:nullaway:0.12.14"
     implementation "org.jspecify:jspecify:1.0.0"
-    errorprone "com.google.errorprone:error_prone_core:2.41.0"
+    errorprone "com.google.errorprone:error_prone_core:2.45.0"
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

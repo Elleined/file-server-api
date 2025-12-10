@@ -46,7 +46,7 @@ class FileControllerTest {
     @TempDir
     private Path tempDir;
 
-    private static Stream<Arguments> getByName_HappyPath_Payload() {
+    private static Stream<Arguments> getByUUID_HappyPath_Payload() {
         return Stream.of(
                 Arguments.of(MediaType.IMAGE_PNG, "inline", "png"),
                 Arguments.of(MediaType.IMAGE_JPEG, "inline", "jpeg"),
@@ -85,8 +85,8 @@ class FileControllerTest {
     }
 
     @ParameterizedTest
-    @MethodSource("getByName_HappyPath_Payload")
-    void getByName_HappyPath(MediaType mediaType, String contentDisposition, String extension) throws FileServerAPIException, IOException, MimeTypeException {
+    @MethodSource("getByUUID_HappyPath_Payload")
+    void getByUUID_HappyPath(MediaType mediaType, String contentDisposition, String extension) throws FileServerAPIException, IOException, MimeTypeException {
         // Pre defined values
 
         // Expected Value
@@ -160,16 +160,20 @@ class FileControllerTest {
     }
 
     @Test
-    void delete_HappyPath() throws IOException {
+    void delete_HappyPath() throws IOException, MimeTypeException, FileServerAPIException {
         // Pre defined values
         UUID folder = UUID.randomUUID();
         UUID file = UUID.randomUUID();
+        Path filePath = tempDir.resolve(folder.toString()).resolve(file.toString());
 
         // Expected Value
+        FileEntity fileEntity = mock(FileEntity.class);
 
         // Mock data
         // Stubbing methods
-        doNothing().when(fileService).delete(any(UUID.class), any(UUID.class));
+        when(fileService.getByUUID(any(UUID.class), any(UUID.class))).thenReturn(Optional.of(fileEntity));
+        when(fileEntity.filePath()).thenReturn(filePath);
+        doNothing().when(fileService).delete(any(Path.class));
 
         // Set up method
         assertDoesNotThrow(() -> mockMvc.perform(delete("/folders/{folder}/files/{file}", folder, file))
@@ -177,7 +181,9 @@ class FileControllerTest {
         );
 
         // Behavior Verifications
-        verify(fileService).delete(any(UUID.class), any(UUID.class));
+        verify(fileService).getByUUID(any(UUID.class), any(UUID.class));
+        verify(fileEntity).filePath();
+        verify(fileService).delete(any(Path.class));
 
         // Assertions
     }

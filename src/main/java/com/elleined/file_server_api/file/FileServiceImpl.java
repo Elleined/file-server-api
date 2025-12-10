@@ -80,8 +80,6 @@ public class FileServiceImpl implements FileService {
                 if (filePath.getFileName().toString().startsWith(file.toString())) {
                     MediaType mediaType = MediaType.parseMediaType(tika.detect(filePath));
                     String extension = fileUtil.getFileExtension(mediaType);
-
-                    log.info("Fetching file metadata for {} success", file);
                     return Optional.of(new FileEntity(filePath, file, extension, mediaType));
                 }
             }
@@ -90,11 +88,8 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void delete(UUID folder, UUID file) throws IOException {
-        Path folderPath = folderService.getByName(folder);
-        Path filePath = folderPath.resolve(file.toString())
-                        .toRealPath(LinkOption.NOFOLLOW_LINKS);
-
-        Files.delete(filePath);
+    public void delete(Path path) throws IOException {
+        Files.delete(path);
     }
+
 }

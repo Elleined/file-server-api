@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
@@ -33,7 +34,7 @@ public class FileController {
     }
 
     @GetMapping("/{file}")
-    public ResponseEntity<StreamingResponseBody> getByName(@PathVariable("folder") UUID folder,
+    public ResponseEntity<StreamingResponseBody> getByUUID(@PathVariable("folder") UUID folder,
                                                            @PathVariable("file") UUID file) throws IOException, FileServerAPIException, MimeTypeException {
 
         FileEntity fileEntity = fileService.getByUUID(folder, file).orElseThrow();
@@ -57,8 +58,9 @@ public class FileController {
 
     @DeleteMapping("/{file}")
     public void delete(@PathVariable("folder") UUID folder,
-                       @PathVariable("file") UUID file) throws IOException {
+                       @PathVariable("file") UUID file) throws IOException, MimeTypeException, FileServerAPIException {
 
-        fileService.delete(folder, file);
+        FileEntity fetchedFile = fileService.getByUUID(folder, file).orElseThrow();
+        fileService.delete(fetchedFile.filePath());
     }
 }
