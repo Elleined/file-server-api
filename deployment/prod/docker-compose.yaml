@@ -10,6 +10,7 @@ services:
       - MAX_FILE_SIZE_IN_MB=${MAX_FILE_SIZE_IN_MB}
       - LOG_LEVEL=${LOG_LEVEL}
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+      - SPRING_OPENAPI_ENABLED=${SPRING_OPENAPI_ENABLED}
     ports:
       - "${PORT}:${PORT}"
     networks:
