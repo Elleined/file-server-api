@@ -1,8 +1,8 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.5.8'
+    id 'org.springframework.boot' version '3.5.10'
     id 'io.spring.dependency-management' version '1.1.7'
-    id 'net.ltgt.errorprone' version '4.3.0'
+    id 'net.ltgt.errorprone' version '4.2.0'
 }
 java {
     toolchain {
@@ -13,9 +13,6 @@ java {
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
-    }
-    configureEach {
-        exclude group: 'commons-logging', module: 'commons-logging'
     }
 }
 
@@ -28,12 +25,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14'
-    implementation 'org.apache.pdfbox:pdfbox:3.0.6'
     implementation 'org.apache.tika:tika-core:3.2.3'
 
-    errorprone "com.uber.nullaway:nullaway:0.12.14"
+    errorprone "com.uber.nullaway:nullaway:0.13.1"
     implementation "org.jspecify:jspecify:1.0.0"
-    errorprone "com.google.errorprone:error_prone_core:2.45.0"
+    errorprone "com.google.errorprone:error_prone_core:2.46.0"
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
